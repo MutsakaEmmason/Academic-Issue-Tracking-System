@@ -1,9 +1,10 @@
 Academic Issue Tracking System (AITS)
-    The Academic Issue Tracking System (AITS) is a web-based platform designed to help students at Makerere University log and track issues related to their academic records.
-    Issues like missing marks, appeals, and corrections can be reported, tracked, and resolved by various user roles within the system, including students, lecturers, heads of departments, and the Academic Registrar. The system provides role-based access control, personalized dashboards, issue categorization, status tracking, notifications, and an audit trail for all actions performed on issues.
+      The Academic Issue Tracking System (AITS) is a web-based platform designed to help students at Makerere University log and track issues related to their academic records.
+      Issues like missing marks, appeals, and corrections can be reported, tracked, and resolved by various user roles within the system, including students, lecturers, heads of departments, and the Academic Registrar.
+    The system provides role-based access control, personalized dashboards, issue categorization, status tracking, notifications, and an audit trail for all actions performed on issues.
 
-Project Overview
-This system was built using Django for the backend and React for the frontend. The backend is powered by Django REST Framework (DRF) to provide API endpoints, while React handles the user interface, allowing for an interactive and dynamic experience. PostgreSQL is used as the database, with cloud hosting and deployment options available on Heroku or AWS.
+  Project Overview
+         This system was built using Django for the backend and React for the frontend. The backend is powered by Django REST Framework (DRF) to provide API endpoints, while React handles the user interface, allowing for an interactive and dynamic experience. PostgreSQL is used as the database, with cloud hosting and deployment options available on Heroku or AWS.
 
 Features
 User Roles and Permissions:
@@ -132,13 +133,15 @@ git push heroku main
 For AWS, you can configure EC2 or Elastic Beanstalk for hosting the application.
 
 Testing
-Backend Testing: Pytest is used for testing the backend. Run the following command to run tests:
+Backend Testing:
+      Pytest is used for testing the backend. Run the following command to run tests:
 
 bash
 Copy
 Edit
 python manage.py test
-Frontend Testing: Jest and React Testing Library are used for testing React components. Run the following command to run tests:
+Frontend Testing: 
+       Jest and React Testing Library are used for testing React components. Run the following command to run tests:
 
 bash
 Copy
@@ -147,8 +150,6 @@ npm test
 Contribution
 Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 Acknowledgements
 Thanks to the Django and React communities for providing such powerful frameworks.
