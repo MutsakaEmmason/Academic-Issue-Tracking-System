@@ -1,37 +1,43 @@
-    Academic Issue Tracking System (AITS)
+
+
+         Academic Issue Tracking System (AITS)
+
 Project Overview
 The Academic Issue Tracking System (AITS) is a web-based platform designed to help students at Makerere University log and track academic-related issues such as missing marks, appeals, and corrections. The system enables multiple user roles—students, lecturers, heads of departments, and the Academic Registrar—to manage, track, and resolve issues.
 
 Technologies Used
-Backend: Django, Django REST Framework (DRF)
-Frontend: React, Redux, React Toastify
-Database: PostgreSQL
-Hosting/Deployment: Heroku or AWS
-Version Control: Git, GitHub
-Testing: Pytest (Backend), Jest, React Testing Library (Frontend)
+Backend: Django, Django REST Framework (DRF) Frontend: React, Redux, React Toastify Database: PostgreSQL Hosting/Deployment: Heroku or AWS Version Control: Git, GitHub Testing: Pytest (Backend), Jest, React Testing Library (Frontend)
+
 Features
 User Roles and Permissions
 Students: Log issues, view status, update issue details.
+
 Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads.
+
 Lecturers/Heads of Departments: Resolve assigned issues, update issue status.
+
 Issue Management
 Issue Types: Categorized into "Missing Marks," "Appeals," and "Corrections."
+
 Details: Students provide relevant information such as course codes and descriptions for each issue.
+
 Notifications
 In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues.
+
 Dashboard
 Personalized Dashboard: Displays relevant tasks, issues, and updates based on user roles.
-Audit Trail
-Audit Log: A log of all actions performed on each issue for transparency and accountability.
+
+Activity Log
+Activity Log: A log of all actions performed on each issue for transparency and accountability.
+
 Security
 Role-Based Access Control: Ensures users only have access to features and data they are authorized to view.
+
 Setup Instructions
 Backend Setup (Django)
 Clone the repository:
 
 bash
-Copy
-Edit
 git clone https://github.com/your-username/aits.git
 cd aits
 Set up a Python virtual environment (optional but recommended):
@@ -39,37 +45,28 @@ Set up a Python virtual environment (optional but recommended):
 For macOS/Linux:
 
 bash
-Copy
-Edit
 python -m venv env
 source env/bin/activate
 For Windows:
 
 bash
-Copy
-Edit
 env\Scripts\activate
 Install required dependencies:
 
 bash
-Copy
-Edit
 pip install -r requirements.txt
 Set up PostgreSQL database (optional):
 
-Ensure PostgreSQL is installed and running.
-Create a database and user according to the configuration in settings.py.
+Ensure PostgreSQL is installed and running. Create a database and user according to the configuration in settings.py.
+
 Run migrations to create the necessary database tables:
+
 bash
-Copy
-Edit
 python manage.py makemigrations
 python manage.py migrate
 Start the Django development server:
 
 bash
-Copy
-Edit
 python manage.py runserver
 The backend API will be available at http://127.0.0.1:8000/.
 
@@ -77,20 +74,14 @@ Frontend Setup (React)
 Navigate to the frontend directory:
 
 bash
-Copy
-Edit
 cd aits-frontend
 Install the required dependencies:
 
 bash
-Copy
-Edit
 npm install
 Start the React development server:
 
 bash
-Copy
-Edit
 npm start
 The frontend will be available at http://localhost:3000/.
 
@@ -100,14 +91,10 @@ For development, allow cross-origin requests from the frontend by configuring CO
 Install django-cors-headers:
 
 bash
-Copy
-Edit
 pip install django-cors-headers
 Update settings.py:
 
 python
-Copy
-Edit
 INSTALLED_APPS = [
     ...
     'corsheaders',
@@ -127,38 +114,34 @@ Deployment
 The project can be deployed on either Heroku or AWS. Follow the respective documentation for deployment setup.
 
 Heroku Deployment:
+
 Create a Heroku app:
 
 bash
-Copy
-Edit
 heroku create
 Push to Heroku:
 
 bash
-Copy
-Edit
 git push heroku main
 AWS Deployment:
+
 Configure EC2 or Elastic Beanstalk for hosting the application on AWS.
+
 Testing
 Backend Testing (Pytest)
+
 To run tests for the backend, use:
 
 bash
-Copy
-Edit
 python manage.py test
 Frontend Testing (Jest and React Testing Library)
+
 To run tests for the frontend, use:
 
 bash
-Copy
-Edit
 npm test
 Contribution
 Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.
 
 Acknowledgements
-Thanks to the Django and React communities for providing such powerful frameworks.
-Special thanks to the creators of Django REST Framework, React, and Redux for enabling efficient development of this system.
+Thanks to the Django and React communities for providing such powerful frameworks. Special thanks to the creators of Django REST Framework, React, and Redux for enabling efficient development of this system.
