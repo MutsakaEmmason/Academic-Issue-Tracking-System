@@ -1,0 +1,5 @@
+.App {
+    display: flex; /* Example style */
+    flex-direction: column; /* Example style */
+    min-height: 100vh; /* Example style */
+}
