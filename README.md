@@ -31,7 +31,7 @@ Activity Log
 Activity Log: A log of all actions performed on each issue for transparency and accountability.
 
 Security
-Role-Based Access Control: Ensures users only have access to features and data they are authorized to view.
+Role-Based Access Control: Ensures users only have access to features and data they are authorized to view
 
 Setup Instructions
 Backend Setup (Django)
