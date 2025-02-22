@@ -1,0 +1,95 @@
+/* Login.css */
+body {
+       background: linear-gradient(to right, #6a11cb, #2575fc); /* Purple to Blue Gradient */
+       height: 100vh;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       margin: 0;
+       font-family: Arial, sans-serif;
+       animation: fadeIn 1.5s ease-in-out; /* Page fade-in effect */
+   }
+   
+   /* Login Form Container */
+   .login-container {
+       background: rgba(255, 255, 255, 0.2);
+       padding: 20px;
+       border-radius: 10px;
+       box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+       backdrop-filter: blur(10px);
+       text-align: center;
+       width: 300px;
+       opacity: 0;
+       animation: slideIn 1s ease-in-out forwards, float 3s ease-in-out infinite; /* Slide-in and floating */
+   }
+   
+   /* Heading */
+   h2 {
+       color: white;
+   }
+   
+   /* Input Fields */
+   input {
+       width: 100%;
+       padding: 10px;
+       margin: 10px 0;
+       border: none;
+       border-radius: 5px;
+       background: rgba(255, 255, 255, 0.7);
+       transition: transform 0.2s ease-in-out;
+   }
+   
+   /* Input Hover Effect */
+   input:focus {
+       transform: scale(1.05); /* Slight pop effect */
+   }
+   
+   /* Login Button */
+   button {
+       width: 100%;
+       padding: 10px;
+       border: none;
+       border-radius: 5px;
+       background-color: #4CAF50;
+       color: white;
+       font-size: 16px;
+       cursor: pointer;
+       transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+   }
+   
+   /* Button Hover Effect */
+   button:hover {
+       background-color: #45a049;
+       transform: scale(1.1); /* Slight grow effect */
+   }
+   
+   /* Animations */
+   @keyframes fadeIn {
+       from {
+           opacity: 0;
+       }
+       to {
+           opacity: 1;
+       }
+   }
+   
+   @keyframes slideIn {
+       from {
+           transform: translateY(-50px);
+           opacity: 0;
+       }
+       to {
+           transform: translateY(0);
+           opacity: 1;
+       }
+   }
+   
+   @keyframes float {
+       0%, 100% {
+           transform: translateY(0);
+       }
+       50% {
+           transform: translateY(10px);
+       }
+   }
+   
