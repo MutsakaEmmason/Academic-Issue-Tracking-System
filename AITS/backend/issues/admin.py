@@ -41,11 +41,11 @@ class NotificationAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
 
 # AuditLog Admin
-#class AuditLogAdmin(admin.ModelAdmin):
-    #list_display = ('user', 'action', 'created_at')
-    #list_filter = ('created_at',)
-    #search_fields = ('user__username', 'action')
-    #raw_id_fields = ('user',)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'action', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'action')
+    raw_id_fields = ('user',)
 
 # Register models
 #admin.site.register(CustomUser, CustomUserAdmin)
