@@ -20,11 +20,11 @@ class CustomUserAdmin(UserAdmin):
     )
 
 # Issue Admin
-#class IssueAdmin(admin.ModelAdmin):
-    #list_display = ('title', 'status', 'category', 'student', 'assigned_to', 'created_at')
-    #list_filter = ('status', 'category', 'created_at')
-    #search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
-    #raw_id_fields = ('student', 'assigned_to')
+class IssueAdmin(admin.ModelAdmin):
+    list_display = ('title', 'status', 'category', 'student', 'assigned_to', 'created_at')
+    list_filter = ('status', 'category', 'created_at')
+    search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
+    raw_id_fields = ('student', 'assigned_to')
 
 # Comment Admin
 #class CommentAdmin(admin.ModelAdmin):
@@ -48,7 +48,7 @@ class CustomUserAdmin(UserAdmin):
     #raw_id_fields = ('user',)
 
 # Register models
-admin.site.register(CustomUser, CustomUserAdmin)
+#admin.site.register(CustomUser, CustomUserAdmin)
 #admin.site.register(Issue, IssueAdmin)
 #admin.site.register(Comment, CommentAdmin)
 #admin.site.register(Notification, NotificationAdmin)
