@@ -26,26 +26,26 @@ class IssueAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
     raw_id_fields = ('student', 'assigned_to')
 
-# Comment Admin
-#class CommentAdmin(admin.ModelAdmin):
-    #list_display = ('issue', 'user', 'created_at')
-    #list_filter = ('created_at',)
-    #search_fields = ('issue__title', 'user__username', 'text')
-    #raw_id_fields = ('issue', 'user')
+ #Comment Admin
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('issue', 'user', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('issue__title', 'user__username', 'text')
+    raw_id_fields = ('issue', 'user')
 
 # Notification Admin
-#class NotificationAdmin(admin.ModelAdmin):
-    #list_display = ('user', 'message', 'read', 'created_at')
-    #list_filter = ('read', 'created_at')
-    #search_fields = ('user__username', 'message')
-   # raw_id_fields = ('user',)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'message', 'read', 'created_at')
+    list_filter = ('read', 'created_at')
+    search_fields = ('user__username', 'message')
+    raw_id_fields = ('user',)
 
 # AuditLog Admin
-#class AuditLogAdmin(admin.ModelAdmin):
-    #list_display = ('user', 'action', 'created_at')
-    #list_filter = ('created_at',)
-    #search_fields = ('user__username', 'action')
-    #raw_id_fields = ('user',)
+class AuditLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'action', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'action')
+    raw_id_fields = ('user',)
 
 # Register models
 #admin.site.register(CustomUser, CustomUserAdmin)
