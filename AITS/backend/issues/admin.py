@@ -26,12 +26,12 @@ class IssueAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
     raw_id_fields = ('student', 'assigned_to')
 
-# Comment Admin
-#class CommentAdmin(admin.ModelAdmin):
-    #list_display = ('issue', 'user', 'created_at')
-    #list_filter = ('created_at',)
-    #search_fields = ('issue__title', 'user__username', 'text')
-    #raw_id_fields = ('issue', 'user')
+ #Comment Admin
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('issue', 'user', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('issue__title', 'user__username', 'text')
+    raw_id_fields = ('issue', 'user')
 
 # Notification Admin
 #class NotificationAdmin(admin.ModelAdmin):
