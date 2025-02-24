@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Abstract model for timestamps
+# Abstract model for timestamps.
 class Timestamp(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -9,7 +9,7 @@ class Timestamp(models.Model):
     class Meta:
         abstract = True
 
-# Custom user model
+# Custom user model..
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('student', 'Student'),
@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-# Issue model
+# Issue model..
 class Issue(Timestamp):
     CATEGORY_CHOICES = [
         ('missing_marks', 'Missing Marks'),
@@ -43,7 +43,8 @@ class Issue(Timestamp):
     def __str__(self):
         return f"{self.title} ({self.status})"
 
-# Comment model
+
+# Comment model..
 class Comment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -52,7 +53,8 @@ class Comment(Timestamp):
     def __str__(self):
         return f"Comment by {self.user.username} on {self.issue.title}"
 
-# Notification model.
+
+# Notification model..
 class Notification(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message = models.CharField(max_length=255)
@@ -61,7 +63,8 @@ class Notification(Timestamp):
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
 
-# Audit Log model.
+
+# Audit Log model..
 class AuditLog(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)

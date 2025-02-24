@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
 
+
 # CustomUser Admin
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff')
@@ -40,6 +41,7 @@ class NotificationAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'message')
     raw_id_fields = ('user',)
 
+
 # AuditLog Admin
 class AuditLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'action', 'created_at')
@@ -47,7 +49,8 @@ class AuditLogAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'action')
     raw_id_fields = ('user',)
 
-# Register models
+
+# Register models.
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Issue, IssueAdmin)
 admin.site.register(Comment, CommentAdmin)
