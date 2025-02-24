@@ -61,7 +61,7 @@ class Notification(Timestamp):
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
 
-# Audit Log model 
+# Audit Log model.
 class AuditLog(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)
