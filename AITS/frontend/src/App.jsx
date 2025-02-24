@@ -1,16 +1,22 @@
+
 import React from "react";
 import LecturerLogin from "./Login";
-import StudentLogin from "./student_login"; // Ensure this import is correct
+import StudentLogin from "./student_login";
+import Home from "./home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
+import Register from "./routes/register";
 
 function App() {
   return (
     <ChakraProvider>
       <Router>
         <Routes>
-          <Route path="/student_login" element={<StudentLogin />} />
-          <Route path="/" element={<LecturerLogin />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/student/login" element={<StudentLogin />} />
+          <Route path="/lecturer/login" element={<LecturerLogin />} />
+          {/* <Route path="/admin/login" element={<AdminLogin />} /> */}
+          <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
     </ChakraProvider>
