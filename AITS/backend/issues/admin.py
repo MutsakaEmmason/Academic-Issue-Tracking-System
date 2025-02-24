@@ -34,11 +34,11 @@ class CommentAdmin(admin.ModelAdmin):
     raw_id_fields = ('issue', 'user')
 
 # Notification Admin
-#class NotificationAdmin(admin.ModelAdmin):
-    #list_display = ('user', 'message', 'read', 'created_at')
-    #list_filter = ('read', 'created_at')
-    #search_fields = ('user__username', 'message')
-   # raw_id_fields = ('user',)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'message', 'read', 'created_at')
+    list_filter = ('read', 'created_at')
+    search_fields = ('user__username', 'message')
+    raw_id_fields = ('user',)
 
 # AuditLog Admin
 #class AuditLogAdmin(admin.ModelAdmin):
