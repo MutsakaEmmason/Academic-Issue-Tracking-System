@@ -48,8 +48,8 @@ class AuditLogAdmin(admin.ModelAdmin):
     raw_id_fields = ('user',)
 
 # Register models
-#admin.site.register(CustomUser, CustomUserAdmin)
-#admin.site.register(Issue, IssueAdmin)
-#admin.site.register(Comment, CommentAdmin)
-#admin.site.register(Notification, NotificationAdmin)
-#admin.site.register(AuditLog, AuditLogAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(Issue, IssueAdmin)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Notification, NotificationAdmin)
+admin.site.register(AuditLog, AuditLogAdmin)
