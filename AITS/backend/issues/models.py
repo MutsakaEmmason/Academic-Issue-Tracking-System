@@ -9,7 +9,7 @@ class Timestamp(models.Model):
     class Meta:
         abstract = True
 
-# Custom user model..
+# Custom user model.
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('student', 'Student'),
