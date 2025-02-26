@@ -35,7 +35,7 @@ class IssueViewSet(viewsets.ModelViewSet):
         return permissions
 
 
-# Comment ViewSet
+# Comment ViewSet.
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
