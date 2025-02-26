@@ -9,7 +9,7 @@ class Timestamp(models.Model):
     class Meta:
         abstract = True
 
-# Custom user model.
+# Custom user model..
 class CustomUser(AbstractUser):
     ROLE_CHOICES = [
         ('student', 'Student'),
@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 
-# Issue model..
+# Issue model.
 class Issue(Timestamp):
     CATEGORY_CHOICES = [
         ('missing_marks', 'Missing Marks'),
