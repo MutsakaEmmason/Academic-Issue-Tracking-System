@@ -4,7 +4,7 @@ from .permissions import IsStudent, IsLecturer, IsHOD, IsRegistrar
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer
 
-# CustomUser ViewSet
+# CustomUser ViewSet.
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
