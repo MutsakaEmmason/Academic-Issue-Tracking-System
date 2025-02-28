@@ -5,4 +5,4 @@ class IssuesConfig(AppConfig):
     name = 'issues'
 
     def ready(self):
-        import issues.signals  # Register signals..
+        import issues.signals  # Register signals
