@@ -8,19 +8,11 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
 
 function App() {
-  return (
-    <ChakraProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/student/login" element={<StudentLogin />} />
-          <Route path="/lecturer/login" element={<LecturerLogin />} />
-          {/* <Route path="/admin/login" element={<AdminLogin />} /> */}
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </Router>
-    </ChakraProvider>
-  );
+    return (
+        <div>
+            <LecturerLogin />
+        </div>
+    );
 }
 
 export default App;
