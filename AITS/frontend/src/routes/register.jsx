@@ -49,6 +49,12 @@ const Register = () => {
         Register to access the Academic Issue Tracking System.
       </Text>
 
+      <Text textAlign="center" color="blue.500">
+        <a href="https://reactjs.org/link/switch-to-createroot" target="_blank" rel="noopener noreferrer">
+          Learn about switching to createRoot
+        </a>
+      </Text>
+
       <Box w="100%" maxW="400px">
         <FormControl>
           <FormLabel>Full Name</FormLabel>
