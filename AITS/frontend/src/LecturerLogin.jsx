@@ -106,6 +106,17 @@ const LecturerLogin = () => {
                     />
                 </FormControl>
 
+                <FormControl display="flex" alignItems="center" mb={4}>
+                    <FormLabel htmlFor="login-signup-switch" mb="0">
+                        {isLogin ? "Switch to Sign Up" : "Switch to Login"}
+                    </FormLabel>
+                    <Switch
+                        id="login-signup-switch"
+                        isChecked={!isLogin}
+                        onChange={() => setIsLogin(!isLogin)}
+                    />
+                </FormControl>
+
                 {!isLogin && (
                     <>
                         <FormControl id="course" mb={4}>
