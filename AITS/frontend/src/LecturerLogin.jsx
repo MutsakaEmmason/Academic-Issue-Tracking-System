@@ -1,98 +1,153 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
-import "./LecturerLogin.css";
+import { useNavigate } from "react-router-dom";
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Heading,
+    Text,
+    Switch,
+    useToast,
+} from "@chakra-ui/react";
 
 const LecturerLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [course, setCourse] = useState("");
     const [department, setDepartment] = useState("");
-    const [isLogin, setIsLogin] = useState(true); // Toggle between login and signup
+    const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState("");
-    const navigate = useNavigate(); // For navigation
+    const navigate = useNavigate();
+    const toast = useToast();
 
-    // Check if the lecturer is already signed up
     const isLecturerSignedUp = () => {
         const lecturer = localStorage.getItem("lecturer");
         return lecturer ? true : false;
     };
 
-    // Handle login
     const handleLogin = (e) => {
         e.preventDefault();
         const lecturer = JSON.parse(localStorage.getItem("lecturer"));
         if (lecturer && lecturer.email === email && lecturer.password === password) {
-            navigate("/lecturer-dashboard", { state: { username: lecturer.email } }); // Redirect to dashboard
+            navigate("/lecturer-dashboard", { state: { username: lecturer.email } });
             setError("");
         } else {
             setError("Invalid email or password.");
+            toast({
+                title: "Error",
+                description: "Invalid email or password.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
-    // Handle signup
     const handleSignup = (e) => {
         e.preventDefault();
         if (email && password && course && department) {
             const lecturer = { email, password, course, department };
-            localStorage.setItem("lecturer", JSON.stringify(lecturer)); // Save lecturer details
-            alert("Signup successful! Please log in.");
-            setIsLogin(true); // Switch to login after signup
+            localStorage.setItem("lecturer", JSON.stringify(lecturer));
+            toast({
+                title: "Success",
+                description: "Signup successful! Please log in.",
+                status: "success",
+                duration: 3000,
+                isClosable: true,
+            });
+            setIsLogin(true);
             setError("");
         } else {
             setError("Please fill in all fields.");
+            toast({
+                title: "Error",
+                description: "Please fill in all fields.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
         }
     };
 
     return (
-        <div className="login-container">
-            <h2>{isLogin ? "Lecturer Login" : "Lecturer Sign Up"}</h2>
-            {error && <p className="error">{error}</p>}
+        <Box maxW="md" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
+            <Heading as="h2" size="lg" textAlign="center" mb={4}>
+                {isLogin ? "Lecturer Login" : "Lecturer Sign Up"}
+            </Heading>
+
+            {error && (
+                <Text color="red.500" textAlign="center" mb={4}>
+                    {error}
+                </Text>
+            )}
 
             <form onSubmit={isLogin ? handleLogin : handleSignup}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
+                <FormControl id="email" mb={4}>
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </FormControl>
+
+                <FormControl id="password" mb={4}>
+                    <FormLabel>Password</FormLabel>
+                    <Input
+                        type="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </FormControl>
 
                 {!isLogin && (
                     <>
-                        <input
-                            type="text"
-                            placeholder="Course Taught"
-                            value={course}
-                            onChange={(e) => setCourse(e.target.value)}
-                            required
-                        />
-                        <input
-                            type="text"
-                            placeholder="Department"
-                            value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                            required
-                        />
+                        <FormControl id="course" mb={4}>
+                            <FormLabel>Course Taught</FormLabel>
+                            <Input
+                                type="text"
+                                placeholder="Enter the course you teach"
+                                value={course}
+                                onChange={(e) => setCourse(e.target.value)}
+                                required
+                            />
+                        </FormControl>
+
+                        <FormControl id="department" mb={4}>
+                            <FormLabel>Department</FormLabel>
+                            <Input
+                                type="text"
+                                placeholder="Enter your department"
+                                value={department}
+                                onChange={(e) => setDepartment(e.target.value)}
+                                required
+                            />
+                        </FormControl>
                     </>
                 )}
 
-                <button type="submit">{isLogin ? "Login" : "Sign Up"}</button>
+                <Button type="submit" colorScheme="teal" width="full" mb={4}>
+                    {isLogin ? "Login" : "Sign Up"}
+                </Button>
             </form>
 
-            <p>
+            <Text textAlign="center">
                 {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <span onClick={() => setIsLogin(!isLogin)} style={{ cursor: "pointer", color: "#4CAF50" }}>
+                <Button
+                    variant="link"
+                    colorScheme="teal"
+                    onClick={() => setIsLogin(!isLogin)}
+                >
                     {isLogin ? "Sign Up" : "Login"}
-                </span>
-            </p>
-        </div>
+                </Button>
+            </Text>
+        </Box>
     );
 };
 
