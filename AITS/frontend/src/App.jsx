@@ -1,7 +1,3 @@
-
-
-
-jsx
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -11,9 +7,10 @@ import {
 import { ChakraProvider } from "@chakra-ui/react";
 import LecturerLogin from "./LecturerLogin.jsx";
 import LecturerDashboard from "./LecturerDashboard.jsx";
-import StudentLogin from "./student_login";
-import Home from "./home";
-import Register from "./routes/register";
+import StudentLogin from "./StudentLogin.jsx"; // Ensure correct import
+import Home from "./Home.jsx"; // Ensure correct import
+import Register from "./Register.jsx"; // Ensure correct import
+import StudentDashboard from "./StudentDashboard.jsx";
 
 function App() {
   return (
@@ -25,6 +22,7 @@ function App() {
           <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
           <Route path="/student-login" element={<StudentLogin />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
         </Routes>
       </Router>
     </ChakraProvider>
