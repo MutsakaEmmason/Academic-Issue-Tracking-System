@@ -1,6 +1,6 @@
 
 
-         Academic Issue Tracking System (AITS)
+Academic Issue Tracking System (AITS)
 
 Project Overview
 The Academic Issue Tracking System (AITS) is a web-based platform designed to help students at Makerere University log and track academic-related issues such as missing marks, appeals, and corrections. The system enables multiple user roles—students, lecturers, heads of departments, and the Academic Registrar—to manage, track, and resolve issues.
