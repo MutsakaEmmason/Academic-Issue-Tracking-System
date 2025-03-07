@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Login.css"; // Import CSS file
+import "./Login.css"; // Ensure this path is correct
 
 const LecturerLogin = () => {
     const [email, setEmail] = useState("");
@@ -10,8 +10,6 @@ const LecturerLogin = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Login Data:", { email, password, course, department });
-
-        // Here, you will later send data to the backend
     };
 
     return (
