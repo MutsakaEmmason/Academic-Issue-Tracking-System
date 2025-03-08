@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsStudent, IsLecturer, IsHOD, IsRegistrar
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
