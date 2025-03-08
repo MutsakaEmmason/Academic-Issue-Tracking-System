@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
 import {
     Box,
@@ -11,61 +11,46 @@ import {
     Switch,
     useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+
+const BASE_URL = "http://127.0.0.1:8000/api/";
 
 const LecturerLogin = () => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState(""); // Changed from email to username
     const [password, setPassword] = useState("");
-    const [firstName, setFirstName] = useState(""); // State for first name
-    const [lastName, setLastName] = useState(""); // State for last name
-    const [course, setCourse] = useState("");
-    const [department, setDepartment] = useState("");
     const [isLogin, setIsLogin] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const toast = useToast();
 
-    const isLecturerSignedUp = () => {
-        const lecturer = localStorage.getItem("lecturer");
-        return lecturer ? true : false;
-    };
-
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        const lecturer = JSON.parse(localStorage.getItem("lecturer"));
-        if (lecturer && lecturer.email === email && lecturer.password === password) {
-            navigate("/lecturer-dashboard", { state: { username: lecturer.firstName } }); // Use firstName for greeting
-            setError("");
-        } else {
-            setError("Invalid email or password.");
-            toast({
-                title: "Error",
-                description: "Invalid email or password.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
+        try {
+            const response = await axios.post(`${BASE_URL}token/`, {
+                username, // Django expects "username"
+                password
             });
-        }
-    };
 
-    const handleSignup = (e) => {
-        e.preventDefault();
-        if (email && password && firstName && lastName && course && department) {
-            const lecturer = { email, password, firstName, lastName, course, department };
-            localStorage.setItem("lecturer", JSON.stringify(lecturer));
+            // Store JWT token
+            localStorage.setItem("access_token", response.data.access);
+            localStorage.setItem("refresh_token", response.data.refresh);
+            axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access}`;
+
             toast({
-                title: "Success",
-                description: "Signup successful! Please log in.",
+                title: "Login Successful",
+                description: "You have successfully logged in.",
                 status: "success",
                 duration: 3000,
                 isClosable: true,
             });
-            setIsLogin(true);
-            setError("");
-        } else {
-            setError("Please fill in all fields.");
+
+            navigate("/lecturer-dashboard"); // Redirect to the lecturer dashboard
+
+        } catch (error) {
+            setError("Invalid credentials");
             toast({
                 title: "Error",
-                description: "Please fill in all fields.",
+                description: "Invalid username or password.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -76,7 +61,7 @@ const LecturerLogin = () => {
     return (
         <Box maxW="md" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
             <Heading as="h2" size="lg" textAlign="center" mb={4}>
-                {isLogin ? "Lecturer Login" : "Lecturer Sign Up"}
+                Lecturer Login
             </Heading>
 
             {error && (
@@ -85,40 +70,14 @@ const LecturerLogin = () => {
                 </Text>
             )}
 
-            <form onSubmit={isLogin ? handleLogin : handleSignup}>
-                {!isLogin && (
-                    <>
-                        <FormControl id="firstName" mb={4}>
-                            <FormLabel>First Name</FormLabel>
-                            <Input
-                                type="text"
-                                placeholder="Enter your first name"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                required
-                            />
-                        </FormControl>
-
-                        <FormControl id="lastName" mb={4}>
-                            <FormLabel>Last Name</FormLabel>
-                            <Input
-                                type="text"
-                                placeholder="Enter your last name"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                required
-                            />
-                        </FormControl>
-                    </>
-                )}
-
-                <FormControl id="email" mb={4}>
-                    <FormLabel>Email</FormLabel>
+            <form onSubmit={handleLogin}>
+                <FormControl id="username" mb={4}>
+                    <FormLabel>Username</FormLabel>
                     <Input
-                        type="email"
-                        placeholder="Enter your email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         required
                     />
                 </FormControl>
@@ -134,58 +93,10 @@ const LecturerLogin = () => {
                     />
                 </FormControl>
 
-                {!isLogin && (
-                    <>
-                        <FormControl id="course" mb={4}>
-                            <FormLabel>Course Taught</FormLabel>
-                            <Input
-                                type="text"
-                                placeholder="Enter the course you teach"
-                                value={course}
-                                onChange={(e) => setCourse(e.target.value)}
-                                required
-                            />
-                        </FormControl>
-
-                        <FormControl id="department" mb={4}>
-                            <FormLabel>Department</FormLabel>
-                            <Input
-                                type="text"
-                                placeholder="Enter your department"
-                                value={department}
-                                onChange={(e) => setDepartment(e.target.value)}
-                                required
-                            />
-                        </FormControl>
-                    </>
-                )}
-
-                <FormControl display="flex" alignItems="center" mb={4}>
-                    <FormLabel htmlFor="login-signup-switch" mb="0">
-                        {isLogin ? "Switch to Sign Up" : "Switch to Login"}
-                    </FormLabel>
-                    <Switch
-                        id="login-signup-switch"
-                        isChecked={!isLogin}
-                        onChange={() => setIsLogin(!isLogin)}
-                    />
-                </FormControl>
-
                 <Button type="submit" colorScheme="teal" width="full" mb={4}>
-                    {isLogin ? "Login" : "Sign Up"}
+                    Login
                 </Button>
             </form>
-
-            <Text textAlign="center">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <Button
-                    variant="link"
-                    colorScheme="teal"
-                    onClick={() => setIsLogin(!isLogin)}
-                >
-                    {isLogin ? "Sign Up" : "Login"}
-                </Button>
-            </Text>
         </Box>
     );
 };
