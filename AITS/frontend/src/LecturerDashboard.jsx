@@ -52,7 +52,7 @@ const LecturerDashboard = () => {
                 {/* Courses Dropdown */}
                 <Box mt={6} w="100%">
                     <Heading as="h3" size="lg" mb={4} color="purple.600">
-                        Select a Course Taught
+                        Select a Course
                     </Heading>
                     <Select
                         placeholder="Select a course"
