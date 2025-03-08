@@ -15,6 +15,19 @@ const LecturerDashboard = () => {
     ]);
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [newComment, setNewComment] = useState("");
+    const [selectedCourse, setSelectedCourse] = useState(""); // State for selected course
+
+    // List of Computer Science courses
+    const courses = [
+        "Introduction to Computer Science",
+        "Programming in C",
+        "Data Structures and Algorithms",
+        "Database Systems",
+        "Artificial Intelligence",
+        "Web Programming and Technologies",
+        "Cybersecurity",
+        "Cloud Computing",
+    ];
 
     const handleStatusChange = (issueId, newStatus) => {
         setIssues(issues.map(issue => issue.id === issueId ? { ...issue, status: newStatus } : issue));
@@ -36,22 +49,25 @@ const LecturerDashboard = () => {
                     Welcome to your Lecturer Dashboard.
                 </Text>
 
-                {/* Courses Section */}
+                {/* Courses Dropdown */}
                 <Box mt={6} w="100%">
                     <Heading as="h3" size="lg" mb={4} color="purple.600">
-                        Your Courses
+                        Select a Course Taught
                     </Heading>
-                    <List spacing={3}>
-                        <ListItem p={3} bg="purple.50" borderRadius="md" boxShadow="sm">
-                            Course 1: Introduction to Programming
-                        </ListItem>
-                        <ListItem p={3} bg="purple.50" borderRadius="md" boxShadow="sm">
-                            Course 2: Data Structures
-                        </ListItem>
-                        <ListItem p={3} bg="purple.50" borderRadius="md" boxShadow="sm">
-                            Course 3: Algorithms
-                        </ListItem>
-                    </List>
+                    <Select
+                        placeholder="Select a course"
+                        value={selectedCourse}
+                        onChange={(e) => setSelectedCourse(e.target.value)}
+                        bg="white"
+                        borderColor="purple.300"
+                        _hover={{ borderColor: "purple.500" }}
+                    >
+                        {courses.map((course, index) => (
+                            <option key={index} value={course}>
+                                {course}
+                            </option>
+                        ))}
+                    </Select>
                 </Box>
 
                 {/* Notifications Section */}
