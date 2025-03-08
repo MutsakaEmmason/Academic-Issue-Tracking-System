@@ -15,6 +15,8 @@ import {
 const LecturerLogin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState(""); // State for first name
+    const [lastName, setLastName] = useState(""); // State for last name
     const [course, setCourse] = useState("");
     const [department, setDepartment] = useState("");
     const [isLogin, setIsLogin] = useState(true);
@@ -31,7 +33,7 @@ const LecturerLogin = () => {
         e.preventDefault();
         const lecturer = JSON.parse(localStorage.getItem("lecturer"));
         if (lecturer && lecturer.email === email && lecturer.password === password) {
-            navigate("/lecturer-dashboard", { state: { username: lecturer.email } });
+            navigate("/lecturer-dashboard", { state: { username: lecturer.firstName } }); // Use firstName for greeting
             setError("");
         } else {
             setError("Invalid email or password.");
@@ -47,8 +49,8 @@ const LecturerLogin = () => {
 
     const handleSignup = (e) => {
         e.preventDefault();
-        if (email && password && course && department) {
-            const lecturer = { email, password, course, department };
+        if (email && password && firstName && lastName && course && department) {
+            const lecturer = { email, password, firstName, lastName, course, department };
             localStorage.setItem("lecturer", JSON.stringify(lecturer));
             toast({
                 title: "Success",
@@ -84,6 +86,32 @@ const LecturerLogin = () => {
             )}
 
             <form onSubmit={isLogin ? handleLogin : handleSignup}>
+                {!isLogin && (
+                    <>
+                        <FormControl id="firstName" mb={4}>
+                            <FormLabel>First Name</FormLabel>
+                            <Input
+                                type="text"
+                                placeholder="Enter your first name"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                required
+                            />
+                        </FormControl>
+
+                        <FormControl id="lastName" mb={4}>
+                            <FormLabel>Last Name</FormLabel>
+                            <Input
+                                type="text"
+                                placeholder="Enter your last name"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                required
+                            />
+                        </FormControl>
+                    </>
+                )}
+
                 <FormControl id="email" mb={4}>
                     <FormLabel>Email</FormLabel>
                     <Input
@@ -103,17 +131,6 @@ const LecturerLogin = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
-                    />
-                </FormControl>
-
-                <FormControl display="flex" alignItems="center" mb={4}>
-                    <FormLabel htmlFor="login-signup-switch" mb="0">
-                        {isLogin ? "Switch to Sign Up" : "Switch to Login"}
-                    </FormLabel>
-                    <Switch
-                        id="login-signup-switch"
-                        isChecked={!isLogin}
-                        onChange={() => setIsLogin(!isLogin)}
                     />
                 </FormControl>
 
@@ -142,6 +159,17 @@ const LecturerLogin = () => {
                         </FormControl>
                     </>
                 )}
+
+                <FormControl display="flex" alignItems="center" mb={4}>
+                    <FormLabel htmlFor="login-signup-switch" mb="0">
+                        {isLogin ? "Switch to Sign Up" : "Switch to Login"}
+                    </FormLabel>
+                    <Switch
+                        id="login-signup-switch"
+                        isChecked={!isLogin}
+                        onChange={() => setIsLogin(!isLogin)}
+                    />
+                </FormControl>
 
                 <Button type="submit" colorScheme="teal" width="full" mb={4}>
                     {isLogin ? "Login" : "Sign Up"}
