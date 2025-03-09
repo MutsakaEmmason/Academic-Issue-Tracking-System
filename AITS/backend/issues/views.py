@@ -16,7 +16,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = [IsAuthenticated]
 
-# Issue ViewSet.
+# Issue ViewSet
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
