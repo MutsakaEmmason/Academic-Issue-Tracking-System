@@ -36,6 +36,7 @@ class AuditLogSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
         
+
 class IssueAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = IssueAttachment
