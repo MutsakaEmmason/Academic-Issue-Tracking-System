@@ -147,7 +147,7 @@ class IssueAttachmentViewSet(viewsets.ModelViewSet):
 def log_action(user, action):
     AuditLog.objects.create(user=user, action=action)
 
-# Issue Update Email Notification'
+# Issue Update Email Notification
 def send_issue_update_email(issue):
     send_mail(
         subject=f"Issue Update: {issue.title}",
@@ -171,7 +171,7 @@ def send_issue_update_email(issue):
         issue.status = "Resolved"
         issue.save()
 
-        # Send notification to user
+        # Send notification to user.
 
 def send_notification(user, message):
     Notification.objects.create(user=user, message=message)
