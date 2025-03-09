@@ -13,7 +13,7 @@ router.register(r'attachments', IssueAttachmentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-     path('issues/<int:pk>/assign/', IssueViewSet.as_view({'patch': 'assign'})),.
+     path('issues/<int:pk>/assign/', IssueViewSet.as_view({'patch': 'assign'})),
     path('issues/<int:pk>/resolve/', IssueViewSet.as_view({'patch': 'resolve'})),
 ]
 
