@@ -137,7 +137,7 @@ class AuditLogViewSet(viewsets.ModelViewSet):
             return AuditLog.objects.all()
         return AuditLog.objects.none()
 
-# IssueAttachment ViewSet.
+# IssueAttachment ViewSet
 class IssueAttachmentViewSet(viewsets.ModelViewSet):
     queryset = IssueAttachment.objects.all()
     serializer_class = IssueAttachmentSerializer
@@ -147,7 +147,7 @@ class IssueAttachmentViewSet(viewsets.ModelViewSet):
 def log_action(user, action):
     AuditLog.objects.create(user=user, action=action)
 
-# Issue Update Email Notification
+# Issue Update Email Notification'
 def send_issue_update_email(issue):
     send_mail(
         subject=f"Issue Update: {issue.title}",
