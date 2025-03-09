@@ -75,7 +75,7 @@ class IssueViewSet(viewsets.ModelViewSet):
  
      
      
-    @action(detail=True, methods=['patch'], permission_classes=[IsAuthenticated]).
+    @action(detail=True, methods=['patch'], permission_classes=[IsAuthenticated])
     def assign(self, request, pk=None):
         """Assign an issue to a lecturer"""
         issue = self.get_object()
