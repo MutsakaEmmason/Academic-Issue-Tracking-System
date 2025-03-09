@@ -137,7 +137,7 @@ class AuditLogViewSet(viewsets.ModelViewSet):
             return AuditLog.objects.all()
         return AuditLog.objects.none()
 
-# IssueAttachment ViewSet
+# IssueAttachment ViewSet.
 class IssueAttachmentViewSet(viewsets.ModelViewSet):
     queryset = IssueAttachment.objects.all()
     serializer_class = IssueAttachmentSerializer
