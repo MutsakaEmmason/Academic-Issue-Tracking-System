@@ -171,7 +171,7 @@ def send_issue_update_email(issue):
         issue.status = "Resolved"
         issue.save()
 
-        # Send notification to user.
+        # Send notification to user
 
 def send_notification(user, message):
     Notification.objects.create(user=user, message=message)
@@ -206,7 +206,8 @@ def perform_create(self, serializer):
         issue.status = "Assigned"
         issue.save()
 
-        # Send email
+       
+        #Send email
         send_email_notification(lecturer, "New Issue Assigned",
                                 f"You have been assigned issue {issue.id}.")
         send_email_notification(issue.student, "Issue Status Updated",
