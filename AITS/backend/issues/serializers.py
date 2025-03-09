@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
-from .models import IssueAttachment.
+from .models import IssueAttachment
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,7 +8,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'role']
 
 class IssueSerializer(serializers.ModelSerializer):
-    student = serializers.ReadOnlyField(source='student.username').
+    student = serializers.ReadOnlyField(source='student.username')
     assigned_to = serializers.ReadOnlyField(source='assigned_to.username') 
 
     class Meta:
