@@ -1,4 +1,15 @@
 import { useState } from "react";
+
+import { useNavigate } from "react-router-dom"; 
+
+
+
+
+
+
+
+
+
 import {
     VStack,
     Button,
@@ -40,7 +51,37 @@ const Register = () => {
             department,
             yearOfStudy,
         });
-        // You would typically send this data to your backend API
+        fetch('http://127.0.0.1:8000/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                studentRegNumber,
+                password,
+                fullName,
+                email,
+                college,
+                department,
+                yearOfStudy,
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+        console.log('Success:', data);
+        // Redirect to StudentDashboard on successful registration
+        navigate("/StudentDashboard");
+
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+
     };
 
     return (
@@ -168,7 +209,7 @@ const Register = () => {
 
                 <Button
                     onClick={handleStudentRegistration}
-                    colorScheme="blue"
+                    colorScheme="green"
                     mt={6}
                     w="100%"
                 >
