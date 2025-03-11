@@ -38,6 +38,33 @@ const StudentDashboard = ({ studentName, isAuthenticated, issues = [] }) => {
         );
         setFilteredIssues(filtered);
     };
+    return (
+        <div style={{ textAlign: 'center' }}>
+            <h1 style={{ fontSize: '2.5em', padding: '20px', backgroundColor: 'green', color: 'white' }}>STUDENT DASHBOARD</h1>
+            <p style={{ color: 'white', background: "green" }}>WELCOME, {studentName}</p>
+            <hr /> {/* Adding a horizontal line to separate the header from the content */}
+
+            <MenuBar visible={menuVisible} /> {/* Adding the MenuBar to the Student Dashboard */}
+
+            {/* Search Bar using FormControl */}
+            <FormControl mt={4}>
+                <FormLabel>Search by Course Unit</FormLabel>
+                <Input 
+                    type="text" 
+                    placeholder="Enter course unit..." 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    style={{ border: '1px solid green', width: '150px' }} // Reduced width of the search box
+                />
+                <Button onClick={handleSearch} mt={2} colorScheme="green" style={{ border: '1px solid green' }}>Search</Button>
+            </FormControl>
+
+            {/* Message for No Issues */}
+            {filteredIssues.length === 0 && (
+                <p>No issues logged. Please submit an issue.</p>
+            )}
+        </div>
+    );
 
 
 
