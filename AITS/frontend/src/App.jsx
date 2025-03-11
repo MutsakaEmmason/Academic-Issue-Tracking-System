@@ -12,6 +12,9 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
 import LecturerDashboard from "./LecturerDashboard"
 import StudentDashboard from './routes/StudentDashboard';
+import AcademicRegistrar from './AcademicRegistrar';
+import RegistrarLogin from './RegistrarLogin'
+
 
 const App = () => {
     return (
@@ -26,6 +29,9 @@ const App = () => {
                     <Route path="/lecturer/login" element={<LecturerLogin />} />
                     <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/academic-registrar" element={<AcademicRegistrar />} />
+                    <Route path="/registrar-login" element={<RegistrarLogin />} />
+                    
                 </Routes>
             </Router>
         </ChakraProvider>

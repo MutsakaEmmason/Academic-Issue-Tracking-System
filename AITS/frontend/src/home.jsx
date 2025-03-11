@@ -18,6 +18,10 @@ const HomePage = () => {
     navigate("/admin/login");
   };
 
+  const handleRegistrarLogin = () => {
+    navigate("/registrar/login");
+  };
+
   return (
     <VStack spacing={8} p={8} align="center" justify="center" height="100vh">
       <Heading size="2xl">Welcome to AITS</Heading>
@@ -45,6 +49,14 @@ const HomePage = () => {
           colorScheme="orange"
           size="lg"
           onClick={handleAdminLogin}
+          width="200px"
+        >
+           Registrar Login
+        </Button>
+        <Button
+          colorScheme="red"
+          size="lg"
+          onClick={handleRegistrarLogin}
           width="200px"
         >
           Admin Login
