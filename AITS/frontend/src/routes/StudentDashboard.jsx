@@ -30,6 +30,14 @@ const StudentDashboard = ({ studentName, isAuthenticated, issues = [] }) => {
         console.log("User logged out");
         navigate('/'); // Redirect to home page after logout
     };
+    const handleSearch = () => {
+        console.log("Search initiated for:", searchTerm);
+        // Logic to filter issues based on search term
+        const filtered = issues.filter(issue => 
+            issue.courseUnit.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredIssues(filtered);
+    };
 
 
 
