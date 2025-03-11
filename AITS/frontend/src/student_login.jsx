@@ -18,7 +18,31 @@ const StudentLogin = () => {
   const navigate = useNavigate(); // Corrected: Call useNavigate as a function
 
   const handleStudentLogin = () => {
-    // Implement your login logic here
+    fetch('http://127.0.0.1:8000/api/login/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        studentRegNumber,
+        password,
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Success:', data);
+      // Redirect to StudentDashboard on successful login
+      navigate("/StudentDashboard");
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+
   };
 
   const handleNav = () => {

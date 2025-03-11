@@ -7,7 +7,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
 import LecturerDashboard from "./LecturerDashboard"
-
+import StudentDashboard from './routes/StudentDashboard';
 
 function App() {
   return (
@@ -15,6 +15,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} /> 
           <Route path="/student/login" element={<StudentLogin />} />
           <Route path="/lecturer/login" element={<LecturerLogin />} />
           <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
