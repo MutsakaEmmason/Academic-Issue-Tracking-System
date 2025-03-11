@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 const MenuBar = ({ handleLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -18,11 +19,22 @@ const MenuBar = ({ handleLogout }) => {
         setIsOpen(!isOpen);
     };
 
-
-
-
-
-
-
+    return (
+        <nav>
+            <div style={menuStyle}>
+                <button onClick={toggleMenu} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px' }}>
+                    Menu
+                </button>
+                {isOpen && (
+                <ul>
+                    <li><Link to="/issue-submission">Submit an Issue</Link></li>
+                    <li><Link to="/profile">View Profile</Link></li>
+                    <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
+                </ul>
+                )}
+            </div>
+        </nav>
+    );
 };
+
 export default MenuBar;
