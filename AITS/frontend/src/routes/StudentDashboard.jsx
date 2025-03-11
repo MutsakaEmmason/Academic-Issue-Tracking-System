@@ -14,6 +14,22 @@ const StudentDashboard = ({ studentName, isAuthenticated, issues = [] }) => {
 
     const [menuVisible, setMenuVisible] = useState(false);
     console.log("StudentDashboard rendered with:", { studentName, isAuthenticated });
+    const [searchTerm, setSearchTerm] = useState(''); // State for search term
+    const [profileVisible, setProfileVisible] = useState(false); // Added state for profile visibility
+    const [filteredIssues, setFilteredIssues] = useState(issues); // State for filtered issues
+
+    const toggleMenu = () => {
+        setMenuVisible(!menuVisible);
+    };
+
+    const toggleProfile = () => {
+        setProfileVisible(!profileVisible); // Toggle profile visibility
+    };
+
+    const handleLogout = () => {
+        console.log("User logged out");
+        navigate('/'); // Redirect to home page after logout
+    };
 
 
 
