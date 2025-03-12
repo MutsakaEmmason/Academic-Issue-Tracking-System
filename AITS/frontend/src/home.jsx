@@ -19,7 +19,7 @@ const HomePage = () => {
   };
 
   const handleRegistrarLogin = () => {
-    navigate("/registrar/login");
+    navigate("/registrar-login");
   };
 
   return (
