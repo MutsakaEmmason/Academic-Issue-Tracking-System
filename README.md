@@ -16,7 +16,7 @@ Academic Registrar: Review and resolve issues, assign issues to lecturers or dep
 
 Lecturers/Heads of Departments: Resolve assigned issues, update issue status.
 
-Issue Management.
+Issue Management
 Issue Types: Categorized into "Missing Marks," "Appeals," and "Corrections."
 
 Details: Students provide relevant information such as course codes and descriptions for each issue.
