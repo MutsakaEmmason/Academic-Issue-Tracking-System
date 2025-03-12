@@ -1,15 +1,5 @@
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom"; 
-
-
-
-
-
-
-
-
-
+import { useNavigate, Link } from "react-router-dom";
 import {
     VStack,
     Button,
@@ -25,6 +15,8 @@ import {
 } from "@chakra-ui/react";
 
 const Register = () => {
+    const navigate = useNavigate();
+
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,15 +34,6 @@ const Register = () => {
         }
 
         setPasswordsMatch(true);
-        console.log({
-            studentRegNumber,
-            password,
-            fullName,
-            email,
-            college,
-            department,
-            yearOfStudy,
-        });
         fetch('http://127.0.0.1:8000/api/register/', {
             method: 'POST',
             headers: {
@@ -72,16 +55,12 @@ const Register = () => {
             }
             return response.json();
         })
-        .then(data => {
-        console.log('Success:', data);
-        // Redirect to StudentDashboard on successful registration
-        navigate("/StudentDashboard");
-
+        .then(() => {
+            navigate("/StudentDashboard");
         })
         .catch((error) => {
             console.error('Error:', error);
         });
-
     };
 
     return (
@@ -91,114 +70,57 @@ const Register = () => {
                 alt="Makerere University Logo"
                 boxSize="100px"
             />
-
             <Heading size="lg">Student Registration</Heading>
-
             <Text textAlign="center" color="gray.600" fontWeight='extrabold'>
                 Welcome to the Academic Issue Tracking System.
             </Text>
-
-            <Box w="100%" maxW="400px">
+            <Box w="100%" maxW="400px"> 
                 <FormControl>
                     <FormLabel>Full Name</FormLabel>
-                    <Input
-                        onChange={(e) => setFullName(e.target.value)}
-                        value={fullName}
-                        type="text"
-                    />
+                    <Input onChange={(e) => setFullName(e.target.value)} value={fullName} type="text" />
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Student Reg Number</FormLabel>
-                    <Input
-                        onChange={(e) => setStudentRegNumber(e.target.value)}
-                        value={studentRegNumber}
-                        type="text"
-                    />
+                    <Input onChange={(e) => setStudentRegNumber(e.target.value)} value={studentRegNumber} type="text" />
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Email</FormLabel>
-                    <Input
-                        onChange={(e) => setEmail(e.target.value)}
-                        value={email}
-                        type="email"
-                    />
+                    <Input onChange={(e) => setEmail(e.target.value)} value={email} type="email" />
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Password</FormLabel>
-                    <Input
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                        type="password"
-                    />
+                    <Input onChange={(e) => setPassword(e.target.value)} value={password} type="password" />
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Confirm Password</FormLabel>
-                    <Input
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        value={confirmPassword}
-                        type="password"
-                    />
+                    <Input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} type="password" />
                     {!passwordsMatch && (
-                        <FormHelperText color="red.500">
-                            Passwords do not match
-                        </FormHelperText>
+                        <FormHelperText color="red.500">Passwords do not match</FormHelperText>
                     )}
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>College</FormLabel>
-                    <Select
-                        onChange={(e) => setCollege(e.target.value)}
-                        value={college}
-                    >
+                    <Select onChange={(e) => setCollege(e.target.value)} value={college}>
                         <option value="">Select College</option>
-                        <option value="CAES">
-                            College of Agricultural and Environmental Sciences (CAES)
-                        </option>
-                        <option value="CoBAMS">
-                            College of Business and Management Sciences (CoBAMS)
-                        </option>
-                        <option value="CoCIS">
-                            College of Computing and Information Sciences (CoCIS)
-                        </option>
-                        <option value="CEES">
-                            College of Education and External Studies (CEES)
-                        </option>
-                        <option value="CEDAT">
-                            College of Engineering, Design, Art and Technology (CEDAT)
-                        </option>
+                        <option value="CAES">College of Agricultural and Environmental Sciences (CAES)</option>
+                        <option value="CoBAMS">College of Business and Management Sciences (CoBAMS)</option>
+                        <option value="CoCIS">College of Computing and Information Sciences (CoCIS)</option>
+                        <option value="CEES">College of Education and External Studies (CEES)</option>
+                        <option value="CEDAT">College of Engineering, Design, Art and Technology (CEDAT)</option>
                         <option value="CHS">College of Health Sciences (CHS)</option>
-                        <option value="CHUSS">
-                            College of Humanities and Social Sciences (CHUSS)
-                        </option>
+                        <option value="CHUSS">College of Humanities and Social Sciences (CHUSS)</option>
                         <option value="CoNAS">College of Natural Sciences (CoNAS)</option>
-                        <option value="COVAB">
-                            College of Veterinary Medicine, Animal Resources and Bio-security
-                            (COVAB)
-                        </option>
+                        <option value="COVAB">College of Veterinary Medicine, Animal Resources and Bio-security (COVAB)</option>
                         <option value="Law">School of Law</option>
                     </Select>
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Department</FormLabel>
-                    <Input
-                        onChange={(e) => setDepartment(e.target.value)} // Corrected to setDepartment
-                        value={department}
-                        type="text"
-                    />
+                    <Input onChange={(e) => setDepartment(e.target.value)} value={department} type="text" />
                 </FormControl>
-
                 <FormControl mt={4}>
                     <FormLabel>Year of Study</FormLabel>
-                    <Select
-                        onChange={(e) => setYearOfStudy(e.target.value)}
-                        value={yearOfStudy}
-                    >
+                    <Select onChange={(e) => setYearOfStudy(e.target.value)} value={yearOfStudy}>
                         <option value="">Select Year</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -206,15 +128,13 @@ const Register = () => {
                         <option value="4">4</option>
                     </Select>
                 </FormControl>
-
-                <Button
-                    onClick={handleStudentRegistration}
-                    colorScheme="green"
-                    mt={6}
-                    w="100%"
-                >
-                    Register
-                </Button>
+                <Text>
+                    Already have an account? 
+                    <Text as="span" color="blue.500" cursor="pointer" onClick={() => navigate("/student/login")}>
+                        Login here
+                    </Text>
+                </Text>
+                <Button mt={4} colorScheme="blue" onClick={handleStudentRegistration}>Register</Button>
             </Box>
         </VStack>
     );
