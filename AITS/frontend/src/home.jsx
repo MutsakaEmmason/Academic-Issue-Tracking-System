@@ -51,7 +51,7 @@ const HomePage = () => {
           onClick={handleAdminLogin}
           width="200px"
         >
-           Registrar Login
+           Admin
         </Button>
         <Button
           colorScheme="red"
@@ -59,7 +59,7 @@ const HomePage = () => {
           onClick={handleRegistrarLogin}
           width="200px"
         >
-          Admin Login
+          Registrar
         </Button>
       </VStack>
     </VStack>

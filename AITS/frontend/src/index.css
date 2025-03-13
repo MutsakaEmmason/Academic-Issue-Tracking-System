@@ -2,3 +2,50 @@
 body {
        margin: 0; /* Example: Reset default body margin */
    }
+
+
+   .sidebar-container {
+    display: flex;
+  }
+  
+  .sidebar {
+    background: #2c3e50;
+    color: white;
+    width: 100px;
+    height: 100vh;
+    padding-top: 20px;
+    transition: width 0.3s ease-in-out;
+    overflow: hidden;
+    position: fixed;
+  }
+  
+  .sidebar.open {
+    width: 2000px;
+  }
+  
+  .menu {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .menu li {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+  }
+  
+  .menu li span {
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+  
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  

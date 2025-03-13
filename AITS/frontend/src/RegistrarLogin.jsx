@@ -9,29 +9,44 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate
 
 const RegistrarLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
   const toast = useToast();
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (isLogin) {
-      // Handle Login Logic (You can integrate your API here)
-      toast({
-        title: "Logged in successfully!",
-        description: "You have successfully logged in as Registrar.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // Dummy login validation (replace with actual API authentication)
+      if (email === "registrar@example.com" && password === "password") {
+        toast({
+          title: "Logged in successfully!",
+          description: "Redirecting to Academic Registrar Dashboard...",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+
+        setTimeout(() => {
+          navigate("/academic-registrar"); // Redirect to AcademicRegistrar page
+        }, 2000); // Delay for better user experience
+      } else {
+        toast({
+          title: "Login Failed",
+          description: "Invalid email or password.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
     } else {
-      // Handle Registration Logic (You can integrate your API here)
+      // Registration logic (replace with API call)
       toast({
         title: "Registered successfully!",
         description: "You have successfully registered as a Registrar.",
