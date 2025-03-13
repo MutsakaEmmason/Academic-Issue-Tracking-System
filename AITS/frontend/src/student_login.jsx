@@ -9,15 +9,35 @@ import {
   Image,
   Heading,
   Box,
+  useToast,
+  FormHelperText, // Import FormHelperText
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 const StudentLogin = () => {
   const [studentRegNumber, setStudentRegNumber] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate(); // Corrected: Call useNavigate as a function
+  const [errors, setErrors] = useState({}); // State for errors
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const handleStudentLogin = () => {
+    let formErrors = {};
+
+    if (!studentRegNumber) {
+      formErrors.studentRegNumber = "Student Registration Number is required";
+    }
+    if (!password) {
+      formErrors.password = "Password is required";
+    }
+
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return; // Stop the login process if there are errors
+    }
+
+    setErrors({}); // Clear any previous errors
+
     fetch('http://127.0.0.1:8000/api/login/', {
       method: 'POST',
       headers: {
@@ -28,25 +48,40 @@ const StudentLogin = () => {
         password,
       }),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Success:', data);
-      // Redirect to StudentDashboard on successful login
-      navigate("/StudentDashboard");
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-    });
-
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(data => {
+            throw new Error(data.message || 'Login failed');
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Success:', data);
+        localStorage.setItem('authToken', data.token);
+        toast({
+          title: 'Login successful.',
+          description: "You've successfully logged in.",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        navigate("/student-dashboard");
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast({
+          title: 'Login failed.',
+          description: error.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   const handleNav = () => {
-    navigate("/register"); // Corrected: Use navigate instead of navigator
+    navigate("/register");
   };
 
   return (
@@ -65,21 +100,27 @@ const StudentLogin = () => {
       </Text>
 
       <Box w="100%" maxW="400px">
-        <FormControl>
+        <FormControl isInvalid={errors.studentRegNumber}>
           <FormLabel>StudentRegNumber</FormLabel>
           <Input
             onChange={(e) => setStudentRegNumber(e.target.value)}
             value={studentRegNumber}
             type="text"
           />
+          {errors.studentRegNumber && (
+            <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>
+          )}
         </FormControl>
-        <FormControl mt={4}>
+        <FormControl mt={4} isInvalid={errors.password}>
           <FormLabel>Password</FormLabel>
           <Input
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             type="password"
           />
+          {errors.password && (
+            <FormHelperText color="red">{errors.password}</FormHelperText>
+          )}
         </FormControl>
         <Button
           onClick={handleStudentLogin}
