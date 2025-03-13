@@ -4,38 +4,32 @@ body {
    }
 
 
-   .sidebar-container {
-    display: flex;
-  }
-  
-  .sidebar {
+   .sidebar {
+    width: 60px;
+    height: 100vh;
     background: #2c3e50;
     color: white;
-    width: 100px;
-    height: 100vh;
-    padding-top: 20px;
-    transition: width 0.3s ease-in-out;
-    overflow: hidden;
+    transition: width 0.3s;
     position: fixed;
   }
   
   .sidebar.open {
-    width: 2000px;
+    width: 200px;
   }
   
-  .menu {
+  .sidebar ul {
     list-style: none;
     padding: 0;
   }
   
-  .menu li {
+  .sidebar ul li {
+    padding: 15px;
     display: flex;
     align-items: center;
-    padding: 15px;
     cursor: pointer;
   }
   
-  .menu li span {
+  .sidebar ul li span {
     margin-left: 10px;
     white-space: nowrap;
   }
@@ -46,6 +40,6 @@ body {
     color: white;
     font-size: 20px;
     cursor: pointer;
-    margin-left: 10px;
+    margin: 10px;
   }
   
