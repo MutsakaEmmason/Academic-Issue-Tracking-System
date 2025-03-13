@@ -84,7 +84,7 @@ const HomePage = () => {
             colorScheme="red"
             size="lg"
             width="full"
-            onClick={() => navigate("/registrar/login")}
+            onClick={() => navigate("/registrar-login")}
             _hover={{ bg: "red.400", transform: "scale(1.05)" }}
           >
             Registrar Login
