@@ -24,7 +24,6 @@ const App = () => {
                     <Route path="/" element={<Home />} />
                     <Route path="/student-dashboard" element={<StudentDashboard studentName="John Doe" isAuthenticated={true} />} /> 
                     <Route path="/issue-submission" element={<IssueSubmissionForm />} /> // Ensure this route is present
-
                     <Route path="/student/login" element={<StudentLogin />} />
                     <Route path="/lecturer/login" element={<LecturerLogin />} />
                     <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />

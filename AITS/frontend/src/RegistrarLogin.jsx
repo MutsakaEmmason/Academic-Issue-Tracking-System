@@ -1,110 +1,182 @@
 import React, { useState } from "react";
 import {
-  Box,
+  VStack,
+  Input,
   Button,
+  Heading,
+  Text,
+  Box,
   FormControl,
   FormLabel,
-  Input,
-  Stack,
-  Text,
-  useToast,
+  InputGroup,
+  InputRightElement,
+  Select,
+  FormErrorMessage,
+  useBreakpointValue,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
 
-const RegistrarLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
-  const toast = useToast();
+const RegistrarAuth = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    college: "",
+  });
+  const [error, setError] = useState("");
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Dummy data for login simulation
+  const existingUsers = [
+    { email: "admin@example.com", password: "admin123" }, // Example user
+  ];
 
+  const handleSubmit = () => {
     if (isLogin) {
-      // Handle Login Logic (You can integrate your API here)
-      toast({
-        title: "Logged in successfully!",
-        description: "You have successfully logged in as Registrar.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // Login logic: check if user exists
+      const user = existingUsers.find(
+        (user) => user.email === formData.email && user.password === formData.password
+      );
+      if (!user) {
+        setError("No account found with this email and password.");
+      } else {
+        setError(""); // Clear error on successful login
+        console.log("Logging in:", formData);
+      }
     } else {
-      // Handle Registration Logic (You can integrate your API here)
-      toast({
-        title: "Registered successfully!",
-        description: "You have successfully registered as a Registrar.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      // Signup logic: check if passwords match
+      if (formData.password !== formData.confirmPassword) {
+        setIsPasswordMismatch(true);
+      } else {
+        setIsPasswordMismatch(false);
+        console.log("Signing up:", formData);
+      }
     }
   };
 
   return (
-    <Box
-      maxW="400px"
-      mx="auto"
-      mt="100px"
-      p="6"
-      borderWidth="1px"
-      borderRadius="md"
-      boxShadow="lg"
+    <VStack
+      spacing={6}
+      p={8}
+      align="center"
+      justify="center"
+      height="100vh"
+      bgGradient="linear(to-br, #2c3e50, #34495e)"
+      color="white"
     >
-      <Stack spacing={4}>
-        <Text fontSize="2xl" fontWeight="bold" textAlign="center">
-          {isLogin ? "Registrar Login" : "Registrar Register"}
-        </Text>
-        <form onSubmit={handleSubmit}>
-          <FormControl id="email" isRequired>
+      <Heading size="lg">{isLogin ? "Registrar Login" : "Registrar Signup"}</Heading>
+      <Box
+        bg="rgba(255, 255, 255, 0.1)"
+        p={6}
+        rounded="lg"
+        shadow="xl"
+        width={{ base: "100%", sm: "400px" }} // Responsively control width
+        backdropFilter="blur(10px)"
+        border="1px solid rgba(255, 255, 255, 0.2)"
+      >
+        <VStack spacing={4} align="stretch">
+          {!isLogin && (
+            <FormControl>
+              <FormLabel>Name</FormLabel>
+              <Input
+                type="text"
+                placeholder="Enter your name"
+                bg="white"
+                color="black"
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
+            </FormControl>
+          )}
+
+          <FormControl>
             <FormLabel>Email</FormLabel>
             <Input
               type="email"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              bg="white"
+              color="black"
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </FormControl>
 
-          <FormControl id="password" isRequired mt="4">
+          <FormControl isInvalid={isPasswordMismatch}>
             <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <InputGroup>
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter password"
+                bg="white"
+                color="black"
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              />
+              <InputRightElement width="4.5rem">
+                <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? "Hide" : "Show"}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
+            {isPasswordMismatch && (
+              <FormErrorMessage>Passwords do not match.</FormErrorMessage>
+            )}
           </FormControl>
+
+          {!isLogin && (
+            <>
+              <FormControl isInvalid={isPasswordMismatch}>
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  type="password"
+                  placeholder="Confirm password"
+                  bg="white"
+                  color="black"
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                />
+              </FormControl>
+
+              <FormControl>
+                <FormLabel>College</FormLabel>
+                <Select
+                  placeholder="Select College"
+                  bg="white"
+                  color="black"
+                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                >
+                  <option value="College of Engineering">College of Engineering</option>
+                  <option value="College of Medicine">College of Medicine</option>
+                  <option value="College of Business">College of Business</option>
+                  <option value="College of Humanities">College of Humanities</option>
+                </Select>
+              </FormControl>
+            </>
+          )}
 
           <Button
-            mt="4"
-            colorScheme="teal"
+            colorScheme={isLogin ? "blue" : "green"}
             width="full"
-            type="submit"
+            onClick={handleSubmit}
+            _hover={{ transform: "scale(1.05)" }}
           >
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "Login" : "Sign Up"}
           </Button>
-        </form>
 
-        <Stack direction="row" spacing={2} justify="center" mt="4">
-          <Text>
-            {isLogin ? "Don't have an account?" : "Already have an account?"}
+          {error && (
+            <Text color="red.400" fontSize="sm" textAlign="center">
+              {error}
+            </Text>
+          )}
+
+          <Text fontSize="sm" textAlign="center">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <Button variant="link" colorScheme="blue" onClick={() => setIsLogin(!isLogin)}>
+              {isLogin ? "Sign Up" : "Login"}
+            </Button>
           </Text>
-          <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "Register" : "Login"}
-          </Button>
-        </Stack>
-
-        <Stack direction="row" spacing={2} justify="center" mt="2">
-          <Text>Or</Text>
-          <Button variant="link" as={Link} to="/forgot-password">
-            Forgot Password?
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
+        </VStack>
+      </Box>
+    </VStack>
   );
 };
 
-export default RegistrarLogin;
+export default RegistrarAuth;
