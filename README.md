@@ -138,7 +138,7 @@ Frontend Testing (Jest and React Testing Library)
 
 To run tests for the frontend, use:
 
-bash
+bash.
 npm test
 Contribution
 Feel free to fork this repository and submit pull requests. For major changes, please open an issue first to discuss what you would like to change.

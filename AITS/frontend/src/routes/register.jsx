@@ -1,15 +1,7 @@
+
+
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom"; 
-
-
-
-
-
-
-
-
-
+import { useNavigate, Link } from "react-router-dom";
 import {
     VStack,
     Button,
@@ -22,7 +14,123 @@ import {
     Box,
     Select,
     FormHelperText,
+    useToast,
 } from "@chakra-ui/react";
+
+const collegeDepartments = {
+    CAES: [
+        "Agricultural Production (AP)",
+        "Agribusiness and Natural Resource Economics (Ag & NRE)",
+        "Extension & Innovations (EI)",
+        "Forestry, Bio-Diversity and Tourism (F, B &T)",
+        "Environmental Management (EM)",
+        "Geography, Geo Informatics and Climatic Sciences (GGCS)",
+        "Agricultural & Bio systems Engineering (ABE)",
+        "Food Technology and Human Nutrition (FT&HN)",
+    ],
+    CoBAMS: [
+        "Economic Theory and Analysis",
+        "Policy and Development Economics",
+        "Marketing & Management",
+        "Accounting and Finance",
+        "Planning and Applied Statistics",
+        "Population Studies",
+        "Statistics and Actuarial Science",
+    ],
+    CoCIS: [
+        "Computer Science",
+        "Information Technology",
+        "Information Systems",
+        "Networks",
+        "Library and Information Sciences",
+        "Records and Archives Management",
+    ],
+    CEES: [
+        "Social Sciences & Arts Education",
+        "Science, Technology & Vocational Education",
+        "Foundations & Curriculum Studies",
+        "Adult & Community Education",
+        "Institute of Open Distance and eLearning",
+        "Higher Education Studies and Development",
+    ],
+    CEDAT: [
+        "Civil and Environmental Engineering",
+        "Electrical and Computer Engineering",
+        "Mechanical Engineering",
+        "Architecture and Physical Planning",
+        "Construction Economics and Management",
+        "Geomatics and Land Management",
+        "Fine Art",
+        "Visual Communication Design and Multi-media",
+        "Industrial Art and Applied Design",
+    ],
+    CHS: [
+        "Internal Medicine",
+        "Surgery",
+        "Obstetrics & Gynaecology",
+        "Psychiatry",
+        "Family Medicine",
+        "Anaesthesia",
+        "Ear Nose Throat",
+        "Ophthalmology",
+        "Orthopaedics",
+        "Radiology & Radio Therapy",
+        "Paediatrics & Child Health",
+        "Health Policy & Management",
+        "Epidemic & Biostatistics",
+        "Community Health & Behavioral Sciences",
+        "Disease Control & Environmental Health",
+        "Human Anatomy",
+        "Biochemistry",
+        "Microbiology",
+        "Pathology",
+        "Physiology",
+        "Pharmacology & Therapeutics",
+        "Medical Illustration",
+        "Pharmacy",
+        "Dentistry",
+        "Nursing",
+        "Allied Health Sciences",
+    ],
+    CHUSS: [
+        "Philosophy",
+        "Development Studies",
+        "Religion and Peace Studies",
+        "Performing Arts & Film",
+        "History, Archaeology & Organizational Studies",
+        "Women and Gender Studies",
+        "Literature",
+        "Linguistics, English Language Studies & Communication Skills",
+        "European and Oriental Languages",
+        "African Languages",
+        "Journalism and Communication",
+        "Mental Health and Community Psychology",
+        "Educational, Organizational and Social Psychology",
+        "Sociology & Anthropology",
+        "Social Work and Social Administration",
+        "Political Science and Public Administration",
+    ],
+    CoNAS: [
+        "Physics",
+        "Chemistry",
+        "Geology and Petroleum Studies",
+        "Mathematics",
+        "Plant Sciences, Microbiology and Biotechnology",
+        "Biochemistry and Sports Science",
+        "Zoology, Entomology and Fisheries Sciences",
+    ],
+    CoVAB: [
+        "Bio-security, Biotechnical and Laboratory Sciences",
+        "Veterinary and Animal Resources",
+    ],
+    Law: [
+        "Law and Jurisprudence",
+        "Public Law",
+        "Commercial Law",
+        "Environmental Law",
+        "Human Rights and Peace Centre",
+    ],
+};
 
 const Register = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
@@ -34,54 +142,83 @@ const Register = () => {
     const [department, setDepartment] = useState("");
     const [yearOfStudy, setYearOfStudy] = useState("");
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [errors, setErrors] = useState({});
+
+    const navigate = useNavigate();
+    const toast = useToast(); // Initialize toast
 
     const handleStudentRegistration = () => {
+        let formErrors = {};
+
+        if (!fullName) formErrors.fullName = "Full Name is required";
+        if (!email) formErrors.email = "Email is required";
+        if (!studentRegNumber) formErrors.studentRegNumber = "Registration Number is required";
+        if (!yearOfStudy) formErrors.yearOfStudy = "Year of Study is required";
+        if (!password) formErrors.password = "Password is required";
+        if (!confirmPassword) formErrors.confirmPassword = "Confirm Password is required";
+        if (!college) formErrors.college = "College is required";
+        if (!department) formErrors.department = "Department is required";
+
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+
         if (password !== confirmPassword) {
             setPasswordsMatch(false);
             return;
         }
 
         setPasswordsMatch(true);
-        console.log({
-            studentRegNumber,
-            password,
-            fullName,
-            email,
-            college,
-            department,
-            yearOfStudy,
-        });
+        setErrors({});
+
         fetch('http://127.0.0.1:8000/api/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                studentRegNumber,
+                username: studentRegNumber, // Send studentRegNumber as username
                 password,
                 fullName,
                 email,
                 college,
                 department,
+                studentRegNumber, // Also send studentRegNumber
                 yearOfStudy,
+                role: "student", // Ensure role is set for correct username handling
             }),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-        console.log('Success:', data);
-        // Redirect to StudentDashboard on successful registration
-        navigate("/StudentDashboard");
-
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.detail || 'Registration failed'); // Use data.detail
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem('authToken', data.access); // Store access token
+                localStorage.setItem('refreshToken', data.refresh); // Store refresh token
+                toast({ // Use toast for success message
+                    title: 'Registration successful.',
+                    description: "You've successfully registered.",
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
+                navigate("/student-dashboard");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toast({ // Use toast for error message
+                    title: 'Registration failed.',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
     };
 
     return (
@@ -91,133 +228,144 @@ const Register = () => {
                 alt="Makerere University Logo"
                 boxSize="100px"
             />
-
             <Heading size="lg">Student Registration</Heading>
-
             <Text textAlign="center" color="gray.600" fontWeight='extrabold'>
                 Welcome to the Academic Issue Tracking System.
             </Text>
-
             <Box w="100%" maxW="400px">
-                <FormControl>
+                {/* Full Name */}
+                <FormControl mt={4} isInvalid={errors.fullName}>
                     <FormLabel>Full Name</FormLabel>
                     <Input
-                        onChange={(e) => setFullName(e.target.value)}
+                        type="text"
                         value={fullName}
-                        type="text"
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Enter Full Name"
                     />
+                    {errors.fullName && <FormHelperText color="red">{errors.fullName}</FormHelperText>}
                 </FormControl>
 
-                <FormControl mt={4}>
-                    <FormLabel>Student Reg Number</FormLabel>
+                {/* Email */}
+                <FormControl mt={4} isInvalid={errors.email}>
+                <FormLabel>Email</FormLabel>
                     <Input
-                        onChange={(e) => setStudentRegNumber(e.target.value)}
-                        value={studentRegNumber}
-                        type="text"
-                    />
-                </FormControl>
-
-                <FormControl mt={4}>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                        onChange={(e) => setEmail(e.target.value)}
-                        value={email}
                         type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter Email (e.g., example@gmail.com)"
                     />
+                  {errors.email && <FormHelperText color="red">{errors.email}</FormHelperText>}
                 </FormControl>
 
-                <FormControl mt={4}>
+                {/* Registration Number */}
+                <FormControl mt={4} isInvalid={errors.studentRegNumber}>
+                    <FormLabel>Student Registration Number</FormLabel>
+                    <Input
+                        type="text"
+                        value={studentRegNumber}
+                        onChange={(e) => setStudentRegNumber(e.target.value)}
+                        placeholder="Enter Registration Number"
+                    />
+                    {errors.studentRegNumber && <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>}
+                </FormControl>
+
+                {/* Year of Study */}
+                <FormControl mt={4} isInvalid={errors.yearOfStudy}>
+                    <FormLabel>Year of Study</FormLabel>
+                    <Select
+                        value={yearOfStudy}
+                        onChange={(e) => setYearOfStudy(e.target.value)}
+                        placeholder="Select Year of Study"
+                    >
+                        <option value="1">Year 1</option>
+                        <option value="2">Year 2</option>
+                        <option value="3">Year 3</option>
+                        <option value="4">Year 4</option>
+                        <option value="5">Year 5</option>
+                        <option value="6">Year 6</option>
+                    </Select>
+                    {errors.yearOfStudy && <FormHelperText color="red">{errors.yearOfStudy}</FormHelperText>}
+                </FormControl>
+
+                {/* Password */}
+                <FormControl mt={4} isInvalid={errors.password}>
                     <FormLabel>Password</FormLabel>
                     <Input
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
                         type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Enter Password"
                     />
+                    {errors.password && <FormHelperText color="red">{errors.password}</FormHelperText>}
                 </FormControl>
 
-                <FormControl mt={4}>
+                {/* Confirm Password */}
+                <FormControl mt={4} isInvalid={errors.confirmPassword}>
                     <FormLabel>Confirm Password</FormLabel>
                     <Input
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        value={confirmPassword}
                         type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm Password"
                     />
-                    {!passwordsMatch && (
-                        <FormHelperText color="red.500">
-                            Passwords do not match
-                        </FormHelperText>
-                    )}
+                    {!passwordsMatch && <FormHelperText color="red">Passwords do not match</FormHelperText>}
                 </FormControl>
 
-                <FormControl mt={4}>
+                {/* College Selection */}
+                <FormControl mt={4} isInvalid={errors.college}>
                     <FormLabel>College</FormLabel>
-                    <Select
-                        onChange={(e) => setCollege(e.target.value)}
+                    <Select 
+                        onChange={(e) => { 
+                            setCollege(e.target.value); 
+                            setDepartment(""); 
+                        }} 
                         value={college}
                     >
                         <option value="">Select College</option>
-                        <option value="CAES">
-                            College of Agricultural and Environmental Sciences (CAES)
-                        </option>
-                        <option value="CoBAMS">
-                            College of Business and Management Sciences (CoBAMS)
-                        </option>
-                        <option value="CoCIS">
-                            College of Computing and Information Sciences (CoCIS)
-                        </option>
-                        <option value="CEES">
-                            College of Education and External Studies (CEES)
-                        </option>
-                        <option value="CEDAT">
-                            College of Engineering, Design, Art and Technology (CEDAT)
-                        </option>
-                        <option value="CHS">College of Health Sciences (CHS)</option>
-                        <option value="CHUSS">
-                            College of Humanities and Social Sciences (CHUSS)
-                        </option>
-                        <option value="CoNAS">College of Natural Sciences (CoNAS)</option>
-                        <option value="COVAB">
-                            College of Veterinary Medicine, Animal Resources and Bio-security
-                            (COVAB)
-                        </option>
-                        <option value="Law">School of Law</option>
+                        {Object.keys(collegeDepartments).map((key) => (
+                            <option key={key} value={key}>{key}</option>
+                        ))}
                     </Select>
+                    {errors.college && <FormHelperText color="red">{errors.college}</FormHelperText>}
                 </FormControl>
 
-                <FormControl mt={4}>
+                {/* Department Selection */}
+                <FormControl mt={4} isInvalid={errors.department}>
                     <FormLabel>Department</FormLabel>
-                    <Input
-                        onChange={(e) => setDepartment(e.target.value)} // Corrected to setDepartment
-                        value={department}
-                        type="text"
-                    />
-                </FormControl>
-
-                <FormControl mt={4}>
-                    <FormLabel>Year of Study</FormLabel>
-                    <Select
-                        onChange={(e) => setYearOfStudy(e.target.value)}
-                        value={yearOfStudy}
+                    <Select 
+                        onChange={(e) => setDepartment(e.target.value)} 
+                        value={department} 
+                        disabled={!college}
                     >
-                        <option value="">Select Year</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
+                        <option value="">Select Department</option>
+                        {college && collegeDepartments[college]?.map((dept) => (
+                            <option key={dept} value={dept}>{dept}</option>
+                        ))}
                     </Select>
+                    {errors.department && <FormHelperText color="red">{errors.department}</FormHelperText>}
                 </FormControl>
 
-                <Button
-                    onClick={handleStudentRegistration}
-                    colorScheme="green"
-                    mt={6}
-                    w="100%"
-                >
+                {/* Login Link */}
+                <Text mt={4}>
+                    Already have an account? <Link to="/student/login" style={{ color: 'blue' }}>Login here</Link>
+                </Text>
+
+                {/* Submit Button */}
+                <Button colorScheme="blue" mt={4} onClick={handleStudentRegistration}>
                     Register
                 </Button>
             </Box>
-        </VStack>
-    );
-};
+
+    
+                
+        </VStack> 
+
+
+    ); 
+
+
+    };
+    
+  
 
 export default Register;

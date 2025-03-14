@@ -1,29 +1,46 @@
+# issues/serializers.py
+
 from rest_framework import serializers
-from .models import CustomUser, Issue, Comment, Notification, AuditLog
-from .models import IssueAttachment
+from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
+from django.contrib.auth.hashers import make_password
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
+
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'email', 'role']
+        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')
+
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = CustomUser(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'role')
 
 class IssueSerializer(serializers.ModelSerializer):
-    student = serializers.ReadOnlyField(source='student.username')
-    assigned_to = serializers.ReadOnlyField(source='assigned_to.username') 
+    student = SimpleUserSerializer(read_only=True)
+    assigned_to = SimpleUserSerializer(read_only=True, allow_null=True)
 
     class Meta:
         model = Issue
-        fields = '__all__'
+        fields = ('id','title', 'description', 'student', 'assigned_to', 'category', 'priority', 'status', 'created_at', 'updated_at')
+
     def validate_title(self, value):
         if len(value) < 5:
             raise serializers.ValidationError("Title must be at least 5 characters long.")
         return value
-        
-        
+
 class CommentSerializer(serializers.ModelSerializer):
+    user = SimpleUserSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ('id','issue', 'user', 'text', 'created_at')
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,8 +51,6 @@ class AuditLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLog
         fields = '__all__'
-        
-        
 
 class IssueAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
