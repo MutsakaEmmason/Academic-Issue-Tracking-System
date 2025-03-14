@@ -14,6 +14,7 @@ import {
     Box,
     Select,
     FormHelperText,
+    useToast,
 } from "@chakra-ui/react";
 
 const collegeDepartments = {
@@ -144,6 +145,7 @@ const Register = () => {
     const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
+    const toast = useToast(); // Initialize toast
 
     const handleStudentRegistration = () => {
         let formErrors = {};
@@ -176,21 +178,47 @@ const Register = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                studentRegNumber,
+                username: studentRegNumber, // Send studentRegNumber as username
                 password,
                 fullName,
                 email,
                 college,
                 department,
+                studentRegNumber, // Also send studentRegNumber
                 yearOfStudy,
+                role: "student", // Ensure role is set for correct username handling
             }),
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.detail || 'Registration failed'); // Use data.detail
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
-                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('authToken', data.access); // Store access token
+                localStorage.setItem('refreshToken', data.refresh); // Store refresh token
+                toast({ // Use toast for success message
+                    title: 'Registration successful.',
+                    description: "You've successfully registered.",
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
                 navigate("/student-dashboard");
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                toast({ // Use toast for error message
+                    title: 'Registration failed.',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
     };
 
     return (
