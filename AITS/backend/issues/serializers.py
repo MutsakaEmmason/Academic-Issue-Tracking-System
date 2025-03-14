@@ -18,23 +18,29 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('id', 'username', 'role')
+
 class IssueSerializer(serializers.ModelSerializer):
-    # Display username directly from CustomUser
-    student_username = serializers.ReadOnlyField(source='student.username')
-    assigned_to_username = serializers.ReadOnlyField(source='assigned_to.username')
+    student = SimpleUserSerializer(read_only=True)
+    assigned_to = SimpleUserSerializer(read_only=True, allow_null=True)
 
     class Meta:
         model = Issue
-        fields = '__all__'  # Or specify the fields you need
+        fields = ('id','title', 'description', 'student', 'assigned_to', 'category', 'priority', 'status', 'created_at', 'updated_at')
+
     def validate_title(self, value):
         if len(value) < 5:
             raise serializers.ValidationError("Title must be at least 5 characters long.")
         return value
 
 class CommentSerializer(serializers.ModelSerializer):
+    user = SimpleUserSerializer(read_only=True)
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ('id','issue', 'user', 'text', 'created_at')
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:

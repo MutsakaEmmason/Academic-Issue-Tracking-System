@@ -66,7 +66,7 @@ class CustomUser(AbstractUser):
         if self.role == 'student' and self.studentRegNumber:
             self.username = self.studentRegNumber
         else:
-            self.username = self.email # set username to email for other users
+            self.username = self.email  # set username to email for other users
         super().save(*args, **kwargs)
 
 
