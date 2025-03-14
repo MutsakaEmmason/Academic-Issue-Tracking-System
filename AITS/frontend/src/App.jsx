@@ -7,32 +7,11 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
 import LecturerDashboard from "./LecturerDashboard"
-import StudentDashboard from './routes/StudentDashboard';
+import {StudentDashboard} from './routes/StudentDashboard';
 import AcademicRegistrar from './AcademicRegistrar';
 import RegistrarLogin from './RegistrarLogin'
 
 
-<<<<<<< HEAD
-function App() {
-  return (
-    <ChakraProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/student-dashboard" element={<StudentDashboard />} /> 
-          <Route path="/student/login" element={<StudentLogin />} />
-          <Route path="/lecturer/login" element={<LecturerLogin />} />
-          <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
-          {/* <Route path="/admin/login" element={<AdminLogin />} /> */}
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </Router>
-    </ChakraProvider>
-  );
-}
-
-export default App;
-=======
 const App = () => {
     return (
         <ChakraProvider>
@@ -57,4 +36,3 @@ const App = () => {
 
 
 export default App;
->>>>>>> 89094da338eb6d99e68861b1ca99a0122ad1392b

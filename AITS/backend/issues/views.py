@@ -5,10 +5,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 
-<<<<<<< HEAD
-# CustomUser ViewSet
-=======
->>>>>>> 89094da338eb6d99e68861b1ca99a0122ad1392b
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
