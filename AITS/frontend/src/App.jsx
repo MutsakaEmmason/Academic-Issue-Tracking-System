@@ -3,15 +3,11 @@ import React from "react";
 import LecturerLogin from "./Login";
 import StudentLogin from "./student_login";
 import Home from "./home";
-import IssueSubmissionForm from './components/IssueSubmissionForm'; // Import IssueSubmissionForm
-
-import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
 import LecturerDashboard from "./LecturerDashboard"
-import StudentDashboard from './routes/StudentDashboard';
+import {StudentDashboard} from './routes/StudentDashboard';
 import AcademicRegistrar from './AcademicRegistrar';
 import RegistrarLogin from './RegistrarLogin'
 
