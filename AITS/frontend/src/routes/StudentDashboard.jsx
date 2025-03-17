@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import MenuBar from '../components/MenuBar';
 import { useNavigate } from 'react-router-dom';
 import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
-const StudentDashboard = ({ studentData, loading }) => { // Receive studentData and loading
+const StudentDashboard = ({ studentData, loading }) => {
     const navigate = useNavigate();
-    const [menuVisible, setMenuVisible] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [profileVisible, setProfileVisible] = useState(false);
     const [filteredIssues, setFilteredIssues] = useState([]);
 
     useEffect(() => {
@@ -21,14 +19,6 @@ const StudentDashboard = ({ studentData, loading }) => { // Receive studentData 
             setFilteredIssues(studentData.issues);
         }
     }, [studentData]);
-
-    const toggleMenu = () => {
-        setMenuVisible(!menuVisible);
-    };
-
-    const toggleProfile = () => {
-        setProfileVisible(!profileVisible);
-    };
 
     const handleLogout = () => {
         console.log("User logged out");
@@ -52,11 +42,25 @@ const StudentDashboard = ({ studentData, loading }) => { // Receive studentData 
     }
 
     return (
-        <div style={{ textAlign: 'center' }}>
-            <h1 style={{ fontSize: '2.5em', padding: '20px', backgroundColor: 'green', color: 'white' }}>STUDENT DASHBOARD</h1>
-            <p style={{ color: 'white', background: "green" }}>WELCOME, {studentData.fullName}</p>
+        <div>
+            <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: 'green', color: 'white' }}>
+                <h1 style={{ fontSize: '2.5em', padding: '20px' }}>STUDENT DASHBOARD</h1>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <p style={{ marginRight: '10px' }}>WELCOME, {studentData.fullName}</p>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <Link to="/issue-submission" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>
+                            Submit an Issue
+                        </Link>
+                        <Link to="/profile" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>
+                            View Profile
+                        </Link>
+                        <Link to="/" onClick={handleLogout} style={{ color: 'white', textDecoration: 'none' }}>
+                            Logout
+                        </Link>
+                    </div>
+                </div>
+            </header>
             <hr />
-            <MenuBar visible={menuVisible} />
             <FormControl mt={4}>
                 <FormLabel>Search by Issue Title</FormLabel>
                 <Input
