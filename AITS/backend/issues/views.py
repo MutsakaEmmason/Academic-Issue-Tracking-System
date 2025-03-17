@@ -38,20 +38,39 @@ class IssueAttachmentViewSet(viewsets.ModelViewSet):
 class StudentRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [permissions.AllowAny] # Allow unauthenticated access
+    permission_classes = [permissions.AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        res = {
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-        }
-        return Response(res, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            print("Serializer is valid!")
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            res = {
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+            return Response(res, status=status.HTTP_201_CREATED)
+        else:
+            print("Serializer is NOT valid!")
+            print(serializer.errors)  # Print the errors
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# New View for Student Profile
+class StudentProfileView(generics.RetrieveAPIView):
+    serializer_class = CustomUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user
+
+    def retrieve(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        issues = Issue.objects.filter(student=user).values('id', 'title','description', 'category', 'priority', 'status', 'created_at', 'updated_at') # get issues.
+        data = serializer.data
+        data['issues'] = list(issues)
+        return Response(data)
 
 # Helper function to log actions (like updates to issues)
 def log_action(user, action):

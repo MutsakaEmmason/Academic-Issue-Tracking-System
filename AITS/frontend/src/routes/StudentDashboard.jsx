@@ -1,77 +1,80 @@
 import React, { useState, useEffect } from 'react';
-import MenuBar from '../components/MenuBar'; // Importing the MenuBar component
-import { useNavigate } from 'react-router-dom'; // Importing useNavigate for navigation
-import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react'; // Importing Chakra UI components
+import MenuBar from '../components/MenuBar';
+import { useNavigate } from 'react-router-dom';
+import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
 
-const StudentDashboard = ({ studentName, isAuthenticated, issues = [] }) => { // Default to empty array
-
-    const navigate = useNavigate(); // Initialize navigate for navigation
+const StudentDashboard = ({ studentData, loading }) => { // Receive studentData and loading
+    const navigate = useNavigate();
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [profileVisible, setProfileVisible] = useState(false);
+    const [filteredIssues, setFilteredIssues] = useState([]);
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            navigate('/login'); // Redirect to login if not authenticated
+        if (!studentData && !loading) {
+            navigate('/student/login');
         }
-    }, [isAuthenticated, navigate]);
+    }, [studentData, loading, navigate]);
 
-    const [menuVisible, setMenuVisible] = useState(false);
-    console.log("StudentDashboard rendered with:", { studentName, isAuthenticated });
-
-    const [searchTerm, setSearchTerm] = useState(''); // State for search term
-    const [profileVisible, setProfileVisible] = useState(false); // Added state for profile visibility
-    const [filteredIssues, setFilteredIssues] = useState(issues); // State for filtered issues
+    useEffect(() => {
+        if (studentData && studentData.issues) {
+            setFilteredIssues(studentData.issues);
+        }
+    }, [studentData]);
 
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     };
 
     const toggleProfile = () => {
-        setProfileVisible(!profileVisible); // Toggle profile visibility
+        setProfileVisible(!profileVisible);
     };
 
     const handleLogout = () => {
         console.log("User logged out");
-        navigate('/'); // Redirect to home page after logout
+        navigate('/');
     };
 
     const handleSearch = () => {
         console.log("Search initiated for:", searchTerm);
-        // Logic to filter issues based on search term
-        const filtered = issues.filter(issue => 
-            issue.courseUnit.toLowerCase().includes(searchTerm.toLowerCase())
+        const filtered = studentData.issues.filter(issue =>
+            issue.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredIssues(filtered);
     };
 
+    if (loading) {
+        return <p>Loading...</p>;
+    }
+
+    if (!studentData) {
+        return <p>No student data available.</p>;
+    }
+
     return (
         <div style={{ textAlign: 'center' }}>
             <h1 style={{ fontSize: '2.5em', padding: '20px', backgroundColor: 'green', color: 'white' }}>STUDENT DASHBOARD</h1>
-            <p style={{ color: 'white', background: "green" }}>WELCOME, {studentName}</p>
-            <hr /> {/* Adding a horizontal line to separate the header from the content */}
-
-            <MenuBar visible={menuVisible} /> {/* Adding the MenuBar to the Student Dashboard */}
-
-            {/* Search Bar using FormControl */}
+            <p style={{ color: 'white', background: "green" }}>WELCOME, {studentData.fullName}</p>
+            <hr />
+            <MenuBar visible={menuVisible} />
             <FormControl mt={4}>
-                <FormLabel>Search by Course Unit</FormLabel>
-                <Input 
-                    type="text" 
-                    placeholder="Enter course unit..." 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
-                    style={{ border: '1px solid green', width: '150px' }} // Reduced width of the search box
+                <FormLabel>Search by Issue Title</FormLabel>
+                <Input
+                    type="text"
+                    placeholder="Enter issue title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{ border: '1px solid green', width: '150px' }}
                 />
                 <Button onClick={handleSearch} mt={2} colorScheme="green" style={{ border: '1px solid green' }}>Search</Button>
             </FormControl>
-
-            {/* Message for No Issues */}
             {filteredIssues.length === 0 && (
                 <p>No issues logged. Please submit an issue.</p>
             )}
-
-            {/* List of Filtered Issues */}
             <div>
                 {filteredIssues.map(filteredIssue => (
                     <div key={filteredIssue.id}>
+                        <p>{filteredIssue.title}</p>
                         <p>{filteredIssue.description}</p>
                     </div>
                 ))}

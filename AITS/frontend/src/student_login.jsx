@@ -44,21 +44,21 @@ const StudentLogin = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: studentRegNumber, // Use studentRegNumber as username
+                username: studentRegNumber,
                 password,
             }),
         })
             .then(response => {
                 if (!response.ok) {
                     return response.json().then(data => {
-                        throw new Error(data.detail || 'Login failed'); // Use data.detail
+                        throw new Error(data.detail || 'Login failed');
                     });
                 }
                 return response.json();
             })
             .then(data => {
                 console.log('Success:', data);
-                localStorage.setItem('authToken', data.access); // Use data.access
+                localStorage.setItem('token', data.access); // Corrected token key
                 toast({
                     title: 'Login successful.',
                     description: "You've successfully logged in.",
@@ -66,7 +66,7 @@ const StudentLogin = () => {
                     duration: 3000,
                     isClosable: true,
                 });
-                navigate("/student-dashboard");
+                navigate("/student-dashboard"); // Corrected route
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -83,7 +83,6 @@ const StudentLogin = () => {
     const handleNav = () => {
         navigate("/register");
     };
-
     return (
         <VStack spacing={6} p={8} align="center">
             <Image
