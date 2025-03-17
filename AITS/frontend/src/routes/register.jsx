@@ -131,7 +131,6 @@ const collegeDepartments = {
         "Human Rights and Peace Centre",
     ],
 };
-
 const Register = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
@@ -145,7 +144,7 @@ const Register = () => {
     const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
-    const toast = useToast(); // Initialize toast
+    const toast = useToast();
 
     const handleStudentRegistration = () => {
         let formErrors = {};
@@ -178,40 +177,39 @@ const Register = () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: studentRegNumber, // Send studentRegNumber as username
+                username: studentRegNumber,
                 password,
                 fullName,
                 email,
                 college,
                 department,
-                studentRegNumber, // Also send studentRegNumber
+                studentRegNumber,
                 yearOfStudy,
-                role: "student", // Ensure role is set for correct username handling
+                role: "student",
             }),
         })
             .then(response => {
                 if (!response.ok) {
                     return response.json().then(data => {
-                        throw new Error(data.detail || 'Registration failed'); // Use data.detail
+                        throw new Error(data.detail || 'Registration failed');
                     });
                 }
                 return response.json();
             })
             .then(data => {
-                localStorage.setItem('authToken', data.access); // Store access token
-                localStorage.setItem('refreshToken', data.refresh); // Store refresh token
-                toast({ // Use toast for success message
+                localStorage.setItem('token', data.access); // Corrected key to token
+                toast({
                     title: 'Registration successful.',
                     description: "You've successfully registered.",
                     status: 'success',
                     duration: 3000,
                     isClosable: true,
                 });
-                navigate("/student-dashboard");
+                navigate("/student-dashboard"); // Corrected route to dashboard
             })
             .catch(error => {
                 console.error('Error:', error);
-                toast({ // Use toast for error message
+                toast({
                     title: 'Registration failed.',
                     description: error.message,
                     status: 'error',
@@ -220,6 +218,7 @@ const Register = () => {
                 });
             });
     };
+
 
     return (
         <VStack spacing={6} p={8} align="center">
