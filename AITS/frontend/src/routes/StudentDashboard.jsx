@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormControl, FormLabel, Input, Button } from '@chakra-ui/react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import {
+    FormControl,
+    FormLabel,
+    Input,
+    Button,
+    Flex,
+    Box,
+    Table,
+    Thead,
+    Tbody,
+    Tr,
+    Th,
+    Td,
+} from '@chakra-ui/react';
 
 const StudentDashboard = ({ studentData, loading }) => {
     const navigate = useNavigate();
@@ -21,16 +33,21 @@ const StudentDashboard = ({ studentData, loading }) => {
     }, [studentData]);
 
     const handleLogout = () => {
-        console.log("User logged out");
+        console.log('User logged out');
+        localStorage.removeItem('token');
         navigate('/');
     };
 
     const handleSearch = () => {
-        console.log("Search initiated for:", searchTerm);
-        const filtered = studentData.issues.filter(issue =>
+        console.log('Search initiated for:', searchTerm);
+        const filtered = studentData.issues.filter((issue) =>
             issue.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredIssues(filtered);
+    };
+
+    const handleViewDetails = (issueId) => {
+        navigate(`/issue/${issueId}`);
     };
 
     if (loading) {
@@ -42,47 +59,71 @@ const StudentDashboard = ({ studentData, loading }) => {
     }
 
     return (
-        <div>
-            <header style={{ display: 'flex', justifyContent: 'space-between', padding: '10px', backgroundColor: 'green', color: 'white' }}>
-                <h1 style={{ fontSize: '2.5em', padding: '20px' }}>STUDENT DASHBOARD</h1>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <p style={{ marginRight: '10px' }}>WELCOME, {studentData.fullName}</p>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Link to="/issue-submission" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>
-                            Submit an Issue
-                        </Link>
-                        <Link to="/profile" style={{ color: 'white', textDecoration: 'none', marginRight: '20px' }}>
-                            View Profile
-                        </Link>
-                        <Link to="/" onClick={handleLogout} style={{ color: 'white', textDecoration: 'none' }}>
-                            Logout
-                        </Link>
-                    </div>
-                </div>
-            </header>
-            <hr />
-            <FormControl mt={4}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Flex p={4} bg="green" color="white" justify="space-between" align="center" width="100%">
+                <Box>
+                    <h1 style={{ fontSize: '2.5em' }}>STUDENT DASHBOARD</h1>
+                </Box>
+                <Flex align="center">
+                    <p style={{ marginRight: '20px' }}>WELCOME, {studentData.fullName}</p>
+                    <Button onClick={() => navigate('/issue-submission')} colorScheme="green" mr={2}>
+                        Submit an Issue
+                    </Button>
+                    <Button onClick={() => navigate('/profile')} colorScheme="green" mr={2}>
+                        View Profile
+                    </Button>
+                    <Button onClick={handleLogout} colorScheme="red">
+                        Logout
+                    </Button>
+                </Flex>
+            </Flex>
+            <hr style={{ width: '80%' }} />
+            <FormControl mt={4} style={{ width: '80%' }}>
                 <FormLabel>Search by Issue Title</FormLabel>
-                <Input
-                    type="text"
-                    placeholder="Enter issue title..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{ border: '1px solid green', width: '150px' }}
-                />
-                <Button onClick={handleSearch} mt={2} colorScheme="green" style={{ border: '1px solid green' }}>Search</Button>
+                <Flex alignItems="center" gap={2}> {/* Flex Container */}
+                    <Input
+                        type="text"
+                        placeholder="Enter issue title..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ border: '1px solid green', width: '100%' }}
+                    />
+                    <Button onClick={handleSearch} colorScheme="green">Search</Button>
+                </Flex>
             </FormControl>
-            {filteredIssues.length === 0 && (
-                <p>No issues logged. Please submit an issue.</p>
-            )}
-            <div>
-                {filteredIssues.map(filteredIssue => (
-                    <div key={filteredIssue.id}>
-                        <p>{filteredIssue.title}</p>
-                        <p>{filteredIssue.description}</p>
-                    </div>
-                ))}
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                {filteredIssues.length === 0 && <p>No issues logged. Please submit an issue.</p>}
             </div>
+            {filteredIssues.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', width: '80%' }}>
+                    <Table variant="simple" mt={4} width="100%">
+                        <Thead>
+                            <Tr>
+                                <Th>Title</Th>
+                                <Th>Status</Th>
+                                <Th>Category</Th>
+                                <Th>Course Code</Th>
+                                <Th>Actions</Th>
+                            </Tr>
+                        </Thead>
+                        <Tbody>
+                            {filteredIssues.map((issue) => (
+                                <Tr key={issue.id}>
+                                    <Td>{issue.title}</Td>
+                                    <Td>{issue.status}</Td>
+                                    <Td>{issue.category}</Td>
+                                    <Td>{issue.courseCode}</Td>
+                                    <Td>
+                                        <Button size="sm" onClick={() => handleViewDetails(issue.id)}>
+                                            View Details
+                                        </Button>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                </div>
+            )}
         </div>
     );
 };
