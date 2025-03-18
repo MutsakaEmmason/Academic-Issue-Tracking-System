@@ -69,8 +69,8 @@ const StudentDashboard = ({ studentData, loading }) => {
                     <Button onClick={() => navigate('/issue-submission')} colorScheme="green" mr={2}>
                         Submit an Issue
                     </Button>
-                    <Button onClick={() => navigate('/profile')} colorScheme="green" mr={2}>
-                        View Profile
+                    <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>
+                        About Us
                     </Button>
                     <Button onClick={handleLogout} colorScheme="red">
                         Logout
@@ -80,7 +80,7 @@ const StudentDashboard = ({ studentData, loading }) => {
             <hr style={{ width: '80%' }} />
             <FormControl mt={4} style={{ width: '80%' }}>
                 <FormLabel>Search by Issue Title</FormLabel>
-                <Flex alignItems="center" gap={2}> {/* Flex Container */}
+                <Flex alignItems="center" gap={2}>
                     <Input
                         type="text"
                         placeholder="Enter issue title..."
@@ -100,9 +100,17 @@ const StudentDashboard = ({ studentData, loading }) => {
                         <Thead>
                             <Tr>
                                 <Th>Title</Th>
+                                <Th>Student Name</Th>
+                                <Th>Student ID</Th>
                                 <Th>Status</Th>
                                 <Th>Category</Th>
                                 <Th>Course Code</Th>
+                                <Th>Priority</Th>
+                                <Th>Lecturer</Th>
+                                <Th>Department</Th>
+                                <Th>Semester</Th>
+                                <Th>Academic Year</Th>
+                                <Th>Issue Date</Th>
                                 <Th>Actions</Th>
                             </Tr>
                         </Thead>
@@ -110,9 +118,17 @@ const StudentDashboard = ({ studentData, loading }) => {
                             {filteredIssues.map((issue) => (
                                 <Tr key={issue.id}>
                                     <Td>{issue.title}</Td>
+                                    <Td>{issue.studentName}</Td>
+                                    <Td>{issue.studentId}</Td>
                                     <Td>{issue.status}</Td>
                                     <Td>{issue.category}</Td>
                                     <Td>{issue.courseCode}</Td>
+                                    <Td>{issue.priority}</Td>
+                                    <Td>{issue.lecturer}</Td>
+                                    <Td>{issue.department}</Td>
+                                    <Td>{issue.semester}</Td>
+                                    <Td>{issue.academicYear}</Td>
+                                    <Td>{issue.issueDate}</Td>
                                     <Td>
                                         <Button size="sm" onClick={() => handleViewDetails(issue.id)}>
                                             View Details
