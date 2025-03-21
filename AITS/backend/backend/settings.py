@@ -41,7 +41,10 @@ INSTALLED_APPS = [
     'issues',
     'rest_framework',
     'rest_framework.authtoken',
+    'authentication',
+
 ]  
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
