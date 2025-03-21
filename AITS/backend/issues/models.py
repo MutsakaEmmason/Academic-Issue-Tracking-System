@@ -1,10 +1,7 @@
-# issues/models.py
-
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from django.conf import settings
 from django.utils.timezone import now
-
 
 # Abstract model for timestamps.
 class Timestamp(models.Model):
@@ -13,7 +10,6 @@ class Timestamp(models.Model):
 
     class Meta:
         abstract = True
-
 
 # Custom user model.
 class CustomUser(AbstractUser):
@@ -31,7 +27,7 @@ class CustomUser(AbstractUser):
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-        related_name="customuser_groups",  # added related_name
+        related_name="customuser_groups",
         related_query_name="customuser",
     )
     user_permissions = models.ManyToManyField(
@@ -39,7 +35,7 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name="customuser_user_permissions",  # added related_name
+        related_name="customuser_user_permissions",
         related_query_name="customuser",
     )
 
@@ -66,9 +62,8 @@ class CustomUser(AbstractUser):
         if self.role == 'student' and self.studentRegNumber:
             self.username = self.studentRegNumber
         else:
-            self.username = self.email  # set username to email for other users
+            self.username = self.email
         super().save(*args, **kwargs)
-
 
 # Issue model.
 class Issue(Timestamp):
@@ -106,12 +101,19 @@ class Issue(Timestamp):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='open')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    courseCode = models.CharField(max_length=20, blank=True, null=True)
+    studentId = models.CharField(max_length=20, default='DEFAULT_STUDENT_ID')  # Set a default value
+    lecturer = models.CharField(max_length=255, blank=True, null=True)
+    issue_department = models.CharField(max_length=255, blank=True, null=True)
+    semester = models.CharField(max_length=20, blank=True, null=True)
+    academicYear = models.CharField(max_length=20, blank=True, null=True)
+    issueDate = models.DateField(auto_now_add=True)
+    studentName = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.title} ({self.status})"
 
-
-# Comment model..
+# Comment model.
 class Comment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -121,8 +123,7 @@ class Comment(Timestamp):
     def __str__(self):
         return f"Comment by {self.user.username} on {self.issue.title}"
 
-
-# Notification model..
+# Notification model.
 class Notification(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message = models.CharField(max_length=255)
@@ -132,8 +133,7 @@ class Notification(Timestamp):
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
 
-
-# Audit Log model..
+# Audit Log model.
 class AuditLog(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)
@@ -141,7 +141,6 @@ class AuditLog(Timestamp):
 
     def __str__(self):
         return f"{self.user.username} - {self.action}"
-
 
 class IssueAttachment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="attachments")

@@ -49,6 +49,8 @@ const StudentLogin = () => {
             }),
         })
             .then(response => {
+                // Log the response to check if the request is received correctly
+                console.log('Response:', response);
                 if (!response.ok) {
                     return response.json().then(data => {
                         throw new Error(data.detail || 'Login failed');
@@ -83,6 +85,7 @@ const StudentLogin = () => {
     const handleNav = () => {
         navigate("/register");
     };
+
     return (
         <VStack spacing={6} p={8} align="center">
             <Image
