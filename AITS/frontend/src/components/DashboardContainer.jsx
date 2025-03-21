@@ -3,8 +3,8 @@ import StudentDashboard from "../routes/StudentDashboard";
 import { useNavigate } from "react-router-dom";
 
 const DashboardContainer = () => {
-    const [studentData, setStudentData] = useState(null); // Use studentData
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [studentData, setStudentData] = useState(null);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -12,7 +12,7 @@ const DashboardContainer = () => {
         console.log("Token:", token);
 
         if (token) {
-            fetch("http://127.0.0.1:8000/api/student/profile", {
+            fetch("http://127.0.0.1:8000/api/student-profile/", { // Corrected URL
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -26,13 +26,13 @@ const DashboardContainer = () => {
                 })
                 .then((data) => {
                     console.log("API Data:", data);
-                    setStudentData(data); // Set studentData
-                    setLoading(false); // Set loading to false
+                    setStudentData(data);
+                    setLoading(false);
                 })
                 .catch((error) => {
                     console.error("Error fetching student data:", error);
                     navigate("/student/login");
-                    setLoading(false); // Set loading to false in case of error
+                    setLoading(false);
                 });
         } else {
             navigate("/student/login");
@@ -41,7 +41,7 @@ const DashboardContainer = () => {
 
     return (
         <div>
-            {studentData && <StudentDashboard studentData={studentData} loading={loading} />} {/* Pass studentData and loading */}
+            {studentData && <StudentDashboard studentData={studentData} loading={loading} />}
         </div>
     );
 };
