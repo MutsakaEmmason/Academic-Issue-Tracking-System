@@ -17,9 +17,5 @@ urlpatterns = [
     path('', include(router.urls)),  # Include the router URLs for the viewsets
     path('register/', StudentRegistrationView.as_view(), name='student-registration'),  # Endpoint for student registration
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'), #add login url
-<<<<<<< HEAD
-    path('student/profile/', StudentProfileView.as_view(), name='student-profile'), #Corrected
-=======
-    path('auth/', include('authentication.urls')), 
->>>>>>> 1fb46bfa (authentication)
+    path('student-profile/', StudentProfileView.as_view(), name='student-profile'),
 ]
