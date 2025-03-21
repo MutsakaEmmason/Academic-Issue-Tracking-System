@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     VStack,
     Button,
@@ -8,7 +9,6 @@ import {
     Text,
     Box,
     Select,
-    Flex,
     Textarea,
 } from "@chakra-ui/react";
 
@@ -17,33 +17,86 @@ const IssueSubmissionForm = ({ studentName }) => {
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
     const [courseCode, setCourseCode] = useState('');
-    const [attachments, setAttachments] = useState(null);
     const [studentId, setStudentId] = useState('');
     const [priority, setPriority] = useState('Medium');
     const [lecturer, setLecturer] = useState('');
     const [department, setDepartment] = useState('');
     const [semester, setSemester] = useState('');
     const [academicYear, setAcademicYear] = useState('');
-    const issueDate = new Date().toISOString().split('T')[0]; // Get current date
+    const [attachments, setAttachments] = useState(null);
+    const issueDate = new Date().toISOString().split('T')[0];
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        console.log("Issue form state updated:");
+        console.log("Title:", title);
+        console.log("Description:", description);
+        console.log("Category:", category);
+        console.log("Course Code:", courseCode);
+        console.log("Student ID:", studentId);
+        console.log("Priority:", priority);
+        console.log("Lecturer:", lecturer);
+        console.log("Department:", department);
+        console.log("Semester:", semester);
+        console.log("Academic Year:", academicYear);
+        console.log("Attachments:", attachments);
+    }, [title, description, category, courseCode, studentId, priority, lecturer, department, semester, academicYear, attachments]);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log({
+
+        // Validate required fields
+        if (!title || !description || !category || !courseCode || !studentId) {
+            alert("Please fill in all the required fields.");
+            return;
+        }
+
+        const formData = {
             title,
             description,
             category,
             courseCode,
-            attachments,
-            studentName,
             studentId,
-            issueDate,
             priority,
             lecturer,
-            department,
+            issue_department: department,
             semester,
             academicYear,
-        });
-        // Handle form submission logic here
+            issueDate,
+            studentName: studentName || "Unknown",
+        };
+
+        // Attachments handling
+        if (attachments) {
+            formData.attachments = attachments;
+        }
+
+        console.log("Token being used:", localStorage.getItem('token'));
+        console.log("Form Data being sent:", formData);
+
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://127.0.0.1:8000/api/issues/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Expecting JSON format for the request body
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData), // Sending data as JSON
+            });
+
+            if (response.ok) {
+                navigate('/student-dashboard');
+            } else {
+                const errorData = await response.json();
+                console.error('Error:', errorData);
+                alert('Issue submission failed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error submitting issue:', error);
+            alert('Error submitting issue. Please check your connection and try again.');
+        }
     };
 
     return (
@@ -77,6 +130,9 @@ const IssueSubmissionForm = ({ studentName }) => {
                             <option value="missing_marks">Missing Marks</option>
                             <option value="appeals">Appeals</option>
                             <option value="corrections">Corrections</option>
+                            <option value="technical">Technical</option>
+                            <option value="administrative">Administrative</option>
+                            <option value="course_registration">Course Registration</option>
                         </Select>
                     </FormControl>
 
@@ -103,9 +159,10 @@ const IssueSubmissionForm = ({ studentName }) => {
                     <FormControl mt={4}>
                         <FormLabel>Priority/Urgency:</FormLabel>
                         <Select value={priority} onChange={(e) => setPriority(e.target.value)}>
-                            <option value="Low">Low</option>
-                            <option value="Medium">Medium</option>
-                            <option value="High">High</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
                         </Select>
                     </FormControl>
 
