@@ -13,37 +13,96 @@ import {
     Tr,
     Th,
     Td,
+    useToast,
+    Spinner,
 } from '@chakra-ui/react';
 
-const StudentDashboard = ({ studentData, loading }) => {
+const StudentDashboard = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredIssues, setFilteredIssues] = useState([]);
+    const [studentData, setStudentData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const toast = useToast();
 
     useEffect(() => {
-        if (!studentData && !loading) {
-            navigate('/student/login');
-        }
-    }, [studentData, loading, navigate]);
+        const fetchProfile = async () => {
+            setLoading(true);
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://127.0.0.1:8000/api/student-profile/', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-    useEffect(() => {
-        if (studentData && studentData.issues) {
-            setFilteredIssues(studentData.issues);
-        }
-    }, [studentData]);
+                if (response.ok) {
+                    const data = await response.json();
+                    setStudentData(data);
+                    setFilteredIssues(data.issues);
+                } else {
+                    toast({
+                        title: 'Failed to fetch profile.',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
+                    navigate('/student/login'); // Corrected path
+                }
+            } catch (error) {
+                toast({
+                    title: 'An error occurred.',
+                    description: error.message,
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+                navigate('/student/login'); // Corrected path
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, [navigate, toast]);
 
     const handleLogout = () => {
-        console.log('User logged out');
         localStorage.removeItem('token');
-        navigate('/');
+        navigate('/student/login'); // Corrected path
     };
 
-    const handleSearch = () => {
-        console.log('Search initiated for:', searchTerm);
-        const filtered = studentData.issues.filter((issue) =>
-            issue.title.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredIssues(filtered);
+    const handleSearch = async () => {
+        setLoading(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://127.0.0.1:8000/api/issues/?search=${searchTerm}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setFilteredIssues(data);
+            } else {
+                toast({
+                    title: 'Search failed.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        } catch (error) {
+            toast({
+                title: 'An error occurred during search.',
+                description: error.message,
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleViewDetails = (issueId) => {
@@ -51,7 +110,11 @@ const StudentDashboard = ({ studentData, loading }) => {
     };
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <Flex justify="center" align="center" height="100vh">
+                <Spinner size="xl" />
+            </Flex>
+        );
     }
 
     if (!studentData) {
@@ -88,7 +151,7 @@ const StudentDashboard = ({ studentData, loading }) => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ border: '1px solid green', width: '100%' }}
                     />
-                    <Button onClick={handleSearch} colorScheme="green">Search</Button>
+                    <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
                 </Flex>
             </FormControl>
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
