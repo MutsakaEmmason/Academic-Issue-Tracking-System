@@ -9,39 +9,39 @@ const DashboardContainer = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        console.log("Token:", token);
-
-        if (token) {
-            fetch("http://127.0.0.1:8000/api/student-profile/", { // Corrected URL
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            })
-                .then((response) => {
-                    console.log("API Response:", response);
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch student data");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    console.log("API Data:", data);
-                    setStudentData(data);
-                    setLoading(false);
-                })
-                .catch((error) => {
-                    console.error("Error fetching student data:", error);
-                    navigate("/student/login");
-                    setLoading(false);
-                });
-        } else {
+        if (!token) {
             navigate("/student/login");
+            return;
         }
+
+        const fetchStudentData = async () => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/api/student-profile/", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch student data");
+                }
+
+                const data = await response.json();
+                setStudentData(data);
+            } catch (error) {
+                console.error("Error fetching student data:", error);
+                navigate("/student/login");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStudentData();
     }, [navigate]);
 
     return (
         <div>
-            {studentData && <StudentDashboard studentData={studentData} loading={loading} />}
+            <StudentDashboard studentData={studentData} loading={loading} />
         </div>
     );
 };
