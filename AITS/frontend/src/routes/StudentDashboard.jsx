@@ -75,7 +75,8 @@ const StudentDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://127.0.0.1:8000/api/issues/?search=${searchTerm}`, {
+            // Modify the URL to search by category instead of title
+            const response = await fetch(`http://127.0.0.1:8000/api/issues/?category=${searchTerm}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -142,11 +143,11 @@ const StudentDashboard = () => {
             </Flex>
             <hr style={{ width: '80%' }} />
             <FormControl mt={4} style={{ width: '80%' }}>
-                <FormLabel>Search by Issue Title</FormLabel>
+                <FormLabel>Search by Category</FormLabel>
                 <Flex alignItems="center" gap={2}>
                     <Input
                         type="text"
-                        placeholder="Enter issue title..."
+                        placeholder="Enter issue category..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ border: '1px solid green', width: '100%' }}
@@ -155,7 +156,7 @@ const StudentDashboard = () => {
                 </Flex>
             </FormControl>
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                {filteredIssues.length === 0 && <p>No issues logged. Please submit an issue.</p>}
+                {filteredIssues.length === 0 && <p>No issues found in this category.</p>}
             </div>
             {filteredIssues.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', width: '80%' }}>
