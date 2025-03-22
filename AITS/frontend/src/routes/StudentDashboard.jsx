@@ -47,7 +47,7 @@ const StudentDashboard = () => {
                         duration: 5000,
                         isClosable: true,
                     });
-                    navigate('/student/login'); // Corrected path
+                    navigate('/student/login');
                 }
             } catch (error) {
                 toast({
@@ -57,7 +57,7 @@ const StudentDashboard = () => {
                     duration: 5000,
                     isClosable: true,
                 });
-                navigate('/student/login'); // Corrected path
+                navigate('/student/login');
             } finally {
                 setLoading(false);
             }
@@ -68,7 +68,7 @@ const StudentDashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/student/login'); // Corrected path
+        navigate('/student/login');
     };
 
     const handleSearch = async () => {
@@ -129,7 +129,7 @@ const StudentDashboard = () => {
                 </Box>
                 <Flex align="center">
                     <p style={{ marginRight: '20px' }}>WELCOME, {studentData.fullName}</p>
-                    <Button onClick={() => navigate('/issue-submission')} colorScheme="green" mr={2}>
+                    <Button onClick={() => navigate('/issue-submission', { state: { studentName: studentData.fullName } })} colorScheme="green" mr={2}>
                         Submit an Issue
                     </Button>
                     <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>

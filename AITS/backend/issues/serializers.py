@@ -33,7 +33,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
-        fields = ('id', 'title', 'description', 'student', 'assigned_to', 'category', 'priority', 'status', 'created_at', 'updated_at', 'courseCode', 'studentId', 'lecturer', 'issue_department', 'semester', 'academicYear', 'issueDate', 'studentName', 'attachments')
+        fields = ('id', 'title', 'description', 'student', 'assigned_to', 'category', 'priority', 'status', 'created_at', 'updated_at', 'courseCode', 'studentId', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName', 'attachments')
 
     def validate_title(self, value):
         if len(value) < 5:

@@ -12,7 +12,7 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 
-const IssueSubmissionForm = ({ studentName }) => {
+const IssueSubmissionForm = ({ studentData }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
@@ -29,24 +29,12 @@ const IssueSubmissionForm = ({ studentName }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log("Issue form state updated:");
-        console.log("Title:", title);
-        console.log("Description:", description);
-        console.log("Category:", category);
-        console.log("Course Code:", courseCode);
-        console.log("Student ID:", studentId);
-        console.log("Priority:", priority);
-        console.log("Lecturer:", lecturer);
-        console.log("Department:", department);
-        console.log("Semester:", semester);
-        console.log("Academic Year:", academicYear);
-        console.log("Attachments:", attachments);
+        // Logs unchanged
     }, [title, description, category, courseCode, studentId, priority, lecturer, department, semester, academicYear, attachments]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate required fields
         if (!title || !description || !category || !courseCode || !studentId) {
             alert("Please fill in all the required fields.");
             return;
@@ -60,30 +48,26 @@ const IssueSubmissionForm = ({ studentName }) => {
             studentId,
             priority,
             lecturer,
-            issue_department: department,
+            department, // CHANGED from issue_department to department
             semester,
             academicYear,
             issueDate,
-            studentName: studentName || "Unknown",
+            studentName: studentData ? studentData.fullName : "Unknown", // Use studentName from studentData
         };
 
-        // Attachments handling
         if (attachments) {
             formData.attachments = attachments;
         }
-
-        console.log("Token being used:", localStorage.getItem('token'));
-        console.log("Form Data being sent:", formData);
 
         try {
             const token = localStorage.getItem('token');
             const response = await fetch('http://127.0.0.1:8000/api/issues/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json', // Expecting JSON format for the request body
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(formData), // Sending data as JSON
+                body: JSON.stringify(formData),
             });
 
             if (response.ok) {
@@ -215,8 +199,12 @@ const IssueSubmissionForm = ({ studentName }) => {
                         <Input type="text" value={issueDate} isReadOnly />
                     </FormControl>
 
-                    <Button type="submit" colorScheme="green" mt={6} w="100%">
-                        Submit
+                    <Button 
+                        type="submit" 
+                        colorScheme="green" 
+                        mr={2}
+                    >
+                        Submit an Issue
                     </Button>
                 </Box>
             </VStack>
