@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import StudentDashboard from "../routes/StudentDashboard";
-import { useNavigate } from "react-router-dom";
+import IssueSubmissionForm from '../components/IssueSubmissionForm'; // Import the IssueSubmissionForm
+import { useNavigate, Routes, Route } from "react-router-dom"; // Import Routes and Route
 
 const DashboardContainer = () => {
     const [studentData, setStudentData] = useState(null);
@@ -27,6 +28,7 @@ const DashboardContainer = () => {
                 }
 
                 const data = await response.json();
+                console.log("Student Data Fetched in DashboardContainer:", data);
                 setStudentData(data);
             } catch (error) {
                 console.error("Error fetching student data:", error);
@@ -41,7 +43,10 @@ const DashboardContainer = () => {
 
     return (
         <div>
-            <StudentDashboard studentData={studentData} loading={loading} />
+            <Routes>
+                <Route path="/" element={<StudentDashboard studentData={studentData} loading={loading} />} />
+                <Route path="/issue-submission" element={<IssueSubmissionForm studentData={studentData} />} />
+            </Routes>
         </div>
     );
 };
