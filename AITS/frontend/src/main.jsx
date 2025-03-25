@@ -1,9 +1,8 @@
-// main.jsx
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App'; // Corrected import path
+import { createRoot } from 'react-dom/client'; // Correct import
+import App from './App';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root')); // Use createRoot
 root.render(
   <React.StrictMode>
     <App />

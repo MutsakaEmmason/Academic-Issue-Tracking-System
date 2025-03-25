@@ -100,7 +100,7 @@ class StudentProfileView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = self.get_serializer(user)
-        issues = Issue.objects.filter(student=user).values('id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at', 'courseCode', 'studentId', 'lecturer', 'issue_department', 'semester', 'academicYear', 'issueDate', 'studentName')
+        issues = Issue.objects.filter(student=user).values('id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at', 'courseCode', 'studentId', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName')
         data = serializer.data
         data['issues'] = list(issues)
         return Response(data)

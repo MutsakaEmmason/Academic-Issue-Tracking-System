@@ -131,6 +131,7 @@ const collegeDepartments = {
         "Human Rights and Peace Centre",
     ],
 };
+
 const Register = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
@@ -171,33 +172,41 @@ const Register = () => {
         setPasswordsMatch(true);
         setErrors({});
 
+        const registrationData = {
+            username: studentRegNumber,
+            password,
+            fullName,
+            email,
+            college,
+            department,
+            studentRegNumber,
+            yearOfStudy,
+            role: "student",
+        };
+
+        console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
+
         fetch('http://127.0.0.1:8000/api/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                username: studentRegNumber,
-                password,
-                fullName,
-                email,
-                college,
-                department,
-                studentRegNumber,
-                yearOfStudy,
-                role: "student",
-            }),
+            body: JSON.stringify(registrationData),
         })
             .then(response => {
+                console.log("Response status:", response.status); // Log response status
+
                 if (!response.ok) {
                     return response.json().then(data => {
+                        console.error("Backend error:", data); // Log backend error response
                         throw new Error(data.detail || 'Registration failed');
                     });
                 }
                 return response.json();
             })
             .then(data => {
-                localStorage.setItem('token', data.access); // Corrected key to token
+                console.log("Registration successful:", data); // Log successful response
+                localStorage.setItem('token', data.access);
                 toast({
                     title: 'Registration successful.',
                     description: "You've successfully registered.",
@@ -205,7 +214,7 @@ const Register = () => {
                     duration: 3000,
                     isClosable: true,
                 });
-                navigate("/student-dashboard"); // Corrected route to dashboard
+                navigate("/student-dashboard");
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -218,8 +227,6 @@ const Register = () => {
                 });
             });
     };
-
-
     return (
         <VStack spacing={6} p={8} align="center">
             <Image
