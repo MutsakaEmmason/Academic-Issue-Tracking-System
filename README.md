@@ -2,41 +2,51 @@
 
 Academic Issue Tracking System (AITS)
 
-Project Overview
+   Project Overview
 
 
 The Academic Issue Tracking System (AITS) is a web-based platform designed to help students at Makerere University log and track academic-related issues such as missing marks, appeals, and corrections. The system enables multiple user roles—students, lecturers, heads of departments, and the Academic Registrar—to manage, track, and resolve issues.
 
 Technologies Used
+
 Backend: Django, Django REST Framework (DRF) Frontend: React, Redux, React Toastify Database: PostgreSQL Hosting/Deployment: Heroku or AWS Version Control: Git, GitHub Testing: Pytest (Backend), Jest, React Testing Library (Frontend)
 
-Features
+    Features
+
 User Roles and Permissions
+
 Students: Log issues, view status, update issue details.
 
 Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads.
 
 Lecturers/Heads of Departments: Resolve assigned issues, update issue status.
 
-Issue Management
+   Issue Management
+
 Issue Types: Categorized into "Missing Marks," "Appeals," and "Corrections."
 
 Details: Students provide relevant information such as course codes and descriptions for each issue.
 
-Notifications
+   
+   Notifications
+
 In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues.
 
-Dashboard
-Personalized Dashboard: Displays relevant tasks, issues, and updates based on user roles.
+  Dashboard
+ 
+ Personalized Dashboard: Displays relevant tasks, issues, and updates based on user roles.
 
-Activity Log
+   Activity Log
+   
 Activity Log: A log of all actions performed on each issue for transparency and accountability.
 
 Security
 Role-Based Access Control: Ensures users only have access to features and data they are authorized to view
 
-Setup Instructions
-Backend Setup (Django)
+     Setup Instructions
+ 
+ 
+ Backend Setup (Django)
 Clone the repository:
 
 bash
@@ -72,7 +82,8 @@ bash
 python manage.py runserver
 The backend API will be available at http://127.0.0.1:8000/.
 
-Frontend Setup (React)
+    Frontend Setup (React)
+
 Navigate to the frontend directory:
 
 bash
@@ -112,7 +123,10 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React frontend
 ]
-Deployment
+   
+   Deployment
+
+
 The project can be deployed on either Heroku or AWS. Follow the respective documentation for deployment setup.
 
 Heroku Deployment:
@@ -129,7 +143,9 @@ AWS Deployment:
 
 Configure EC2 or Elastic Beanstalk for hosting the application on AWS.
 
-Testing
+   
+   Testing
+
 Backend Testing (Pytest)
 
 To run tests for the backend, use:
