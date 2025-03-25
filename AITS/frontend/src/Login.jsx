@@ -1,104 +1,79 @@
-import { useState } from "react"; 
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    Box,
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    Heading,
-    Text,
-    Switch,
-    useToast,
-} from "@chakra-ui/react";
-import axios from "axios";
-
-const BASE_URL = "http://127.0.0.1:8000/api/";
+import { Box, Button, FormControl, FormLabel, Input, VStack, Text } from "@chakra-ui/react";
 
 const LecturerLogin = () => {
-    const [username, setUsername] = useState(""); // Changed from email to username
-    const [password, setPassword] = useState("");
-    const [isLogin, setIsLogin] = useState(true);
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
-    const toast = useToast();
+  const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`${BASE_URL}token/`, {
-                username, // Django expects "username"
-                password
-            });
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/lecturer-dashboard"); // If logged in, directly go to the dashboard
+    }
+  }, [navigate]);
 
-            // Store JWT token
-            localStorage.setItem("access_token", response.data.access);
-            localStorage.setItem("refresh_token", response.data.refresh);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access}`;
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    // Replace with actual login logic
+    const response = await fetch("/api/lecturer/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem("token", data.token);
+      navigate("/lecturer-dashboard");
+    } else {
+      alert("Login failed");
+    }
+  };
 
-            toast({
-                title: "Login Successful",
-                description: "You have successfully logged in.",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
+  const handleRegisterRedirect = () => {
+    navigate("/lecturer-register"); // Redirect to registration page
+  };
 
-            navigate("/lecturer-dashboard"); // Redirect to the lecturer dashboard
-
-        } catch (error) {
-            setError("Invalid credentials");
-            toast({
-                title: "Error",
-                description: "Invalid username or password.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-            });
-        }
-    };
-
-    return (
-        <Box maxW="md" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg">
-            <Heading as="h2" size="lg" textAlign="center" mb={4}>
-                Lecturer Login
-            </Heading>
-
-            {error && (
-                <Text color="red.500" textAlign="center" mb={4}>
-                    {error}
-                </Text>
-            )}
-
-            <form onSubmit={handleLogin}>
-                <FormControl id="username" mb={4}>
-                    <FormLabel>Username</FormLabel>
-                    <Input
-                        type="text"
-                        placeholder="Enter your username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </FormControl>
-
-                <FormControl id="password" mb={4}>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        type="password"
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </FormControl>
-
-                <Button type="submit" colorScheme="teal" width="full" mb={4}>
-                    Login
-                </Button>
-            </form>
-        </Box>
-    );
+  return (
+    <Box maxW="md" mx="auto" p={4} borderRadius="md" boxShadow="md" bg="white">
+      <VStack spacing={4} align="stretch">
+        <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+          Lecturer Login
+        </Text>
+        <form onSubmit={handleLogin}>
+          <VStack spacing={4} align="stretch">
+            <FormControl isRequired>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+              />
+            </FormControl>
+            <FormControl isRequired>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+              />
+            </FormControl>
+            <Button colorScheme="blue" type="submit" width="full" mt={4}>
+              Login
+            </Button>
+          </VStack>
+        </form>
+        <Text textAlign="center">
+          Don't have an account?{" "}
+          <Button variant="link" color="blue.500" onClick={handleRegisterRedirect}>
+            Register here
+          </Button>
+        </Text>
+      </VStack>
+    </Box>
+  );
 };
 
 export default LecturerLogin;
