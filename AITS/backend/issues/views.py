@@ -23,7 +23,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         user = self.request.user
-        if user.role == 'student':  # Restrict students to their own issues.
+        if user.role == 'student':  # Restrict students to their own issues
             return Issue.objects.filter(student=user)
         return Issue.objects.all()  # Admins/staff see all issues
  
