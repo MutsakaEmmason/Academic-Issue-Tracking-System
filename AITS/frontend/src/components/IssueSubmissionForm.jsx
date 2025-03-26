@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     VStack,
@@ -12,7 +12,7 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 
-const IssueSubmissionForm = ({ studentData }) => {
+const IssueSubmissionForm = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
@@ -25,17 +25,14 @@ const IssueSubmissionForm = ({ studentData }) => {
     const [academicYear, setAcademicYear] = useState('');
     const [attachments, setAttachments] = useState(null);
     const issueDate = new Date().toISOString().split('T')[0];
+    const [studentName, setStudentName] = useState(''); // Add studentName state
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Logs unchanged
-    }, [title, description, category, courseCode, studentId, priority, lecturer, department, semester, academicYear, attachments]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!title || !description || !category || !courseCode || !studentId) {
+        if (!title || !description || !category || !courseCode || !studentId || !studentName) {
             alert("Please fill in all the required fields.");
             return;
         }
@@ -48,16 +45,18 @@ const IssueSubmissionForm = ({ studentData }) => {
             studentId,
             priority,
             lecturer,
-            department, // CHANGED from issue_department to department
+            department,
             semester,
             academicYear,
             issueDate,
-            studentName: studentData ? studentData.fullName : "Unknown", // Use studentName from studentData
+            studentName: studentName, // Use studentName from state
         };
 
         if (attachments) {
             formData.attachments = attachments;
         }
+
+        console.log("Form Data Submitted:", formData);
 
         try {
             const token = localStorage.getItem('token');
@@ -90,21 +89,12 @@ const IssueSubmissionForm = ({ studentData }) => {
                 <Box w="100%" maxW="400px">
                     <FormControl>
                         <FormLabel>Title/Issue Subject:</FormLabel>
-                        <Input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
+                        <Input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Description/Details:</FormLabel>
-                        <Textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                        />
+                        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
                     </FormControl>
 
                     <FormControl mt={4}>
@@ -122,20 +112,20 @@ const IssueSubmissionForm = ({ studentData }) => {
 
                     <FormControl mt={4}>
                         <FormLabel>Course Code:</FormLabel>
-                        <Input
-                            type="text"
-                            value={courseCode}
-                            onChange={(e) => setCourseCode(e.target.value)}
-                            required
-                        />
+                        <Input type="text" value={courseCode} onChange={(e) => setCourseCode(e.target.value)} required />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Student ID/Registration Number:</FormLabel>
+                        <Input type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
+                    </FormControl>
+
+                    <FormControl mt={4}>
+                        <FormLabel>Student Full Name:</FormLabel>
                         <Input
                             type="text"
-                            value={studentId}
-                            onChange={(e) => setStudentId(e.target.value)}
+                            value={studentName}
+                            onChange={(e) => setStudentName(e.target.value)}
                             required
                         />
                     </FormControl>
@@ -152,46 +142,27 @@ const IssueSubmissionForm = ({ studentData }) => {
 
                     <FormControl mt={4}>
                         <FormLabel>Specific Lecturer:</FormLabel>
-                        <Input
-                            type="text"
-                            value={lecturer}
-                            onChange={(e) => setLecturer(e.target.value)}
-                        />
+                        <Input type="text" value={lecturer} onChange={(e) => setLecturer(e.target.value)} />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Department:</FormLabel>
-                        <Input
-                            type="text"
-                            value={department}
-                            onChange={(e) => setDepartment(e.target.value)}
-                        />
+                        <Input type="text" value={department} onChange={(e) => setDepartment(e.target.value)} />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Semester:</FormLabel>
-                        <Input
-                            type="text"
-                            value={semester}
-                            onChange={(e) => setSemester(e.target.value)}
-                        />
+                        <Input type="text" value={semester} onChange={(e) => setSemester(e.target.value)} />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Academic Year:</FormLabel>
-                        <Input
-                            type="text"
-                            value={academicYear}
-                            onChange={(e) => setAcademicYear(e.target.value)}
-                        />
+                        <Input type="text" value={academicYear} onChange={(e) => setAcademicYear(e.target.value)} />
                     </FormControl>
 
                     <FormControl mt={4}>
                         <FormLabel>Attachments:</FormLabel>
-                        <Input
-                            type="file"
-                            onChange={(e) => setAttachments(e.target.files[0])}
-                        />
+                        <Input type="file" onChange={(e) => setAttachments(e.target.files[0])} />
                     </FormControl>
 
                     <FormControl mt={4}>
@@ -199,17 +170,10 @@ const IssueSubmissionForm = ({ studentData }) => {
                         <Input type="text" value={issueDate} isReadOnly />
                     </FormControl>
 
-                    <Button 
-                        type="submit" 
-                        colorScheme="green" 
-                        mr={2}
-                    >
-                        Submit an Issue
-                    </Button>
+                    <Button type="submit" colorScheme="green" mr={2}>Submit an Issue</Button>
                 </Box>
             </VStack>
         </form>
     );
 };
-
 export default IssueSubmissionForm;
