@@ -58,7 +58,7 @@ class CustomUserResource(resources.ModelResource):
     class Meta:
         model = CustomUser
 
-class CustomUserAdmin(ExportMixin, UserAdmin):  # Add ExportMixin
+class CustomUserAdmin(ExportMixin, UserAdmin):  # add ExportMixin
     resource_class = CustomUserResource
 
 autocomplete_fields = ['username', 'email']
