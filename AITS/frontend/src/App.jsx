@@ -4,18 +4,19 @@ import StudentLogin from "./student_login";
 import Home from "./home";
 import IssueSubmissionForm from './components/IssueSubmissionForm';
 import DashboardContainer from './components/DashboardContainer';
+import IssueData from './components/IssueData';  
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
-import LecturerDashboard from "./LecturerDashboard"
+import LecturerDashboard from "./LecturerDashboard";
 import AcademicRegistrar from './AcademicRegistrar';
-import RegistrarLogin from './RegistrarLogin'
+import RegistrarLogin from './RegistrarLogin';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
     const token = localStorage.getItem('token');
     if (!token) {
-        return <Navigate to="/student/login" replace />;
+        return <Navigate to="/student/login\" replace />;
     }
     return children;
 };
@@ -39,6 +40,13 @@ const App = () => {
                     <Route path="/register" element={<Register />} />
                     <Route path="/academic-registrar" element={<AcademicRegistrar />} />
                     <Route path="/registrar-login" element={<RegistrarLogin />} />
+
+                    
+                    <Route path="/issue/:issueId" element={
+                        <ProtectedRoute>
+                            <IssueData />
+                        </ProtectedRoute>
+                    } />
                 </Routes>
             </Router>
         </ChakraProvider>
