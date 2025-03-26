@@ -14,7 +14,7 @@ router.register(r'audit-logs', AuditLogViewSet)
 router.register(r'attachments', IssueAttachmentViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),  # Include the router URLs for the viewsets
+    path('', include(router.urls)),  # Include the router URLs for the viewsets.
     path('register/', StudentRegistrationView.as_view(), name='student-registration'),  # Endpoint for student registration
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'), #add login url
     path('student-profile/', StudentProfileView.as_view(), name='student-profile'),

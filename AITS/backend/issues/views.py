@@ -25,7 +25,7 @@ class IssueViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.role == 'student':  # Restrict students to their own issues
             return Issue.objects.filter(student=user)
-        return Issue.objects.all()  # Admins/staff see all issues.
+        return Issue.objects.all()  # Admins/staff see all issues
  
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
