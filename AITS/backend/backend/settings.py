@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'authentication',
+    'django_filters',
+    
 
 ]  
 
@@ -139,6 +141,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
 
     ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 
