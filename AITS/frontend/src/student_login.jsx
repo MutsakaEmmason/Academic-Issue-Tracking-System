@@ -103,7 +103,7 @@ const StudentLogin = () => {
 
             <Box w="100%" maxW="400px">
                 <FormControl isInvalid={errors.studentRegNumber}>
-                    <FormLabel>StudentRegNumber</FormLabel>
+                    <FormLabel>StudentNumber</FormLabel>
                     <Input
                         onChange={(e) => setStudentRegNumber(e.target.value)}
                         value={studentRegNumber}
