@@ -11,6 +11,7 @@ import {
     Select,
     Textarea,
 } from "@chakra-ui/react";
+import Footer from '../components/Footer';
 
 const IssueSubmissionForm = () => {
     const [title, setTitle] = useState('');
@@ -116,7 +117,7 @@ const IssueSubmissionForm = () => {
                     </FormControl>
 
                     <FormControl mt={4}>
-                        <FormLabel>Student ID/Registration Number:</FormLabel>
+                        <FormLabel>Student ID/StudentNumber:</FormLabel>
                         <Input type="text" value={studentId} onChange={(e) => setStudentId(e.target.value)} required />
                     </FormControl>
 
@@ -172,7 +173,9 @@ const IssueSubmissionForm = () => {
 
                     <Button type="submit" colorScheme="green" mr={2}>Submit an Issue</Button>
                 </Box>
+                <Footer userRole="student" />
             </VStack>
+            
         </form>
     );
 };

@@ -13,7 +13,7 @@ import {
     FormHelperText,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
+import Footer from './components/Footer';
 const StudentLogin = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
@@ -136,6 +136,7 @@ const StudentLogin = () => {
                     Don't have an account? Sign up
                 </Text>
             </Box>
+            <Footer userRole="student" />
         </VStack>
     );
 };
