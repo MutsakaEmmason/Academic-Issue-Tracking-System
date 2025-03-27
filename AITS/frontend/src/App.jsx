@@ -4,7 +4,7 @@ import StudentLogin from "./student_login";
 import Home from "./home";
 import IssueSubmissionForm from './components/IssueSubmissionForm';
 import DashboardContainer from './components/DashboardContainer';
-import IssueData from './components/IssueData';  
+import IssueData from './routes/IssueData';  
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
 import Register from "./routes/register";
@@ -16,7 +16,6 @@ import AboutUs from "./components/AboutUs";
 import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
 
 
-import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
 
 
 // Protected Route Component

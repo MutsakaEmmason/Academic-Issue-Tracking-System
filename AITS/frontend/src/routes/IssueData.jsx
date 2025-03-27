@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Text, Button, Spinner, Heading, VStack, useToast } from '@chakra-ui/react';
+import Footer from '../components/Footer';
 
 const IssueData = () => {
     const { issueId } = useParams();
@@ -60,26 +61,29 @@ const IssueData = () => {
     }
 
     return (
-        <Box maxW="600px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg" shadow="md">
-            <Heading size="lg" mb={4}>{issue.title}</Heading>
-            <VStack align="start" spacing={3}>
-                <Text><strong>Student Name:</strong> {issue.studentName}</Text>
-                <Text><strong>Student ID:</strong> {issue.studentId}</Text>
-                <Text><strong>Status:</strong> {issue.status}</Text>
-                <Text><strong>Category:</strong> {issue.category}</Text>
-                <Text><strong>Course Code:</strong> {issue.courseCode}</Text>
-                <Text><strong>Priority:</strong> {issue.priority}</Text>
-                <Text><strong>Lecturer:</strong> {issue.lecturer}</Text>
-                <Text><strong>Department:</strong> {issue.department}</Text>
-                <Text><strong>Semester:</strong> {issue.semester}</Text>
-                <Text><strong>Academic Year:</strong> {issue.academicYear}</Text>
-                <Text><strong>Issue Date:</strong> {issue.issueDate}</Text>
-                <Text><strong>Description:</strong> {issue.description}</Text>
-            </VStack>
-            <Button mt={5} colorScheme="green" onClick={() => navigate('/student-dashboard')}>
-                Back to Dashboard
-            </Button>
-        </Box>
+        <> {/* Use a fragment to wrap both sections */}
+            <Box maxW="600px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg" shadow="md">
+                <Heading size="lg" mb={4}>{issue.title}</Heading>
+                <VStack align="start" spacing={3}>
+                    <Text><strong>Student Name:</strong> {issue.studentName}</Text>
+                    <Text><strong>Student ID:</strong> {issue.studentId}</Text>
+                    <Text><strong>Status:</strong> {issue.status}</Text>
+                    <Text><strong>Category:</strong> {issue.category}</Text>
+                    <Text><strong>Course Code:</strong> {issue.courseCode}</Text>
+                    <Text><strong>Priority:</strong> {issue.priority}</Text>
+                    <Text><strong>Lecturer:</strong> {issue.lecturer}</Text>
+                    <Text><strong>Department:</strong> {issue.department}</Text>
+                    <Text><strong>Semester:</strong> {issue.semester}</Text>
+                    <Text><strong>Academic Year:</strong> {issue.academicYear}</Text>
+                    <Text><strong>Issue Date:</strong> {issue.issueDate}</Text>
+                    <Text><strong>Description:</strong> {issue.description}</Text>
+                </VStack>
+                <Button mt={5} colorScheme="green" onClick={() => navigate('/student-dashboard')}>
+                    Back to Dashboard
+                </Button>
+            </Box>
+            <Footer userRole="student" /> {/* Footer outside the constrained Box */}
+        </>
     );
 };
 

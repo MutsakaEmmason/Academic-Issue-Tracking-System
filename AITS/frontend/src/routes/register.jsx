@@ -16,6 +16,7 @@ import {
     FormHelperText,
     useToast,
 } from "@chakra-ui/react";
+import Footer from '../components/Footer';
 
 const collegeDepartments = {
     CAES: [
@@ -270,7 +271,7 @@ const Register = () => {
                         type="text"
                         value={studentRegNumber}
                         onChange={(e) => setStudentRegNumber(e.target.value)}
-                        placeholder="Enter Student Number"
+                        placeholder="Enter StudentNumber"
                     />
                     {errors.studentRegNumber && <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>}
                 </FormControl>
@@ -361,6 +362,7 @@ const Register = () => {
                     Register
                 </Button>
             </Box>
+            <Footer userRole="student" />
 
     
                 
