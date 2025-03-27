@@ -3,6 +3,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
+from import_export.admin import ExportMixin
+from import_export import resources
+
 
 
 # CustomUser Admin
@@ -47,7 +50,18 @@ class AuditLogAdmin(admin.ModelAdmin):
     list_filter = ('created_at',)
     search_fields = ('user__username', 'action')
     raw_id_fields = ('user',)
+    
+   
+    #export button for downloading user data
+    
+class CustomUserResource(resources.ModelResource):
+    class Meta:
+        model = CustomUser
 
+class CustomUserAdmin(ExportMixin, UserAdmin):  # Add ExportMixin
+    resource_class = CustomUserResource
+
+autocomplete_fields = ['username', 'email']
 
 # Register models.
 admin.site.register(CustomUser, CustomUserAdmin)

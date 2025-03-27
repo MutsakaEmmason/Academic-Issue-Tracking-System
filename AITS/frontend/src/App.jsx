@@ -16,6 +16,9 @@ import AboutUs from "./components/AboutUs";
 import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
 
 
+import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
+
+
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
     const token = localStorage.getItem('token');
@@ -51,6 +54,10 @@ const App = () => {
                     {/* Other Routes */}
                     <Route path="/register" element={<Register />} />
                     <Route path="/academic-registrar" element={<AcademicRegistrar />} />
+
+
+                    <Route path="/registrar-login" element={<RegistrarLogin />} />
+
 
                     <Route path="/registrar-login" element={<RegistrarLogin />} />
                     <Route path="/about" element={<AboutUs />} />
