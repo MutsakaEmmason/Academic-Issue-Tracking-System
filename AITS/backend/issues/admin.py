@@ -26,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
     )
 
 class IssueAdmin(admin.ModelAdmin):
-    list_display = ('title', 'status', 'category', 'student', 'assigned_to', 'created_at', 'studentName','department','lecturer','courseCode') #Add studentName to list display
+    list_display = ('title', 'status', 'category', 'student', 'assigned_to', 'created_at', 'studentName','department','lecturer','courseCode','description','semester','academicYear') #Add studentName to list display
     list_filter = ('status', 'category', 'created_at')
     search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
     raw_id_fields = ('student', 'assigned_to')

@@ -95,7 +95,20 @@ const StudentDashboard = () => {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center">
-            <Flex p={4} bg="green.500" color="white" justify="space-between" align="center" width="100%">
+            <Flex  p={4}
+                bg="green.500"
+                color="white"
+                justify="space-between"
+                align="center"
+                width="100%"
+                position="fixed" // Make header fixed
+                top="0" // Stick to the top
+                zIndex="100" // Ensure it's above other content
+            >
+           
+            
+            
+            
                 <Box>
                     <h1 style={{ fontSize: '2.5em' }}>STUDENT DASHBOARD</h1>
                 </Box>
