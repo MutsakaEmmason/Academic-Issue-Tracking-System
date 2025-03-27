@@ -11,6 +11,10 @@ import Register from "./routes/register";
 import LecturerDashboard from "./LecturerDashboard";
 import AcademicRegistrar from './AcademicRegistrar';
 import RegistrarLogin from './RegistrarLogin';
+import AboutUs from "./components/AboutUs";
+
+import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
+
 
 import LecturerRegister from './LecturerRegister'; // Import LecturerRegister component
 
@@ -51,8 +55,12 @@ const App = () => {
                     <Route path="/register" element={<Register />} />
                     <Route path="/academic-registrar" element={<AcademicRegistrar />} />
 
+
                     <Route path="/registrar-login" element={<RegistrarLogin />} />
 
+
+                    <Route path="/registrar-login" element={<RegistrarLogin />} />
+                    <Route path="/about" element={<AboutUs />} />
                     
                     <Route path="/issue/:issueId" element={
                         <ProtectedRoute>

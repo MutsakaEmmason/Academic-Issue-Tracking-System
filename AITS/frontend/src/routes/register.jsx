@@ -265,12 +265,12 @@ const Register = () => {
 
                 {/* Registration Number */}
                 <FormControl mt={4} isInvalid={errors.studentRegNumber}>
-                    <FormLabel>Student Registration Number</FormLabel>
+                    <FormLabel>Student Number</FormLabel>
                     <Input
                         type="text"
                         value={studentRegNumber}
                         onChange={(e) => setStudentRegNumber(e.target.value)}
-                        placeholder="Enter Registration Number"
+                        placeholder="Enter Student Number"
                     />
                     {errors.studentRegNumber && <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>}
                 </FormControl>
