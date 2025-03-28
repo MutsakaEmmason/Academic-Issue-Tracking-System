@@ -102,9 +102,9 @@ class Issue(Timestamp):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     courseCode = models.CharField(max_length=20, blank=True, null=True)
-    studentId = models.CharField(max_length=20, default='DEFAULT_STUDENT_ID')  # Set a default value
+    studentId = models.CharField(max_length=20, default='DEFAULT_STUDENT_ID')
     lecturer = models.CharField(max_length=255, blank=True, null=True)
-    issue_department = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)  # updated field name here
     semester = models.CharField(max_length=20, blank=True, null=True)
     academicYear = models.CharField(max_length=20, blank=True, null=True)
     issueDate = models.DateField(auto_now_add=True)

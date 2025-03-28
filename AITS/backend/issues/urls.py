@@ -7,7 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 # Initialize the router
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet)
-router.register(r'issues', IssueViewSet)
+router.register(r'issues', IssueViewSet, basename='issue')
 router.register(r'comments', CommentViewSet)
 router.register(r'notifications', NotificationViewSet)
 router.register(r'audit-logs', AuditLogViewSet)

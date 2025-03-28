@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'authentication',
+    'django_filters',
+    'import_export',
+    
 
 ]  
 
@@ -117,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization.
+# Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -139,6 +143,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
 
     ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 

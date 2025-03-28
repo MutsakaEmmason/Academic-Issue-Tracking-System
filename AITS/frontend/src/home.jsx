@@ -71,15 +71,7 @@ const HomePage = () => {
           >
             Lecturer Login
           </Button>
-          <Button
-            colorScheme="orange"
-            size="lg"
-            width="full"
-            onClick={() => navigate("/admin/login")}
-            _hover={{ bg: "orange.400", transform: "scale(1.05)" }}
-          >
-            Admin Login
-          </Button>
+          
           <Button
             colorScheme="red"
             size="lg"
