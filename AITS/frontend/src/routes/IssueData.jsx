@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Text, Button, Spinner, Heading, VStack, useToast } from '@chakra-ui/react';
+import { Box, Text, Button, Spinner, Heading, VStack, useToast, HStack } from '@chakra-ui/react';
 import Footer from '../components/Footer';
 
 const IssueData = () => {
@@ -29,7 +29,7 @@ const IssueData = () => {
                         duration: 5000,
                         isClosable: true,
                     });
-                    navigate('/dashboard');
+                    navigate('/student-dashboard');
                 }
             } catch (error) {
                 toast({
@@ -57,14 +57,27 @@ const IssueData = () => {
     }
 
     if (!issue) {
-        return <Text textAlign="center">Issue not found.</Text>;
+        return (
+            <Box minHeight="100vh" bg="green.500" display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                <Text textAlign="center" color="white">Issue not found.</Text>
+                <Footer userRole="student" />
+            </Box>
+        );
     }
 
     return (
-        <> {/* Use a fragment to wrap both sections */}
-            <Box maxW="600px" mx="auto" mt={10} p={5} borderWidth="1px" borderRadius="lg" shadow="md">
-                <Heading size="lg" mb={4}>{issue.title}</Heading>
-                <VStack align="start" spacing={3}>
+        <Box minHeight="100vh" bg="green.500" display="flex" flexDirection="column" alignItems="center" justifyContent="center" p={4}>
+            <Box 
+                width="90%" 
+                minWidth="800px"
+                p={8} 
+                borderWidth="1px" 
+                borderRadius="lg" 
+                shadow="md" 
+                bg="rgba(255, 255, 255, 0.9)"
+            >
+                <Heading size="lg" mb={6} textAlign="center">{issue.title}</Heading>
+                <VStack align="start" spacing={4}>
                     <Text><strong>Student Name:</strong> {issue.studentName}</Text>
                     <Text><strong>Student ID:</strong> {issue.studentId}</Text>
                     <Text><strong>Status:</strong> {issue.status}</Text>
@@ -78,12 +91,20 @@ const IssueData = () => {
                     <Text><strong>Issue Date:</strong> {issue.issueDate}</Text>
                     <Text><strong>Description:</strong> {issue.description}</Text>
                 </VStack>
-                <Button mt={5} colorScheme="green" onClick={() => navigate('/student-dashboard')}>
-                    Back to Dashboard
-                </Button>
+
+                {/* Buttons Container - Left Aligned */}
+                <HStack mt={6} spacing={4}>
+                    <Button colorScheme="green" onClick={() => navigate('/student-dashboard')}>
+                        Back to Dashboard
+                    </Button>
+                    <Button colorScheme="blue" onClick={() => navigate('/issue-submission')}>
+                        Submit Another Issue
+                    </Button>
+                </HStack>
             </Box>
-            <Footer userRole="student" /> {/* Footer outside the constrained Box */}
-        </>
+            
+            <Footer userRole="student" />
+        </Box>
     );
 };
 

@@ -105,10 +105,6 @@ const StudentDashboard = () => {
                 top="0" // Stick to the top
                 zIndex="100" // Ensure it's above other content
             >
-           
-            
-            
-            
                 <Box>
                     <h1 style={{ fontSize: '2.5em' }}>STUDENT DASHBOARD</h1>
                 </Box>
@@ -125,14 +121,17 @@ const StudentDashboard = () => {
                     <Button onClick={handleLogout} colorScheme="red">Logout</Button>
                 </Flex>
             </Flex>
-            <hr style={{ width: '80%' }} />
-            <FormControl mt={4} width="80%">
-                <FormLabel>Search by Category</FormLabel>
-                <Flex alignItems="center" gap={2}>
-                    <Input type="text" placeholder="Enter issue category..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} border="1px solid green" width="100%" />
-                    <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
-                </Flex>
-            </FormControl>
+            
+            <Box mt={20} width="80%"> {/* Added margin-top to push content below navbar */}
+                <FormControl mt={4}>
+                    <FormLabel>Search by Category</FormLabel>
+                    <Flex alignItems="center" gap={2}>
+                        <Input type="text" placeholder="Enter issue category..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} border="1px solid green" width="100%" />
+                        <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
+                    </Flex>
+                </FormControl>
+            </Box>
+            
             <Box width="100%" overflowX="auto" mt={4}>
                 <Table variant="simple" size="sm">
                     <Thead>

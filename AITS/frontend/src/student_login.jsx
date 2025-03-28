@@ -14,6 +14,8 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Footer from './components/Footer';
+
+
 const StudentLogin = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
@@ -87,58 +89,85 @@ const StudentLogin = () => {
     };
 
     return (
-        <VStack spacing={6} p={8} align="center">
-            <Image
-                src="https://i.pinimg.com/736x/7f/30/aa/7f30aaf443ebbf9059c21d6c7f745433.jpg"
-                alt="Makerere University Logo"
-                boxSize="100px"
-            />
-
-            <Heading size="lg">Academic Issue Tracking System (AITS)</Heading>
-
-            <Text textAlign="center" color="gray.600">
-                Welcome to the Makerere University Academic Issue Tracking System. Log in
-                to report, track, and manage your academic issues efficiently.
-            </Text>
-
-            <Box w="100%" maxW="400px">
-                <FormControl isInvalid={errors.studentRegNumber}>
-                    <FormLabel>StudentNumber</FormLabel>
-                    <Input
-                        onChange={(e) => setStudentRegNumber(e.target.value)}
-                        value={studentRegNumber}
-                        type="text"
-                    />
-                    {errors.studentRegNumber && (
-                        <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>
-                    )}
-                </FormControl>
-                <FormControl mt={4} isInvalid={errors.password}>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
-                        type="password"
-                    />
-                    {errors.password && (
-                        <FormHelperText color="red">{errors.password}</FormHelperText>
-                    )}
-                </FormControl>
-                <Button
-                    onClick={handleStudentLogin}
-                    colorScheme="blue"
-                    mt={6}
-                    w="100%"
+        <Box
+            minHeight="100vh"
+            bg="green.500"
+            display="flex"
+            flexDirection="column"
+            alignItems="stretch"
+        >
+            <Box flex="1" display="flex" justifyContent="center" alignItems="center">
+                <VStack
+                    spacing={6}
+                    p={8}
+                    align="center"
+                    bg="rgba(255, 255, 255, 0.8)"
+                    borderRadius="lg"
+                    boxShadow="lg"
+                    maxWidth="400px"
                 >
-                    Login
-                </Button>
-                <Text onClick={handleNav} cursor="pointer" mt={2} color="blue.500">
-                    Don't have an account? Sign up
-                </Text>
+                    <Image
+                        src="https://i.pinimg.com/736x/7f/30/aa/7f30aaf443ebbf9059c21d6c7f745433.jpg"
+                        alt="Makerere University Logo"
+                        boxSize="100px"
+                    />
+
+                    <Heading size="lg">Academic Issue Tracking System (AITS)</Heading>
+
+                    <Text textAlign="center" color="gray.600">
+                        Welcome to the Makerere University Academic Issue Tracking System. Log in
+                        to report, track, and manage your academic issues efficiently.
+                    </Text>
+
+                    <Box w="100%" maxW="400px">
+                        <FormControl isInvalid={errors.studentRegNumber}>
+                            <FormLabel>StudentNumber</FormLabel>
+                            <Input
+                                onChange={(e) => setStudentRegNumber(e.target.value)}
+                                value={studentRegNumber}
+                                type="text"
+                                bg="white" // Added white background
+                                border="1px solid #ccc" // Added border
+                                color="black" // Added text color
+                            />
+                            {errors.studentRegNumber && (
+                                <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>
+                            )}
+                        </FormControl>
+                        <FormControl mt={4} isInvalid={errors.password}>
+                            <FormLabel>Password</FormLabel>
+                            <Input
+                                onChange={(e) => setPassword(e.target.value)}
+                                value={password}
+                                type="password"
+                                bg="white" // Added white background
+                                border="1px solid #ccc" // Added border
+                                color="black" // Added text color
+                            />
+                            {errors.password && (
+                                <FormHelperText color="red">{errors.password}</FormHelperText>
+                            )}
+                        </FormControl>
+                        <Button
+                            onClick={handleStudentLogin}
+                            colorScheme="blue"
+                            mt={6}
+                            w="100%"
+                        >
+                            Login
+                        </Button>
+                        <Text onClick={handleNav} cursor="pointer" mt={2} color="blue.500">
+                            Don't have an account? Sign up
+                        </Text>
+                    </Box>
+                </VStack>
             </Box>
-            <Footer userRole="student" />
-        </VStack>
+            <Box width="100%">
+                <Footer userRole="student" />
+            </Box>
+        </Box>
     );
 };
+
 
 export default StudentLogin;
