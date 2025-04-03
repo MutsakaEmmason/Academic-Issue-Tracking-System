@@ -56,10 +56,37 @@ class CustomUser(AbstractUser):
         related_query_name="customuser",
     )
 
+
+    # Shared fields for all users
+    fullName = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(unique=True)
+    college = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)
+
+    # Student-specific fields (Not applicable to registrar)
+    studentRegNumber = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    
+    YEAR_CHOICES = [
+        ('1', 'Year 1'),
+        ('2', 'Year 2'),
+        ('3', 'Year 3'),
+        ('4', 'Year 4'),
+        ('5', 'Year 5'),
+        ('6', 'Year 6'),
+    ]
+    yearOfStudy = models.CharField(max_length=1, choices=YEAR_CHOICES, blank=True, null=True)
+
     def __str__(self):
         return f"{self.username} ({self.role})"
 
     def save(self, *args, **kwargs):
+
+        # Remove student-specific fields for non-students
+        if self.role != 'student':
+            self.studentRegNumber = None
+            self.yearOfStudy = None
+
+
         # Set username based on role
         if self.role == 'student' and self.studentRegNumber:
             self.username = self.studentRegNumber
@@ -105,7 +132,7 @@ class Issue(Timestamp):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='open')
 
     courseCode = models.CharField(max_length=20, blank=True, null=True)
-    studentId = models.CharField(max_length=20, default='DEFAULT_STUDENT_ID')
+    studentId = models.CharField(max_length=20, blank=True, null=True)
     lecturer = models.CharField(max_length=255, blank=True, null=True)
     department = models.CharField(max_length=255, blank=True, null=True)
     semester = models.CharField(max_length=20, blank=True, null=True)
@@ -131,7 +158,11 @@ class Comment(Timestamp):
 class Notification(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message = models.CharField(max_length=255)
+
     is_read = models.BooleanField(default=False)  # Corrected field name to is_read
+
+    read = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"Notification for {self.user.username}: {self.message}"
@@ -146,7 +177,8 @@ class AuditLog(Timestamp):
         return f"{self.user.username} - {self.action}"
 
 
-# Attachments for issues.
+# Issue Attachment model.
+
 class IssueAttachment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to="attachments/")

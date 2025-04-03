@@ -8,6 +8,26 @@ from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.db.models import Q
 
+
+
+from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
+from .serializers import (
+    CustomUserSerializer, IssueSerializer, CommentSerializer, 
+    NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
+)
+
+# Custom Login View
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = self.user
+        data['role'] = user.role  # Include role in response
+        return data
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import (
     CustomUserSerializer, IssueSerializer, CommentSerializer, 
@@ -116,6 +136,7 @@ class UserRegistrationView(generics.CreateAPIView):
         if serializer.is_valid():
             role = request.data.get('role')
 
+
             # Only allow students and lecturers to register via this endpoint
             if role not in ['student', 'lecturer']:
                 return Response({"error": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
@@ -124,6 +145,12 @@ class UserRegistrationView(generics.CreateAPIView):
             user = serializer.save(role=role)
             
             # Generate JWT tokens
+
+            if role not in ['student', 'lecturer', 'registrar']:
+                return Response({"error": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user = serializer.save(role=role)
+
             refresh = RefreshToken.for_user(user)
             res = {
                 "message": f"{role.capitalize()} registered successfully",
@@ -199,6 +226,35 @@ class UserProfileView(generics.RetrieveAPIView):
         return Response(data)
 
 # Helper Functions
+
+# NEW: Registrar Signup View
+class RegistrarSignupView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer  # Use the existing serializer
+    permission_classes = [permissions.AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        print("Received data:", request.data)  # Log the data
+        
+        # Ensure role is set to 'registrar'
+        data = request.data.copy()
+        data['role'] = 'registrar'
+        
+        serializer = self.get_serializer(data=data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            res = {
+                "message": "Registrar registered successfully",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+            return Response(res, status=status.HTTP_201_CREATED)
+        
+        print("Validation errors:", serializer.errors)  # Log validation errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 def log_action(user, action):
     """

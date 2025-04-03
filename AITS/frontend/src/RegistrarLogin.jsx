@@ -1,182 +1,185 @@
-import React, { useState } from "react";
-import {
-  VStack,
-  Input,
-  Button,
-  Heading,
-  Text,
-  Box,
-  FormControl,
-  FormLabel,
-  InputGroup,
-  InputRightElement,
-  Select,
-  FormErrorMessage,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const RegistrarAuth = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    college: "",
+const RegistrarLogin = () => {
+  const [credentials, setCredentials] = useState({
+    username: '',
+    password: ''
   });
-  const [error, setError] = useState("");
-  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Dummy data for login simulation
-  const existingUsers = [
-    { email: "admin@example.com", password: "admin123" }, // Example user
-  ];
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials({
+      ...credentials,
+      [name]: value
+    });
+  };
 
-  const handleSubmit = () => {
-    if (isLogin) {
-      // Login logic: check if user exists
-      const user = existingUsers.find(
-        (user) => user.email === formData.email && user.password === formData.password
-      );
-      if (!user) {
-        setError("No account found with this email and password.");
-      } else {
-        setError(""); // Clear error on successful login
-        console.log("Logging in:", formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      console.log('Sending credentials:', credentials); // Debug log
+      
+      const response = await axios.post('http://127.0.0.1:8000/api/token/', credentials);
+      
+      console.log('Login response:', response.data); // Debug log
+      
+      // Store tokens in localStorage
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+      
+      // Store user role if available
+      if (response.data.role) {
+        localStorage.setItem('userRole', response.data.role);
       }
-    } else {
-      // Signup logic: check if passwords match
-      if (formData.password !== formData.confirmPassword) {
-        setIsPasswordMismatch(true);
+      
+      // Redirect to dashboard
+      navigate('/academic-registrar');
+    } catch (error) {
+      console.error('Login error:', error.response || error);
+      
+      if (error.response && error.response.status === 401) {
+        setError('Invalid username or password. Please try again.');
       } else {
-        setIsPasswordMismatch(false);
-        console.log("Signing up:", formData);
+        setError(
+          error.response?.data?.detail || 
+          'Failed to login. Please check your credentials.'
+        );
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Simple CSS styles
+  const styles = {
+    container: {
+      maxWidth: '400px',
+      margin: '100px auto',
+      padding: '20px',
+      boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+      borderRadius: '8px',
+      backgroundColor: 'white'
+    },
+    title: {
+      textAlign: 'center',
+      color: '#2C7A7B',
+      marginBottom: '20px'
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '15px'
+    },
+    formGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '5px'
+    },
+    label: {
+      fontWeight: 'bold'
+    },
+    input: {
+      padding: '10px',
+      borderRadius: '4px',
+      border: '1px solid #ddd'
+    },
+    button: {
+      padding: '12px',
+      backgroundColor: '#2C7A7B',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      marginTop: '10px'
+    },
+    error: {
+      color: 'red',
+      textAlign: 'center',
+      marginBottom: '15px'
+    },
+    signupLink: {
+      textAlign: 'center',
+      marginTop: '20px'
+    },
+    link: {
+      color: '#2C7A7B',
+      textDecoration: 'underline',
+      cursor: 'pointer'
+    },
+    helpText: {
+      fontSize: '0.8rem',
+      color: '#666',
+      marginTop: '5px'
     }
   };
 
   return (
-    <VStack
-      spacing={6}
-      p={8}
-      align="center"
-      justify="center"
-      height="100vh"
-      bgGradient="linear(to-br, #2c3e50, #34495e)"
-      color="white"
-    >
-      <Heading size="lg">{isLogin ? "Registrar Login" : "Registrar Signup"}</Heading>
-      <Box
-        bg="rgba(255, 255, 255, 0.1)"
-        p={6}
-        rounded="lg"
-        shadow="xl"
-        width={{ base: "100%", sm: "400px" }} // Responsively control width
-        backdropFilter="blur(10px)"
-        border="1px solid rgba(255, 255, 255, 0.2)"
-      >
-        <VStack spacing={4} align="stretch">
-          {!isLogin && (
-            <FormControl>
-              <FormLabel>Name</FormLabel>
-              <Input
-                type="text"
-                placeholder="Enter your name"
-                bg="white"
-                color="black"
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              />
-            </FormControl>
-          )}
-
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              bg="white"
-              color="black"
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            />
-          </FormControl>
-
-          <FormControl isInvalid={isPasswordMismatch}>
-            <FormLabel>Password</FormLabel>
-            <InputGroup>
-              <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter password"
-                bg="white"
-                color="black"
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
-              <InputRightElement width="4.5rem">
-                <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? "Hide" : "Show"}
-                </Button>
-              </InputRightElement>
-            </InputGroup>
-            {isPasswordMismatch && (
-              <FormErrorMessage>Passwords do not match.</FormErrorMessage>
-            )}
-          </FormControl>
-
-          {!isLogin && (
-            <>
-              <FormControl isInvalid={isPasswordMismatch}>
-                <FormLabel>Confirm Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Confirm password"
-                  bg="white"
-                  color="black"
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>College</FormLabel>
-                <Select
-                  placeholder="Select College"
-                  bg="white"
-                  color="black"
-                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                >
-                  <option value="College of Engineering">College of Engineering</option>
-                  <option value="College of Medicine">College of Medicine</option>
-                  <option value="College of Business">College of Business</option>
-                  <option value="College of Humanities">College of Humanities</option>
-                </Select>
-              </FormControl>
-            </>
-          )}
-
-          <Button
-            colorScheme={isLogin ? "blue" : "green"}
-            width="full"
-            onClick={handleSubmit}
-            _hover={{ transform: "scale(1.05)" }}
-          >
-            {isLogin ? "Login" : "Sign Up"}
-          </Button>
-
-          {error && (
-            <Text color="red.400" fontSize="sm" textAlign="center">
-              {error}
-            </Text>
-          )}
-
-          <Text fontSize="sm" textAlign="center">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-            <Button variant="link" colorScheme="blue" onClick={() => setIsLogin(!isLogin)}>
-              {isLogin ? "Sign Up" : "Login"}
-            </Button>
-          </Text>
-        </VStack>
-      </Box>
-    </VStack>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Registrar Login</h2>
+      
+      {error && <div style={styles.error}>{error}</div>}
+      
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label htmlFor="username" style={styles.label}>Username or Email</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={credentials.username}
+            onChange={handleChange}
+            required
+            style={styles.input}
+            placeholder="Enter your username or email"
+          />
+          <p style={styles.helpText}>
+            This should be the username you created during registration
+          </p>
+        </div>
+        
+        <div style={styles.formGroup}>
+          <label htmlFor="password" style={styles.label}>Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
+            required
+            style={styles.input}
+            placeholder="Enter your password"
+          />
+        </div>
+        
+        <button 
+          type="submit" 
+          style={styles.button}
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Sign In'}
+        </button>
+      </form>
+      
+      <div style={styles.signupLink}>
+        Don't have an account?{' '}
+        <span 
+          style={styles.link}
+          onClick={() => navigate('/registrar-signup')}
+        >
+          Sign up
+        </span>
+      </div>
+    </div>
   );
 };
 
-export default RegistrarAuth;
+export default RegistrarLogin;
