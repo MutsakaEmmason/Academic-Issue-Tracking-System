@@ -34,7 +34,7 @@ const RegistrarSignup = () => {
     }
 
     // Check password strength (at least 8 characters)
-    if (formData.password.length < 8) {
+    if (formData.password.length < 4) {
       setError('Password must be at least 8 characters long');
       return false;
     }
@@ -47,7 +47,7 @@ const RegistrarSignup = () => {
     }
 
     // Check if all required fields are filled
-    const requiredFields = ['username', 'email', 'first_name', 'last_name', 'password', 'phone_number'];
+    const requiredFields = ['username', 'email', 'first_name', 'last_name', 'password',];
     for (const field of requiredFields) {
       if (!formData[field]) {
         setError(`Please fill in all required fields`);
