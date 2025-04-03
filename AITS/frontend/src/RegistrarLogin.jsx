@@ -64,7 +64,7 @@ const RegistrarLogin = () => {
       maxWidth: '400px',
       margin: '100px auto',
       padding: '20px',
-      boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+      boxShadow: '0 0 10px rgba(199, 32, 32, 0.1)',
       borderRadius: '8px',
       backgroundColor: 'white'
     },
