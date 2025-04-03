@@ -135,6 +135,34 @@ class StudentProfileView(generics.RetrieveAPIView):
         data['issues'] = list(issues)
         return Response(data)
 
+# NEW: Registrar Signup View
+class RegistrarSignupView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer  # Use the existing serializer
+    permission_classes = [permissions.AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        print("Received data:", request.data)  # Log the data
+        
+        # Ensure role is set to 'registrar'
+        data = request.data.copy()
+        data['role'] = 'registrar'
+        
+        serializer = self.get_serializer(data=data)
+        
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            res = {
+                "message": "Registrar registered successfully",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+            return Response(res, status=status.HTTP_201_CREATED)
+        
+        print("Validation errors:", serializer.errors)  # Log validation errors
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 def log_action(user, action):
     AuditLog.objects.create(user=user, action=action)
 
