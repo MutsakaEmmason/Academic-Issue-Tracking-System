@@ -4,16 +4,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
 
-# Redundant import removed
+# CustomUser ViewSet
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
+# Issue ViewSet
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
@@ -60,32 +62,31 @@ class IssueViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# Comment ViewSet
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
+# Notification ViewSet
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
+# AuditLog ViewSet
 class AuditLogViewSet(viewsets.ModelViewSet):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
+# IssueAttachment ViewSet
 class IssueAttachmentViewSet(viewsets.ModelViewSet):
     queryset = IssueAttachment.objects.all()
     serializer_class = IssueAttachmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-
-# Refactored User Registration View
+# User Registration View
 class UserRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -112,14 +113,64 @@ class UserRegistrationView(generics.CreateAPIView):
             return Response(res, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-# Refactored Lecturer Registration View (uses same logic as UserRegistrationView)
+# Lecturer Registration View (inherits from UserRegistrationView)
 class LecturerRegistrationView(UserRegistrationView):
     """
-    Handles lecturer registration. Same as User Registration with role='lecturer'.
+    Handles lecturer registration. Same as User Registration with role='lecturer' functionality.
     """
     pass
 
+# Student Registration View
+class StudentRegistrationView(UserRegistrationView):
+    """
+    Handles student registration. Same as User Registration with role='student' functionality.
+    """
+    pass
+# Registrar Signup View
+class RegistrarSignupView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            role = request.data.get('role')
+
+            # Only allow 'registrar' role to register via this endpoint
+            if role != 'registrar':
+                return Response({"error": "Only registrars can sign up using this endpoint."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            user = serializer.save(role='registrar')
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            res = {
+                "message": "Registrar registered successfully",
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            }
+            return Response(res, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Student Profile View
+class StudentProfileView(generics.RetrieveAPIView):
+    """
+    Retrieves the profile of a student.
+    """
+    serializer_class = CustomUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        # Ensure the user is a student before returning the profile data
+        if self.request.user.role == 'student':
+            return self.request.user
+        else:
+            raise permissions.PermissionDenied("You do not have permission to view this profile.")
+    
+    def retrieve(self, request, *args, **kwargs):
+        # Call the parent class's retrieve method
+        return super().retrieve(request, *args, **kwargs)
 
 # User Profile View
 class UserProfileView(generics.RetrieveAPIView):
@@ -150,6 +201,12 @@ class UserProfileView(generics.RetrieveAPIView):
 
         return Response(data)
 
+# Custom Token Obtain Pair View
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Custom view to handle JWT token generation with added functionality, if necessary.
+    """
+    serializer_class = TokenObtainPairSerializer
 
 # Utility functions
 def log_action(user, action):
