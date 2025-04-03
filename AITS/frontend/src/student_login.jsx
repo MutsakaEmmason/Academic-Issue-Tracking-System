@@ -15,7 +15,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import Footer from './components/Footer';
 
-
 const StudentLogin = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
@@ -40,7 +39,8 @@ const StudentLogin = () => {
 
         setErrors({});
 
-        fetch('http://127.0.0.1:8000/api/login/', {
+        // Updated login URL to match the backend URL for obtaining JWT tokens
+        fetch('http://127.0.0.1:8000/api/token/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,7 +51,6 @@ const StudentLogin = () => {
             }),
         })
             .then(response => {
-                // Log the response to check if the request is received correctly
                 console.log('Response:', response);
                 if (!response.ok) {
                     return response.json().then(data => {
@@ -62,7 +61,7 @@ const StudentLogin = () => {
             })
             .then(data => {
                 console.log('Success:', data);
-                localStorage.setItem('token', data.access); // Corrected token key
+                localStorage.setItem('token', data.access); // Store the JWT token
                 toast({
                     title: 'Login successful.',
                     description: "You've successfully logged in.",
@@ -70,12 +69,47 @@ const StudentLogin = () => {
                     duration: 3000,
                     isClosable: true,
                 });
-                navigate("/student-dashboard"); // Corrected route
+
+                // After successful login, fetch user profile (optional)
+                fetchUserProfile(data.access);
             })
             .catch((error) => {
                 console.error('Error:', error);
                 toast({
                     title: 'Login failed.',
+                    description: error.message,
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
+    };
+
+    const fetchUserProfile = (token) => {
+        // Fetch user profile using the token
+        fetch('http://127.0.0.1:8000/api/student-profile/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include JWT token in header
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.detail || 'Failed to fetch user profile');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('User profile data:', data);
+                // Redirect or handle profile data if needed
+                navigate("/student-dashboard");
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                toast({
+                    title: 'Profile fetch failed.',
                     description: error.message,
                     status: 'error',
                     duration: 3000,
@@ -121,7 +155,7 @@ const StudentLogin = () => {
 
                     <Box w="100%" maxW="400px">
                         <FormControl isInvalid={errors.studentRegNumber}>
-                            <FormLabel>StudentNumber</FormLabel>
+                            <FormLabel>Student Number</FormLabel>
                             <Input
                                 onChange={(e) => setStudentRegNumber(e.target.value)}
                                 value={studentRegNumber}
@@ -168,6 +202,5 @@ const StudentLogin = () => {
         </Box>
     );
 };
-
 
 export default StudentLogin;

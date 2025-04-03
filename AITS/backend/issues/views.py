@@ -1,34 +1,18 @@
 from rest_framework import viewsets, permissions, generics, status, filters
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
-from django.db.models import Q
-
+from django.shortcuts import get_object_or_404
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
-from .serializers import (
-    CustomUserSerializer, IssueSerializer, CommentSerializer, 
-    NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
-)
+from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
 
-# Custom Login View
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        user = self.user
-        data['role'] = user.role  # Include role in response
-        return data
-
-class CustomTokenObtainPairView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
-
+# Redundant import removed
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
@@ -76,27 +60,33 @@ class IssueViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class AuditLogViewSet(viewsets.ModelViewSet):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class IssueAttachmentViewSet(viewsets.ModelViewSet):
     queryset = IssueAttachment.objects.all()
     serializer_class = IssueAttachmentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class StudentRegistrationView(generics.CreateAPIView):
+
+# Refactored User Registration View
+class UserRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.AllowAny]
@@ -105,19 +95,34 @@ class StudentRegistrationView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             role = request.data.get('role')
-            if role not in ['student', 'lecturer', 'registrar']:
+
+            # Only allow students and lecturers to register via this endpoint
+            if role not in ['student', 'lecturer']:
                 return Response({"error": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
             
             user = serializer.save(role=role)
+
+            # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
             res = {
+                "message": f"{role.capitalize()} registered successfully",
                 "refresh": str(refresh),
                 "access": str(refresh.access_token),
             }
             return Response(res, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class StudentProfileView(generics.RetrieveAPIView):
+
+# Refactored Lecturer Registration View (uses same logic as UserRegistrationView)
+class LecturerRegistrationView(UserRegistrationView):
+    """
+    Handles lecturer registration. Same as User Registration with role='lecturer'.
+    """
+    pass
+
+
+# User Profile View
+class UserProfileView(generics.RetrieveAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -127,47 +132,37 @@ class StudentProfileView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
         serializer = self.get_serializer(user)
-        issues = Issue.objects.filter(student=user).values(
-            'id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at', 
-            'courseCode', 'studentId', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName'
-        )
         data = serializer.data
-        data['issues'] = list(issues)
+
+        # Fetch issues if the user is a student or lecturer
+        if user.role == 'student':
+            issues = Issue.objects.filter(student=user).values(
+                'id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at', 
+                'courseCode', 'studentId', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName'
+            )
+            data['issues'] = list(issues)
+        elif user.role == 'lecturer':
+            issues = Issue.objects.filter(assigned_to=user).values(
+                'id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at',
+                'courseCode', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName'
+            )
+            data['issues'] = list(issues)
+
         return Response(data)
 
-# NEW: Registrar Signup View
-class RegistrarSignupView(generics.CreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer  # Use the existing serializer
-    permission_classes = [permissions.AllowAny]
-    
-    def create(self, request, *args, **kwargs):
-        print("Received data:", request.data)  # Log the data
-        
-        # Ensure role is set to 'registrar'
-        data = request.data.copy()
-        data['role'] = 'registrar'
-        
-        serializer = self.get_serializer(data=data)
-        
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            res = {
-                "message": "Registrar registered successfully",
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            }
-            return Response(res, status=status.HTTP_201_CREATED)
-        
-        print("Validation errors:", serializer.errors)  # Log validation errors
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# Utility functions
 def log_action(user, action):
+    """
+    Logs an action performed by the user.
+    """
     AuditLog.objects.create(user=user, action=action)
 
 def send_email_notification(user, subject, message):
-    from_email = 'kigongobazirafred@gmail.com'
+    """
+    Sends an email notification to the user.
+    """
+    from_email = 'your-email@example.com'  # Update this to use a proper settings email address
     recipient_list = [user.email]
     try:
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
@@ -176,11 +171,14 @@ def send_email_notification(user, subject, message):
         print(f"Error sending email to {user.email}: {e}")
 
 def send_issue_update_email(issue):
+    """
+    Sends an email notification when an issue is updated.
+    """
     subject = f"Issue Updated: {issue.title}"
     message = f"The issue '{issue.title}' has been updated. Please check the system for details."
     recipient_list = [issue.student.email]
     try:
-        send_mail(subject, message, 'kigongobazirafred@gmail.com', recipient_list, fail_silently=False)
+        send_mail(subject, message, 'your-email@example.com', recipient_list, fail_silently=False)
         print(f"Issue update email sent successfully to {issue.student.email}")
     except Exception as e:
         print(f"Error sending issue update email to {issue.student.email}: {e}")

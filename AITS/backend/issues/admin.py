@@ -1,27 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, Issue, Comment, Notification, AuditLog
-from import_export.admin import ExportMixin
+from import_export.admin import ExportMixin  # Import for Import/Export functionality
 from import_export import resources
 
-# CustomUser Resource for Export
-class CustomUserResource(resources.ModelResource):
-    class Meta:
-        model = CustomUser
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')
-
 # CustomUser Admin
-class CustomUserAdmin(ExportMixin, UserAdmin):  # Added ExportMixin
-    resource_class = CustomUserResource
+class CustomUserAdmin(ExportMixin, UserAdmin):  # Added ExportMixin for Import/Export functionality
     list_display = ('username', 'email', 'first_name', 'last_name', 'role', 'is_staff', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')
     list_filter = ('role', 'is_staff', 'is_superuser')
     search_fields = ('username', 'email', 'fullName', 'studentRegNumber')
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'email', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Important Dates', {'fields': ('last_login', 'date_joined')}),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}), 
     )
 
     add_fieldsets = (
@@ -32,28 +25,28 @@ class CustomUserAdmin(ExportMixin, UserAdmin):  # Added ExportMixin
     )
 
 # Issue Admin
-class IssueAdmin(admin.ModelAdmin):
+class IssueAdmin(ExportMixin, admin.ModelAdmin):  # Added ExportMixin for Import/Export functionality
     list_display = ('title', 'status', 'category', 'student', 'assigned_to', 'created_at', 'studentName', 'department', 'lecturer', 'courseCode', 'semester', 'academicYear')
     list_filter = ('status', 'category', 'created_at')
     search_fields = ('title', 'description', 'student__username', 'assigned_to__username')
     raw_id_fields = ('student', 'assigned_to')
 
 # Comment Admin
-class CommentAdmin(admin.ModelAdmin):
+class CommentAdmin(ExportMixin, admin.ModelAdmin):  # Added ExportMixin for Import/Export functionality
     list_display = ('issue', 'user', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('issue__title', 'user__username', 'text')
     raw_id_fields = ('issue', 'user')
 
 # Notification Admin
-class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'message', 'read', 'created_at')
+class NotificationAdmin(ExportMixin, admin.ModelAdmin):  # Added ExportMixin for Import/Export functionality
+    list_display = ('user', 'message', 'read', 'created_at')  # Changed `is_read` to `read` as in the model
     list_filter = ('read', 'created_at')
     search_fields = ('user__username', 'message')
     raw_id_fields = ('user',)
 
 # AuditLog Admin
-class AuditLogAdmin(admin.ModelAdmin):
+class AuditLogAdmin(ExportMixin, admin.ModelAdmin):  # Added ExportMixin for Import/Export functionality
     list_display = ('user', 'action', 'created_at')
     list_filter = ('created_at',)
     search_fields = ('user__username', 'action')
