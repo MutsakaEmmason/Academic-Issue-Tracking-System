@@ -9,8 +9,7 @@ import StudentLogin from "./student_login";
 
 
 import Home from "./home";
-import Register from "./routes/register"
-import LecturerLogin from "./Login";
+
 
 
 import IssueSubmissionForm from './components/IssueSubmissionForm';
@@ -57,7 +56,7 @@ const App = () => {
                     <Route path="/register" element={<Register />} />
                     <Route path="/academic-registrar" element={<AcademicRegistrar />} />
 
-                    <Route path="/registrar-login" element={<RegistrarLogin />} />
+                   
 
                     
                     {/* Registrar Routes */}

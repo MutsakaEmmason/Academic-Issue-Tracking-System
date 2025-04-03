@@ -1,10 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
 from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
-from .views import IssueAttachmentViewSet, UserRegistrationView, UserProfileView, LecturerRegistrationView
-from .views import  RegistrarSignupView, CustomTokenObtainPairView
-
+from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView # Corrected import
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 # Initialize the router
@@ -18,14 +15,7 @@ router.register(r'attachments', IssueAttachmentViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),  # Include the router URLs for the viewsets
-
-    path('register/', UserRegistrationView.as_view(), name='user-registration'),  # Endpoint for user registration
-    path('lecturer/register/', LecturerRegistrationView.as_view(), name='lecturer-registration'),  # Lecturer registration endpoint
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Endpoint for generic login
-    path('lecturer/login/', CustomTokenObtainPairView.as_view(), name='lecturer-login'),  # Custom login endpoint for lecturers
-    path('student-profile/', UserProfileView.as_view(), name='student-profile'),  # Endpoint for profile view
-
-    path('registrar/signup/', RegistrarSignupView.as_view(), name='registrar-signup'),  # Registrar signup
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # Custom JWT login
+    path('register/', StudentRegistrationView.as_view(), name='student-registration'),  # Endpoint for student registration
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'), #add login url
+    path('student-profile/', StudentProfileView.as_view(), name='student-profile'),
 ]
-
