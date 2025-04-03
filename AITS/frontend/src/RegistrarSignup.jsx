@@ -1,9 +1,6 @@
-import React, { useState } from "react";
-import {
-    VStack, Input, Button, FormControl, FormLabel, FormErrorMessage,
-    Text, Box, Select, useToast
-} from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrarSignup = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +10,8 @@ const RegistrarSignup = () => {
         password: "",
         confirmPassword: "",
         college: "",
+        department: "",
+        studentRegNumber: "",
         role: "registrar",
         // Add username field to match backend requirements
         username: ""
@@ -36,7 +35,7 @@ const RegistrarSignup = () => {
         setIsPasswordMismatch(false);
         
         // Validate required fields
-        const requiredFields = ['first_name', 'last_name', 'email', 'password', 'college'];
+        const requiredFields = ['first_name', 'last_name', 'email', 'password', 'college', 'department'];
         for (const field of requiredFields) {
             if (!formData[field]) {
                 setError(`Please fill in the ${field.replace('_', ' ')}`);
@@ -147,7 +146,20 @@ const RegistrarSignup = () => {
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         />
                     </FormControl>
-
+                    
+                    {/* Username Field (Optional) */}
+                    <FormControl>
+                        <FormLabel>Username (Optional)</FormLabel>
+                        <Input
+                            type="text"
+                            placeholder="Enter username or leave blank to use email"
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                        />
+                        <Text fontSize="xs" color="gray.500">
+                            If left blank, username will be generated from your email
+                        </Text>
+                    </FormControl>
                     
                     {/* Password Field */}
                     <FormControl isRequired isInvalid={isPasswordMismatch}>
@@ -172,28 +184,41 @@ const RegistrarSignup = () => {
                         {isPasswordMismatch && <FormErrorMessage>Passwords do not match.</FormErrorMessage>}
                     </FormControl>
                     
-                   
                     {/* College Field */}
-<FormControl isRequired>
-    <FormLabel>College</FormLabel>
-    <Select
-        placeholder="Select your college"
-        value={formData.college}
-        onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-    >
-        <option value="College of Agricultural and Environmental Sciences">College of Agricultural and Environmental Sciences (CAES)</option>
-        <option value="College of Business and Management Sciences">College of Business and Management Sciences (CoBAMS)</option>
-        <option value="College of Computing and Information Sciences">College of Computing and Information Sciences (CoCIS)</option>
-        <option value="College of Education and External Studies">College of Education and External Studies (CEES)</option>
-        <option value="College of Engineering, Design, Art and Technology">College of Engineering, Design, Art and Technology (CEDAT)</option>
-        <option value="College of Health Sciences">College of Health Sciences (CHS)</option>
-        <option value="College of Humanities and Social Sciences">College of Humanities and Social Sciences (CHUSS)</option>
-        <option value="College of Natural Sciences">College of Natural Sciences (CoNAS)</option>
-        <option value="College of Veterinary Medicine, Animal Resource and Bio-Security">College of Veterinary Medicine, Animal Resource and Bio-Security (CoVAB)</option>
-        <option value="School of Law">School of Law</option>
-    </Select>
-</FormControl>
- 
+                    <FormControl isRequired>
+                        <FormLabel>College</FormLabel>
+                        <Select
+                            placeholder="Select your college"
+                            value={formData.college}
+                            onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                        >
+                            <option value="College of Engineering">College of Engineering</option>
+                            <option value="College of Medicine">College of Medicine</option>
+                            <option value="College of Business">College of Business</option>
+                        </Select>
+                    </FormControl>
+                    
+                    {/* Department Field */}
+                    <FormControl isRequired>
+                        <FormLabel>Department</FormLabel>
+                        <Input
+                            type="text"
+                            placeholder="Enter your department"
+                            value={formData.department}
+                            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                        />
+                    </FormControl>
+                    
+                    {/* Student Registration Number */}
+                    <FormControl isRequired>
+                        <FormLabel>Student Registration Number</FormLabel>
+                        <Input
+                            type="text"
+                            placeholder="Enter your registration number"
+                            value={formData.studentRegNumber}
+                            onChange={(e) => setFormData({ ...formData, studentRegNumber: e.target.value })}
+                        />
+                    </FormControl>
                     
                     {/* Submit Button */}
                     <Button
