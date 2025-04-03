@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
-from django.conf import settings
 from django.utils.timezone import now
 
 # Abstract model for timestamps.
@@ -39,12 +38,15 @@ class CustomUser(AbstractUser):
         related_query_name="customuser",
     )
 
-    # Student-specific fields (optional for other roles)
-    studentRegNumber = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    # Shared fields for all users
     fullName = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = models.EmailField(unique=True)
     college = models.CharField(max_length=255, blank=True, null=True)
     department = models.CharField(max_length=255, blank=True, null=True)
+
+    # Student-specific fields (Not applicable to registrar)
+    studentRegNumber = models.CharField(max_length=20, unique=True, blank=True, null=True)
+    
     YEAR_CHOICES = [
         ('1', 'Year 1'),
         ('2', 'Year 2'),
@@ -59,10 +61,17 @@ class CustomUser(AbstractUser):
         return f"{self.username} ({self.role})"
 
     def save(self, *args, **kwargs):
+        # Remove student-specific fields for non-students
+        if self.role != 'student':
+            self.studentRegNumber = None
+            self.yearOfStudy = None
+
+        # Set username based on role
         if self.role == 'student' and self.studentRegNumber:
             self.username = self.studentRegNumber
         else:
             self.username = self.email
+
         super().save(*args, **kwargs)
 
 # Issue model.
@@ -82,6 +91,7 @@ class Issue(Timestamp):
         ('high', 'High'),
         ('critical', 'Critical'),
     ]
+    
     STATUS_CHOICES = [
         ('open', 'Open'),
         ('submitted', 'Submitted'),
@@ -99,12 +109,10 @@ class Issue(Timestamp):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='technical')
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='open')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     courseCode = models.CharField(max_length=20, blank=True, null=True)
-    studentId = models.CharField(max_length=20, default='DEFAULT_STUDENT_ID')
+    studentId = models.CharField(max_length=20, blank=True, null=True)
     lecturer = models.CharField(max_length=255, blank=True, null=True)
-    department = models.CharField(max_length=255, blank=True, null=True)  # updated field name here
+    department = models.CharField(max_length=255, blank=True, null=True)
     semester = models.CharField(max_length=20, blank=True, null=True)
     academicYear = models.CharField(max_length=20, blank=True, null=True)
     issueDate = models.DateField(auto_now_add=True)
@@ -118,7 +126,6 @@ class Comment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.issue.title}"
@@ -127,7 +134,6 @@ class Comment(Timestamp):
 class Notification(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     message = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
 
     def __str__(self):
@@ -137,15 +143,14 @@ class Notification(Timestamp):
 class AuditLog(Timestamp):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.action}"
 
+# Issue Attachment model.
 class IssueAttachment(Timestamp):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="attachments")
     file = models.FileField(upload_to="attachments/")
-    uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Attachment for {self.issue.title}"
