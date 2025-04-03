@@ -9,7 +9,8 @@ import StudentLogin from "./student_login";
 
 
 import Home from "./home";
-
+import Register from "./routes/register"
+import LecturerLogin from "./Login";
 
 
 import IssueSubmissionForm from './components/IssueSubmissionForm';
