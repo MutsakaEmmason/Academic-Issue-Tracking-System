@@ -1,6 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {
+    VStack,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Text,
+    Image,
+    Heading,
+    Box,
+    Select,
+    FormHelperText,
+    useToast,
+} from "@chakra-ui/react";
 
 const RegistrarSignup = () => {
     const [formData, setFormData] = useState({
@@ -197,12 +211,13 @@ const RegistrarSignup = () => {
                             <option value="College of Business">College of Business</option>
 
 
+
                             <option value="School of Law">College of Business</option>
 
                             <option value="College of Business">College of Computing and information Technology</option>
 
 
-                            <option value="College of Business">College of Computing and information Technology</option>
+                           
 
                         </Select>
                     </FormControl>
