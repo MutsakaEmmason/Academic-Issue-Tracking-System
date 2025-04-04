@@ -196,7 +196,11 @@ const RegistrarSignup = () => {
                             <option value="College of Medicine">College of Medicine</option>
                             <option value="College of Business">College of Business</option>
 
+
                             <option value="School of Law">College of Business</option>
+
+                            <option value="College of Business">College of Computing and information Technology</option>
+
 
                             <option value="College of Business">College of Computing and information Technology</option>
 
