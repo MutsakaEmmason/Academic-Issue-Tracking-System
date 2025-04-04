@@ -200,6 +200,9 @@ const RegistrarSignup = () => {
 
                             <option value="College of Business">College of Computing and information Technology</option>
 
+
+                            <option value="College of Business">College of Computing and information Technology</option>
+
                         </Select>
                     </FormControl>
                     
