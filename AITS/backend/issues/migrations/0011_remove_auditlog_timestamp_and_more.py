@@ -2,17 +2,10 @@
 
 from django.db import migrations, models
 
-<<<<<<< HEAD
 class Migration(migrations.Migration):
 
     dependencies = [
         ('auth', '0012_alter_user_first_name_max_length'),
-=======
-
-class Migration(migrations.Migration):
-
-    dependencies = [
->>>>>>> 04c33485d80eae37a63dced6318b363e38c60b23
         ('issues', '0010_rename_issue_department_issue_department'),
     ]
 
@@ -25,7 +18,6 @@ class Migration(migrations.Migration):
             model_name='issueattachment',
             name='uploaded_at',
         ),
-<<<<<<< HEAD
         migrations.AddField(
             model_name='customuser',
             name='courses_taught',
@@ -41,7 +33,6 @@ class Migration(migrations.Migration):
             name='user_permissions',
             field=models.ManyToManyField(blank=True, related_name='customuser_user_permissions', related_query_name='customuser', to='auth.permission', verbose_name='user permissions'),
         ),
-
         migrations.AlterField(
             model_name='customuser',
             name='email',
