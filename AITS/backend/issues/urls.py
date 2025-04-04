@@ -1,5 +1,8 @@
+# issues/urls.py
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenVerifyView
 from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
 from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView, UserRegistrationView, \
     LecturerRegistrationView, CustomTokenObtainPairView, RegistrarSignupView, UserProfileView  # Correct imports
@@ -7,7 +10,7 @@ from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfi
 # Initialize the router
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet)
-router.register(r'issues', IssueViewSet, basename='issue')
+router.register(r'issues', IssueViewSet)
 router.register(r'comments', CommentViewSet)
 router.register(r'notifications', NotificationViewSet)
 router.register(r'audit-logs', AuditLogViewSet)
