@@ -1,4 +1,7 @@
-from rest_framework import viewsets, permissions, generics, status, filters
+from rest_framework import viewsets, permissions  # Add this import for permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework import generics, status, filters
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
@@ -200,6 +203,25 @@ class UserProfileView(generics.RetrieveAPIView):
             data['issues'] = list(issues)
 
         return Response(data)
+class LecturerDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        if user.role != "lecturer":  # Ensure only lecturers access this
+            return Response({"error": "Unauthorized"}, status=403)
+
+        # Assuming courses_taught is a comma-separated string in the database
+        courses_taught = user.courses_taught
+        courses_list = courses_taught.split(",") if courses_taught else []
+
+        lecturer_data = {
+            "id": user.id,
+            "fullName": user.get_full_name(),
+            "email": user.email,
+            "courses": courses_list,  # Use the parsed list here
+        }
+        return Response(lecturer_data)
 
 # Custom Token Obtain Pair View
 class CustomTokenObtainPairView(TokenObtainPairView):
