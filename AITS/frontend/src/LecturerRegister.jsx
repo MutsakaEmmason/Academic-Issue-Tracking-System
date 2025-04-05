@@ -124,8 +124,7 @@ const LecturerRegister = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [courses_taught, setCoursesTaught] = useState([]);
-
+  const [coursesTaught, setCoursesTaught] = useState([]);
   const [college, setCollege] = useState("");
   const [department, setDepartment] = useState("");
   const [message, setMessage] = useState("");
@@ -133,58 +132,59 @@ const LecturerRegister = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email || !password || !fullName || !courses_taught || !college || !department) {
-      setMessage("Please fill in all fields");
+  
+    if (!email || !password || !fullName || !coursesTaught.length || !college || !department) {
+      setMessage("Please fill in all fields.");
       return;
     }
-
-    // Set username to be the same as email
-    const username = email;
-
-    console.log("Sending registration data:", { email, username, password, fullName, courses_taught, college, department });
-
+  
+    const username = email;  // Ensure this is a string
+  
+    // Create the payload
+    const payload = {
+      email,          // email as a string
+      username,       // username as a string (set to email in this case)
+      password, 
+      fullName, 
+      courses_taught: coursesTaught,  // Array of courses
+      college, 
+      department,
+      role: "lecturer"
+    };
+  
+    console.log("Sending registration data:", JSON.stringify(payload)); // Log the request data
+  
     try {
       const response = await fetch("http://127.0.0.1:8000/api/lecturer/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          email, 
-          username, 
-          password, 
-          fullName, 
-          courses_taught: Array.isArray(courses_taught) ? courses_taught : [courses_taught], // Ensure it's an array
-          college, 
-          department,
-           role: "lecturer"
-
-        }),
-        
+        body: JSON.stringify(payload),
       });
-
+  
       console.log("Response status:", response.status);
-
+  
       if (response.ok) {
         setMessage("Registration successful! Redirecting to dashboard...");
         navigate("/lecturer-dashboard");
       } else {
         const data = await response.json();
-        setMessage(data.error || "Registration failed, please try again.");
         console.error("Registration error:", data);
+        setMessage(data.error || "Registration failed, please try again.");
       }
     } catch (error) {
-      setMessage("Error connecting to the server");
+      setMessage("Error connecting to the server.");
       console.error("Fetch error:", error);
     }
   };
+  
 
   return (
     <Box maxW="md" mx="auto" p={4} borderRadius="md" boxShadow="md" bg="white">
       <VStack spacing={4} align="stretch">
         <Text fontSize="2xl" fontWeight="bold" textAlign="center">
-          Lecturer Register
+          Lecturer Registration
         </Text>
         {message && <Text color="red.500" textAlign="center">{message}</Text>}
         <form onSubmit={handleSubmit}>
@@ -221,14 +221,13 @@ const LecturerRegister = () => {
 
             <FormControl isRequired>
               <FormLabel>Courses Taught (comma-separated)</FormLabel>
-                <Input
-                  type="text"
-                  value={courses_taught.join(", ")} // Convert array to string for display
-                  onChange={(e) => setCoursesTaught(e.target.value.split(",").map(course => course.trim()))} // Convert input to an array
-                  placeholder="Enter courses, separated by commas"
+              <Input
+                type="text"
+                value={coursesTaught.join(", ")} // Convert array to string for display
+                onChange={(e) => setCoursesTaught(e.target.value.split(",").map(course => course.trim()))} // Convert input to an array
+                placeholder="Enter courses, separated by commas"
               />
             </FormControl>
-
 
             <FormControl isRequired>
               <FormLabel>College</FormLabel>
