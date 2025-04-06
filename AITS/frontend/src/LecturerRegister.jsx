@@ -172,6 +172,7 @@ const LecturerRegister = () => {
         const data = await response.json();
         console.error("Registration error:", data);
         setMessage(data.error || "Registration failed, please try again.");
+        console.error("Registration error:", data);
       }
     } catch (error) {
       setMessage("Error connecting to the server.");
