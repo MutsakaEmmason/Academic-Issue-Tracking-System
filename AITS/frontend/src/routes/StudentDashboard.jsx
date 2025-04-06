@@ -16,6 +16,7 @@ import {
     useToast,
     Spinner,
 } from '@chakra-ui/react';
+import Footer from '../components/Footer';
 
 const StudentDashboard = () => {
     const navigate = useNavigate();
@@ -93,8 +94,8 @@ const StudentDashboard = () => {
     }
 
     return (
-        <Box display="flex" flexDirection="column" alignItems="center">
-            <Flex p={4} bg="green.500" color="white" justify="space-between" align="center" width="100%">
+        <Flex direction="column" minHeight="100vh">
+            <Flex p={4} bg="green.500" color="white" justify="space-between" align="center" width="100%" position="fixed" top="0" zIndex="100">
                 <Box>
                     <h1 style={{ fontSize: '2.5em' }}>STUDENT DASHBOARD</h1>
                 </Box>
@@ -105,57 +106,75 @@ const StudentDashboard = () => {
                     <Button onClick={handleLogout} colorScheme="red">Logout</Button>
                 </Flex>
             </Flex>
-            <hr style={{ width: '80%' }} />
-            <FormControl mt={4} width="80%">
-                <FormLabel>Search by Category</FormLabel>
-                <Flex alignItems="center" gap={2}>
-                    <Input type="text" placeholder="Enter issue category..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} border="1px solid green" width="100%" />
-                    <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
-                </Flex>
-            </FormControl>
-            <Box width="100%" overflowX="auto" mt={4}>
-                <Table variant="simple" size="sm">
-                    <Thead>
-                        <Tr>
-                            <Th minWidth="150px">Title</Th>
-                            <Th minWidth="150px">Student Name</Th>
-                            <Th minWidth="100px">Student ID</Th>
-                            <Th minWidth="100px">Status</Th>
-                            <Th minWidth="150px">Category</Th>
-                            <Th minWidth="120px">Course Code</Th>
-                            <Th minWidth="100px">Priority</Th>
-                            <Th minWidth="150px">Lecturer</Th>
-                            <Th minWidth="150px">Department</Th>
-                            <Th minWidth="100px">Semester</Th>
-                            <Th minWidth="150px">Academic Year</Th>
-                            <Th minWidth="150px">Issue Date</Th>
-                            <Th minWidth="100px">Actions</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {filteredIssues.map((issue) => (
-                            <Tr key={issue.id}>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.title}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentName}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentId}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.status}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.category}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.courseCode}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.priority}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.lecturer}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.department}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.semester}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.academicYear}</Td>
-                                <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.issueDate}</Td>
-                                <Td>
-                                    <Button size="sm" onClick={() => handleViewDetails(issue.id)}>View</Button>
-                                </Td>
+
+            <Flex mt={20} justify="center" align="center"> {/* Center the search bar */} 
+                <Box width="80%" maxWidth="900px" mt={4}>
+                    <FormControl>
+                        <FormLabel>Search by Category</FormLabel>
+                        <Flex alignItems="center" gap={2}>
+                            <Input 
+                                type="text" 
+                                placeholder="Enter issue category..." 
+                                value={searchTerm} 
+                                onChange={(e) => setSearchTerm(e.target.value)} 
+                                border="1px solid green" 
+                                width="80%" 
+                            />
+                            <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
+                        </Flex>
+                    </FormControl>
+                </Box>
+            </Flex>
+
+            <Box width="100%" overflowX="auto" mt={4} flexGrow={1} align="center">
+                {filteredIssues.length > 0 ? (
+                    <Table variant="simple" size="sm">
+                        <Thead>
+                            <Tr>
+                                <Th minWidth="150px">Title</Th>
+                                <Th minWidth="150px">Student Name</Th>
+                                <Th minWidth="100px">Student ID</Th>
+                                <Th minWidth="100px">Status</Th>
+                                <Th minWidth="150px">Category</Th>
+                                <Th minWidth="120px">Course Code</Th>
+                                <Th minWidth="100px">Priority</Th>
+                                <Th minWidth="150px">Lecturer</Th>
+                                <Th minWidth="150px">Department</Th>
+                                <Th minWidth="100px">Semester</Th>
+                                <Th minWidth="150px">Academic Year</Th>
+                                <Th minWidth="150px">Issue Date</Th>
+                                <Th minWidth="100px">Actions</Th>
                             </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
+                        </Thead>
+                        <Tbody>
+                            {filteredIssues.map((issue) => (
+                                <Tr key={issue.id}>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.title}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentName}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentId}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.status}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.category}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.courseCode}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.priority}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.lecturer}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.department}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.semester}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.academicYear}</Td>
+                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.issueDate}</Td>
+                                    <Td>
+                                        <Button size="sm" onClick={() => handleViewDetails(issue.id)}>View</Button>
+                                    </Td>
+                                </Tr>
+                            ))}
+                        </Tbody>
+                    </Table>
+                ) : (
+                    <p>No issue submitted. Please submit an issue.</p>
+                )}
             </Box>
-        </Box>
+
+            <Footer userRole="student" />
+        </Flex>
     );
 };
 
