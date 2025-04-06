@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions  # Add this import for permissions
+from rest_framework import viewsets, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import generics, status, filters
@@ -6,8 +6,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.db.models import Q
+
 from django.shortcuts import get_object_or_404
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
@@ -30,7 +33,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         queryset = Issue.objects.all()
-        
+
         # Filter issues based on the user's role
         if user.role == 'student':
             queryset = queryset.filter(student=user)
@@ -40,7 +43,10 @@ class IssueViewSet(viewsets.ModelViewSet):
         # Additional search filter
         search_query = self.request.query_params.get('search', None)
         if search_query:
-            queryset = queryset.filter(Q(title__icontains=search_query))
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
         
         return queryset
 
@@ -49,9 +55,13 @@ class IssueViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             student_name = request.data.get('studentName')
             issue = serializer.save(student=request.user, studentName=student_name)
-            files = request.FILES.getlist('attachments')
-            for file in files:
-                IssueAttachment.objects.create(issue=issue, file=file)
+            
+            # Check if files are provided
+            files = request.FILES.getlist('attachments', [])
+            if files:
+                for file in files:
+                    IssueAttachment.objects.create(issue=issue, file=file)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -129,6 +139,7 @@ class StudentRegistrationView(UserRegistrationView):
     Handles student registration. Same as User Registration with role='student' functionality.
     """
     pass
+
 # Registrar Signup View
 class RegistrarSignupView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -203,25 +214,42 @@ class UserProfileView(generics.RetrieveAPIView):
             data['issues'] = list(issues)
 
         return Response(data)
+
+# Token Verification View (Using built-in view)
+class TokenVerifyView(TokenVerifyView):
+    pass
+
+# Lecturer Details View
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import CustomUser
+from rest_framework import status
+
 class LecturerDetailsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        if user.role != "lecturer":  # Ensure only lecturers access this
-            return Response({"error": "Unauthorized"}, status=403)
+        try:
+            user = request.user  # Assuming request.user is a CustomUser instance
+            
+            # Safely access courses_taught
+            courses_taught = getattr(user, 'courses_taught', '').split(',') if getattr(user, 'courses_taught', '') else []
 
-        # Assuming courses_taught is a comma-separated string in the database
-        courses_taught = user.courses_taught
-        courses_list = courses_taught.split(",") if courses_taught else []
+            # Create response data
+            response_data = {
+                'fullName': user.fullName,
+                'email': user.email,
+                'role': user.role,
+                'courses_taught': courses_taught,
+                'college': user.college,
+                'department': user.department
+            }
 
-        lecturer_data = {
-            "id": user.id,
-            "fullName": user.get_full_name(),
-            "email": user.email,
-            "courses": courses_list,  # Use the parsed list here
-        }
-        return Response(lecturer_data)
+            return Response(response_data, status=status.HTTP_200_OK)
+
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 # Custom Token Obtain Pair View
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -241,7 +269,7 @@ def send_email_notification(user, subject, message):
     """
     Sends an email notification to the user.
     """
-    from_email = 'your-email@example.com'  # Update this to use a proper settings email address
+    from_email = 'your-email@example.com'
     recipient_list = [user.email]
     try:
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)

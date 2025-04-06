@@ -27,8 +27,8 @@ class CustomUser(AbstractUser):
     college = models.CharField(max_length=255, blank=True, null=True)
     department = models.CharField(max_length=255, blank=True, null=True)
 
-    # Lecturer-specific fields
-    courses_taught = models.TextField(blank=True, null=True)  # Store courses as a comma-separated string
+    # Lecturer-specific fieldscourses_taught = models.TextField(blank=True, null=True)
+      # Store courses as a comma-separated string
 
     # Student-specific fields
     studentRegNumber = models.CharField(max_length=20, unique=True, blank=True, null=True)
