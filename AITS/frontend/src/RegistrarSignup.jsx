@@ -21,15 +21,17 @@ import {
   HStack,
   Icon,
   useColorModeValue,
+  Image,
 } from "@chakra-ui/react";
-import { 
-  FiUser, 
-  FiMail, 
-  FiLock, 
-  FiBriefcase, 
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiBriefcase,
   FiBookOpen,
   FiUserPlus,
-  FiArrowLeft
+  FiArrowLeft,
+  FiCheckCircle
 } from 'react-icons/fi';
 
 const RegistrarSignup = () => {
@@ -51,10 +53,15 @@ const RegistrarSignup = () => {
   const navigate = useNavigate();
   const toast = useToast();
   
-  const bgColor = useColorModeValue('white', 'gray.700');
-  const borderColor = useColorModeValue('gray.200', 'gray.600');
+  // Updated color scheme with light green
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('green.100', 'green.700');
   const textColor = useColorModeValue('gray.800', 'white');
   const secondaryTextColor = useColorModeValue('gray.600', 'gray.400');
+  const accentColor = useColorModeValue('green.500', 'green.300');
+  const lightGreenBg = useColorModeValue('green.50', 'green.900');
+  const buttonBgColor = useColorModeValue('green.500', 'green.400');
+  const buttonHoverColor = useColorModeValue('green.600', 'green.500');
 
   const handleSubmit = async () => {
     // Reset error state
@@ -144,16 +151,25 @@ const RegistrarSignup = () => {
       minH="100vh"
       align="center"
       justify="center"
-      bg={useColorModeValue("gray.50", "gray.800")}
+      bg={lightGreenBg}
       p={4}
     >
       <Container maxW="lg" py={12} px={{ base: 5, md: 8 }}>
         <Stack spacing={8}>
-          <Stack align="center">
+          <VStack spacing={2} align="center">
+            <Box 
+              p={2} 
+              bg="green.100" 
+              borderRadius="full" 
+              boxShadow="md"
+              mb={2}
+            >
+              <Icon as={FiUserPlus} w={10} h={10} color="green.600" />
+            </Box>
             <Heading 
-              fontSize="2xl" 
-              fontWeight="bold" 
-              color={textColor}
+              fontSize="2xl"
+              fontWeight="bold"
+              color={accentColor}
               textAlign="center"
             >
               Academic Registrar Registration
@@ -161,75 +177,93 @@ const RegistrarSignup = () => {
             <Text fontSize="md" color={secondaryTextColor} textAlign="center">
               Create your account to access the registrar portal
             </Text>
-          </Stack>
+          </VStack>
           
           <Box
-            rounded="lg"
+            rounded="xl"
             bg={bgColor}
             boxShadow="lg"
             p={8}
             borderWidth="1px"
             borderColor={borderColor}
+            position="relative"
+            overflow="hidden"
           >
-            <Stack spacing={6}>
+            {/* Decorative green accent */}
+            <Box 
+              position="absolute" 
+              top={0} 
+              left={0} 
+              right={0} 
+              height="8px" 
+              bg="green.400" 
+              borderTopLeftRadius="xl" 
+              borderTopRightRadius="xl" 
+            />
+            
+            <Stack spacing={6} mt={2}>
               <HStack spacing={4}>
                 <FormControl id="firstName" isRequired>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel fontWeight="medium">First Name</FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={FiUser} color="gray.400" />
+                      <Icon as={FiUser} color="green.400" />
                     </InputLeftElement>
                     <Input
                       type="text"
                       placeholder="First name"
                       value={formData.first_name}
                       onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                      focusBorderColor="green.400"
                     />
                   </InputGroup>
                 </FormControl>
                 
                 <FormControl id="lastName" isRequired>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel fontWeight="medium">Last Name</FormLabel>
                   <InputGroup>
                     <InputLeftElement pointerEvents="none">
-                      <Icon as={FiUser} color="gray.400" />
+                      <Icon as={FiUser} color="green.400" />
                     </InputLeftElement>
                     <Input
                       type="text"
                       placeholder="Last name"
                       value={formData.last_name}
                       onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                      focusBorderColor="green.400"
                     />
                   </InputGroup>
                 </FormControl>
               </HStack>
               
               <FormControl id="email" isRequired>
-                <FormLabel>Email Address</FormLabel>
+                <FormLabel fontWeight="medium">Email Address</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiMail} color="gray.400" />
+                    <Icon as={FiMail} color="green.400" />
                   </InputLeftElement>
                   <Input
                     type="email"
                     placeholder="your.email@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    focusBorderColor="green.400"
                   />
                 </InputGroup>
               </FormControl>
               
               <FormControl id="username">
-                <FormLabel>Username (Optional)</FormLabel>
+                <FormLabel fontWeight="medium">Username (Optional)</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiUserPlus} color="gray.400" />
+                    <Icon as={FiUserPlus} color="green.400" />
                   </InputLeftElement>
                   <Input
                     type="text"
                     placeholder="Choose a username"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    focusBorderColor="green.400"
                   />
                 </InputGroup>
                 <Text fontSize="xs" color={secondaryTextColor} mt={1}>
@@ -238,31 +272,33 @@ const RegistrarSignup = () => {
               </FormControl>
               
               <FormControl id="password" isRequired isInvalid={isPasswordMismatch}>
-                <FormLabel>Password</FormLabel>
+                <FormLabel fontWeight="medium">Password</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiLock} color="gray.400" />
+                    <Icon as={FiLock} color="green.400" />
                   </InputLeftElement>
                   <Input
                     type="password"
                     placeholder="Create a strong password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    focusBorderColor="green.400"
                   />
                 </InputGroup>
               </FormControl>
               
               <FormControl id="confirmPassword" isRequired isInvalid={isPasswordMismatch}>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel fontWeight="medium">Confirm Password</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiLock} color="gray.400" />
+                    <Icon as={FiLock} color="green.400" />
                   </InputLeftElement>
                   <Input
                     type="password"
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                    focusBorderColor="green.400"
                   />
                 </InputGroup>
                 {isPasswordMismatch && (
@@ -270,18 +306,25 @@ const RegistrarSignup = () => {
                 )}
               </FormControl>
               
-              <Divider />
+              <Divider borderColor="green.100" />
+              
+              <Box p={3} bg="green.50" borderRadius="md" borderLeft="4px solid" borderLeftColor="green.400">
+                <Text fontSize="sm" fontWeight="medium" color="green.700">
+                  Institution Information
+                </Text>
+              </Box>
               
               <FormControl id="college" isRequired>
-                <FormLabel>College</FormLabel>
+                <FormLabel fontWeight="medium">College</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiBookOpen} color="gray.400" />
+                    <Icon as={FiBookOpen} color="green.400" />
                   </InputLeftElement>
                   <Select
                     placeholder="Select your college"
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                    focusBorderColor="green.400"
                   >
                     <option value="College of Engineering">COSIS</option>
                     <option value="College of Medicine">College of Medicine</option>
@@ -294,38 +337,43 @@ const RegistrarSignup = () => {
               </FormControl>
               
               <FormControl id="department" isRequired>
-                <FormLabel>Department</FormLabel>
+                <FormLabel fontWeight="medium">Department</FormLabel>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
-                    <Icon as={FiBriefcase} color="gray.400" />
+                    <Icon as={FiBriefcase} color="green.400" />
                   </InputLeftElement>
                   <Input
                     type="text"
                     placeholder="Your department"
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    focusBorderColor="green.400"
                   />
                 </InputGroup>
               </FormControl>
               
               {error && (
-                <Text color="red.500" fontSize="sm" textAlign="center">
-                  {error}
-                </Text>
+                <Box p={3} bg="red.50" borderRadius="md">
+                  <Text color="red.500" fontSize="sm" textAlign="center">
+                    {error}
+                  </Text>
+                </Box>
               )}
               
               <Stack spacing={4} pt={2}>
                 <Button
                   loadingText="Submitting"
                   size="lg"
-                  bg="blue.500"
+                  bg={buttonBgColor}
                   color="white"
                   _hover={{
-                    bg: 'blue.600',
+                    bg: buttonHoverColor,
                   }}
                   onClick={handleSubmit}
                   isLoading={loading}
-                  leftIcon={<FiUserPlus />}
+                  leftIcon={<FiCheckCircle />}
+                  boxShadow="md"
+                  fontWeight="bold"
                 >
                   Create Account
                 </Button>
@@ -335,13 +383,18 @@ const RegistrarSignup = () => {
                   size="md"
                   leftIcon={<FiArrowLeft />}
                   onClick={() => navigate("/registrar-login")}
+                  borderColor="green.200"
+                  color="green.600"
+                  _hover={{
+                    bg: "green.50",
+                  }}
                 >
                   Back to Login
                 </Button>
               </Stack>
               
-              <Text align="center" fontSize="sm" color={secondaryTextColor}>
-                By signing up, you agree to our Terms of Service and Privacy Policy
+              <Text align="center" fontSize="sm" color={secondaryTextColor} mt={2}>
+                By signing up, you agree to our <Text as="span" color="green.500" fontWeight="medium">Terms of Service</Text> and <Text as="span" color="green.500" fontWeight="medium">Privacy Policy</Text>
               </Text>
             </Stack>
           </Box>
@@ -352,4 +405,3 @@ const RegistrarSignup = () => {
 };
 
 export default RegistrarSignup;
-
