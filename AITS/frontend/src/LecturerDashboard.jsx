@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Text, VStack, HStack, Heading, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 
 const LecturerDashboard = () => {
-  const [lecturer, setLecturer] = useState(null);
+  const [lecturer, setLecturer] = useState();
   const [issues, setIssues] = useState([]);
 
   useEffect(() => {
@@ -91,7 +91,7 @@ const LecturerDashboard = () => {
   if (!lecturer) {
     return (
       <Box p={4} textAlign="center">
-        <Text>Loading lecturer details...</Text>
+        <Text>Loading lecturer details... (line 94)</Text>
       </Box>
     );
   }

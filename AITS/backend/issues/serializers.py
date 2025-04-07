@@ -7,19 +7,32 @@ from django.contrib.auth.hashers import make_password
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     role = serializers.CharField(write_only=True, default='registrar')  # Default role set to 'registrar'
+    courses_taught = serializers.ListField(
+        child=serializers.CharField(), required=False, write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')
+        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy','courses_taught')
 
     def create(self, validated_data):
         role = validated_data.get('role', 'registrar')  # Default to 'registrar' if not provided
         validated_data['role'] = role
+        
         password = validated_data.pop('password')
+        courses= validated_data.pop('courses_taught', [])  # Extract courses_taught if provided
+        validated_data['courses_taught'] = ', '.join(courses)   # Join courses into a string
+        
         user = CustomUser(**validated_data)
         user.set_password(password)  # Hash the password before saving
         user.save()
         return user
+    
+    def to_representation(self, instance):
+        """ Convert courses_taught from string to list when returning the data """
+        rep = super().to_representation(instance)
+        courses = instance.courses_taught
+        rep['courses_taught'] = [course.strip() for course in courses.split(',')] if courses else []
+        return rep
 
 
 # SimpleUserSerializer to retrieve only basic user info (for related user fields)
