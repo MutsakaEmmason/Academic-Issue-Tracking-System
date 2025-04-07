@@ -283,7 +283,7 @@ const RegistrarSignup = () => {
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                   >
-                    <option value="College of Engineering">College of Engineering</option>
+                    <option value="College of Engineering">COSIS</option>
                     <option value="College of Medicine">College of Medicine</option>
                     <option value="College of Business">College of Business</option>
                     <option value="School of Law">School of Law</option>
