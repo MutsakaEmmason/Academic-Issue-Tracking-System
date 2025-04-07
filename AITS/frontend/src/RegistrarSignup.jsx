@@ -329,6 +329,7 @@ const RegistrarSignup = () => {
                     <option value="College of Engineering">COSIS</option>
                     <option value="College of Medicine">CONAS</option>
                     <option value="College of Business">COBMAS</option>
+                    <option value="School of Law">CHS</option>
                     <option value="School of Law">CEDAT</option>
                     <option value="School of Law">SCHOOL OF LAW</option>
                     <option value="School of Law">CEDAT</option>
