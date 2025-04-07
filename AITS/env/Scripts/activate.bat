@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set "VIRTUAL_ENV=C:\Users\HP\Desktop\conflicts\Academic-Issue-Tracking-System\AITS\env"
+set "VIRTUAL_ENV=C:\Users\HP PC\Desktop\2\Academic-Issue-Tracking-System\AITS\env"
 
 if not defined PROMPT set PROMPT=$P$G
 
