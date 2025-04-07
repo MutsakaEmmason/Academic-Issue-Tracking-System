@@ -69,7 +69,7 @@ const LecturerLogin = () => {
     };
 
     return (
-        <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white">
+        <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="yellow.50">
             <VStack spacing={4} align="stretch">
                 <Text fontSize="2xl" fontWeight="bold" textAlign="center">
                     Lecturer Login
