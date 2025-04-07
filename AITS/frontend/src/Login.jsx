@@ -99,7 +99,7 @@ const LecturerLogin = () => {
                             />
                         </FormControl>
 
-                        <Button colorScheme="blue" type="submit" width="full" mt={4} isLoading={loading}>
+                        <Button colorScheme="red" type="submit" width="full" mt={4} isLoading={loading}>
                             Login
                         </Button>
                     </VStack>
@@ -109,7 +109,7 @@ const LecturerLogin = () => {
                     Don't have an account?{" "}
                     <Button
                         variant="link"
-                        color="blue.500"
+                        color="purple.500"
                         onClick={() => navigate("/lecturer-register")}
                     >
                         Register here
