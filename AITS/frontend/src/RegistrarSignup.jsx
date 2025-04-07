@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
     VStack,
     Button,
     FormControl,
     FormLabel,
+    FormErrorMessage,
     Input,
     Text,
-    Image,
-    Heading,
     Box,
     Select,
-    FormHelperText,
     useToast,
 } from "@chakra-ui/react";
 
@@ -25,9 +22,7 @@ const RegistrarSignup = () => {
         confirmPassword: "",
         college: "",
         department: "",
-        studentRegNumber: "",
         role: "registrar",
-        // Add username field to match backend requirements
         username: ""
     });
     
@@ -209,19 +204,7 @@ const RegistrarSignup = () => {
                             <option value="College of Engineering">College of Engineering</option>
                             <option value="College of Medicine">College of Medicine</option>
                             <option value="College of Business">College of Business</option>
-
-
-                            <option value="School of Law">College of Business</option>
-
-                           
-
-
-
-                           
-
-                            
-
-
+                            <option value="School of Law">School of Law</option>
                         </Select>
                     </FormControl>
                     
@@ -233,17 +216,6 @@ const RegistrarSignup = () => {
                             placeholder="Enter your department"
                             value={formData.department}
                             onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                        />
-                    </FormControl>
-                    
-                    {/* Student Registration Number */}
-                    <FormControl isRequired>
-                        <FormLabel>Student Registration Number</FormLabel>
-                        <Input
-                            type="text"
-                            placeholder="Enter your registration number"
-                            value={formData.studentRegNumber}
-                            onChange={(e) => setFormData({ ...formData, studentRegNumber: e.target.value })}
                         />
                     </FormControl>
                     
