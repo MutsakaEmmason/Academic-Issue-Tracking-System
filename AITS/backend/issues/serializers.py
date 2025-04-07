@@ -36,7 +36,6 @@ class IssueAttachmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# IssueSerializer for creating and viewing issues
 class IssueSerializer(serializers.ModelSerializer):
     student = SimpleUserSerializer(read_only=True)
     assigned_to = SimpleUserSerializer(read_only=True, allow_null=True)
@@ -67,6 +66,12 @@ class IssueSerializer(serializers.ModelSerializer):
             if request and hasattr(request, 'user'):
                 student = request.user  # The logged-in user is the student
 
+        # Fetch registrar based on student's college (same logic for registrar assignment)
+        if not assigned_to:
+            registrar = CustomUser.objects.filter(college=student.college, role='registrar').first()
+            if registrar:
+                assigned_to = registrar
+
         validated_data.pop('student', None)  # Remove student field from validated data
         validated_data.pop('assigned_to', None)  # Remove assigned_to field from validated data
 
@@ -85,6 +90,7 @@ class IssueSerializer(serializers.ModelSerializer):
                 IssueAttachment.objects.create(issue=issue, file=attachment_data)
 
         return issue
+
 
 
 # Serializer for Comments on Issues
