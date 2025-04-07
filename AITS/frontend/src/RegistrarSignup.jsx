@@ -206,22 +206,16 @@ const RegistrarSignup = () => {
                             value={formData.college}
                             onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                         >
-                            <option value="College of Engineering">College of Engineering</option>
-                            <option value="College of Medicine">College of Medicine</option>
-                            <option value="College of Business">College of Business</option>
-
-
-                            <option value="School of Law">College of Business</option>
-
-                           
-
-
-
-                           
-
-                            
-
-
+                            <option value="CAES">CAES</option>
+                            <option value="CoBAMS">CoBAMS</option>
+                            <option value="CoCIS">CoCIS</option>
+                            <option value="CEES">CEES</option>
+                            <option value="CEDAT">CEDAT</option>
+                            <option value="CHS">CHS</option>
+                            <option value="CHUSS">CHUSS</option>
+                            <option value="CoNAS">CoNAS</option>
+                            <option value="CoVAB">CoVAB</option>
+                            <option value="LAW">LAW</option>
                         </Select>
                     </FormControl>
                     
@@ -236,17 +230,7 @@ const RegistrarSignup = () => {
                         />
                     </FormControl>
                     
-                    {/* Student Registration Number */}
-                    <FormControl isRequired>
-                        <FormLabel>Student Registration Number</FormLabel>
-                        <Input
-                            type="text"
-                            placeholder="Enter your registration number"
-                            value={formData.studentRegNumber}
-                            onChange={(e) => setFormData({ ...formData, studentRegNumber: e.target.value })}
-                        />
-                    </FormControl>
-                    
+                   
                     {/* Submit Button */}
                     <Button
                         colorScheme="green"
