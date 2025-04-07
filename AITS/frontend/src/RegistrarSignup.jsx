@@ -327,7 +327,7 @@ const RegistrarSignup = () => {
                     focusBorderColor="green.400"
                   >
                     <option value="College of Engineering">COSIS</option>
-                    <option value="College of Medicine">College of Medicine</option>
+                    <option value="College of Medicine">CONAS</option>
                     <option value="College of Business">College of Business</option>
                     <option value="School of Law">School of Law</option>
                     <option value="College of Arts and Sciences">College of Arts and Sciences</option>
