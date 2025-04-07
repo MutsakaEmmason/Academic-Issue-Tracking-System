@@ -24,11 +24,11 @@ class CustomUser(AbstractUser):
     # Common Fields
     fullName = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True, blank=True, null=True)
-    college = models.CharField(max_length=255, blank=True, null=True)
+    college = models.CharField(max_length=255, blank=True, null=True)  # College field
     department = models.CharField(max_length=255, blank=True, null=True)
 
-    # Lecturer-specific fieldscourses_taught = models.TextField(blank=True, null=True)
-      # Store courses as a comma-separated string
+    # Lecturer-specific fields
+    courses_taught = models.TextField(blank=True, null=True)  # Store courses as a comma-separated string
 
     # Student-specific fields
     studentRegNumber = models.CharField(max_length=20, unique=True, blank=True, null=True)
@@ -109,6 +109,13 @@ class Issue(Timestamp):
     academicYear = models.CharField(max_length=20, blank=True, null=True)
     issueDate = models.DateField(auto_now_add=True)
     studentName = models.CharField(max_length=255)
+    college = models.CharField(max_length=255, blank=True, null=True)  # College field to associate with the issue
+
+    def save(self, *args, **kwargs):
+        # Automatically set the college from the student if it's not set
+        if not self.college and self.student:
+            self.college = self.student.college  # Get the college from the student
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title} ({self.status})"

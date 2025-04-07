@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
-
+from .permissions import IsStudent, IsLecturer, IsRegistrar
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -25,7 +25,7 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]  # Add role-specific permissions below
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category']
     search_fields = ['category', 'title', 'status']
@@ -39,7 +39,11 @@ class IssueViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(student=user)
         elif user.role == 'lecturer':
             queryset = queryset.filter(assigned_to=user)
-        
+        elif user.role == 'registrar':
+            # Ensure that the registrar can only view issues from their respective college
+            college = user.college
+            queryset = queryset.filter(college=college)
+
         # Additional search filter
         search_query = self.request.query_params.get('search', None)
         if search_query:
@@ -50,13 +54,21 @@ class IssueViewSet(viewsets.ModelViewSet):
         
         return queryset
 
+    # views.py
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             student_name = request.data.get('studentName')
-            issue = serializer.save(student=request.user, studentName=student_name)
+            issue = serializer.save(student=request.user, studentName=student_name, college=request.user.college)
             
-            # Check if files are provided
+            # Automatically assign the registrar if not already assigned
+            if not issue.assigned_to:
+                registrar = CustomUser.objects.filter(college=issue.college, role='registrar').first()
+                if registrar:
+                    issue.assigned_to = registrar
+                    issue.save()
+
+            # Handle file attachments
             files = request.FILES.getlist('attachments', [])
             if files:
                 for file in files:
@@ -65,15 +77,35 @@ class IssueViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+
+        # Ensure the user is trying to update an issue they are allowed to
+        user = request.user
+        
+        if user.role == 'student' and instance.student != user:
+            # Students can only update their own issues
+            return Response({"detail": "You cannot update an issue that is not yours."}, status=status.HTTP_403_FORBIDDEN)
+
+        if user.role == 'lecturer' and instance.assigned_to != user:
+            # Lecturers can only update issues assigned to them
+            return Response({"detail": "You cannot update an issue that is not assigned to you."}, status=status.HTTP_403_FORBIDDEN)
+
+        if user.role == 'registrar' and instance.college != user.college:
+            # Registrars can only update issues related to their own college
+            return Response({"detail": "You cannot update issues outside your college."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Continue with the update process if permission checks pass
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             log_action(request.user, f"Issue updated: {instance.title}")
             send_issue_update_email(instance)
             return Response(serializer.data)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # Comment ViewSet
 class CommentViewSet(viewsets.ModelViewSet):
