@@ -1,123 +1,133 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react"; 
 import { useNavigate } from "react-router-dom";
-import { Box, Button, FormControl, FormLabel, Input, VStack, Text } from "@chakra-ui/react";
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Heading,
+    Text,
+    Switch,
+    useToast,
+} from "@chakra-ui/react";
+import axios from "axios";
+
+const BASE_URL = "http://127.0.0.1:8000/api/";
 
 const LecturerLogin = () => {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            fetch("http://127.0.0.1:8000/api/token/verify/", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.valid) {
-                        navigate("/lecturer-dashboard");
-                    } else {
-                        localStorage.removeItem("token");
-                    }
-                })
-                .catch((err) => {
-                    console.error("Token verification error:", err);
-                    localStorage.removeItem("token");
-                });
-        }
-    }, [navigate]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("http://127.0.0.1:8000/api/verify-token/", {
+        method: "POST",
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token }), // Some backends require this
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.valid) {
+            navigate("/lecturer-dashboard");
+          } else {
+            localStorage.removeItem("token");
+          }
+        })
+        .catch((err) => {
+          console.error("Token verification error:", err);
+          localStorage.removeItem("token");
+        });
+    }
+  }, [navigate]);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/lecturer/login/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: email, password }),
-            });
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/lecturer/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password }),
+      });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: "Server error" }));
-                setError(errorData.error || errorData.message || "Login failed");
-                return;
-            }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Server error" }));
+        setError(errorData.error || errorData.message || "Login failed");
+        return;
+      }
 
-            const data = await response.json();
-            const token = data.access || data.token;  // Adjust to your actual token field in response
-            if (token) {
-                localStorage.setItem("token", token);
-                navigate("/lecturer-dashboard");
-            } else {
-                setError("Invalid token response from server.");
-            }
-        } catch (err) {
-            setError("Network error, please try again.");
-            console.error("Login request failed:", err);
-        } finally {
-            setLoading(false);
-        }
-    };
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      navigate("/lecturer-dashboard");
 
-    return (
-        <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="yellow.50">
-            <VStack spacing={4} align="stretch">
-                <Text fontSize="2xl" fontWeight="bold" textAlign="center">
-                    Lecturer Login
-                </Text>
+    } catch (err) {
+      setError("Network error, please try again.");
+      console.error("Login request failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                {error && <Text color="red.500" textAlign="center">{error}</Text>}
+  return (
+    <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white">
+      <VStack spacing={4} align="stretch">
+        <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+          Lecturer Login
+        </Text>
 
-                <form onSubmit={handleLogin}>
-                    <VStack spacing={4} align="stretch">
-                        <FormControl isRequired>
-                            <FormLabel>Email</FormLabel>
-                            <Input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                            />
-                        </FormControl>
+        {error && <Text color="red.500" textAlign="center">{error}</Text>}
 
-                        <FormControl isRequired>
-                            <FormLabel>Password</FormLabel>
-                            <Input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter your password"
-                            />
-                        </FormControl>
+        <form onSubmit={handleLogin}>
+          <VStack spacing={4} align="stretch">
+            <FormControl isRequired>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+              />
+            </FormControl>
 
-                        <Button colorScheme="red" type="submit" width="full" mt={4} isLoading={loading}>
-                            Login
-                        </Button>
-                    </VStack>
-                </form>
+            <FormControl isRequired>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+              />
+            </FormControl>
 
-                <Text textAlign="center">
-                    Don't have an account?{" "}
-                    <Button
-                        variant="link"
-                        color="purple.500"
-                        onClick={() => navigate("/lecturer-register")}
-                    >
-                        Register here
-                    </Button>
-                </Text>
-            </VStack>
-        </Box>
-    );
+            <Button colorScheme="blue" type="submit" width="full" mt={4} isLoading={loading}>
+              Login
+            </Button>
+          </VStack>
+        </form>
+
+        <Text textAlign="center">
+          Don't have an account?{" "}
+          <Button
+            variant="link"
+            color="blue.500"
+            onClick={() => navigate("/lecturer-register")}
+          >
+            Register here
+          </Button>
+        </Text>
+      </VStack>
+    </Box>
+  );
 };
 
 export default LecturerLogin;
