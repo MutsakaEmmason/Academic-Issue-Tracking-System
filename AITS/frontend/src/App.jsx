@@ -1,11 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
+ 
+
+
+import LecturerRegister from "./LecturerRegister"; // Import the missing component
+import StudentLogin from "./student_login";
+
 
 import Home from "./home";
-import StudentLogin from "./student_login";
+import Register from "./routes/register"
 import LecturerLogin from "./Login";
-import Register from "./routes/register";
+
+
 import IssueSubmissionForm from './components/IssueSubmissionForm';
 import DashboardContainer from './components/DashboardContainer';
 import IssueData from './routes/IssueData';
@@ -36,10 +43,22 @@ const App = () => {
                     } />
                     <Route path="/issue-submission" element={<IssueSubmissionForm />} />
                     <Route path="/student/login" element={<StudentLogin />} />
+
+                    <Route path="/login" element={<Navigate to="/student/login" replace />} />
+                    
+                    {/* Lecturer Routes */}
+
+
                     <Route path="/lecturer/login" element={<LecturerLogin />} />
+                    <Route path="/lecturer-register" element={<LecturerRegister />} /> {/* Added this line */}
                     <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
+
+                    {/* Other Routes */}
                     <Route path="/register" element={<Register />} />
                     <Route path="/academic-registrar" element={<AcademicRegistrar />} />
+
+                   
+
                     
                     {/* Registrar Routes */}
                     <Route path="/registrar-login" element={<RegistrarLogin />} />
