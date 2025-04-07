@@ -14,3 +14,5 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  # Token Verify (added)
     path('', home),  # Home page route
 ]
+
+
