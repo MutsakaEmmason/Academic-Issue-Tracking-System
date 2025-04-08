@@ -8,3 +8,5 @@ pytz
 sqlparse
 psycopg2-binary
 python-dotenv 
+django-import-export==4.3.7
+django-filter==25.1
