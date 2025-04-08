@@ -10,14 +10,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        #migrations.AddField(
-          #  model_name='customuser',
-           # name='courses_taught',
-           # field=models.TextField(blank=True, null=True),
-       # ),
-        #migrations.AddField(
-          #  model_name='issue',
-           # name='college',
-            #field=models.CharField(blank=True, max_length=255, null=True),
-      #  ),
+        migrations.AddField(
+            model_name='customuser',
+            name='courses_taught',
+            field=models.TextField(blank=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='issue',
+            name='college',
+            field=models.CharField(blank=True, max_length=255, null=True),
+        ),
     ]
