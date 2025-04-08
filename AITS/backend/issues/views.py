@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.core.mail import send_mail
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
+import logging
 from .permissions import IsStudent, IsLecturer, IsRegistrar
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
@@ -29,7 +30,7 @@ class IssueViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category']
     search_fields = ['category', 'title', 'status']
-    
+
     def get_queryset(self):
         user = self.request.user
         queryset = Issue.objects.all()
@@ -42,7 +43,8 @@ class IssueViewSet(viewsets.ModelViewSet):
         elif user.role == 'registrar':
             # Ensure that the registrar can only view issues from their respective college
             college = user.college
-            queryset = queryset.filter(college=college)
+            queryset = queryset.filter(college=user.college)
+
 
         # Additional search filter
         search_query = self.request.query_params.get('search', None)
@@ -51,31 +53,42 @@ class IssueViewSet(viewsets.ModelViewSet):
                 Q(title__icontains=search_query) |
                 Q(description__icontains=search_query)
             )
-        
+
         return queryset
 
     # views.py
     def create(self, request, *args, **kwargs):
+        if request.user.role != 'student':
+            return Response({"error": "Only students can submit issues."}, status=403)
+
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             student_name = request.data.get('studentName')
-            issue = serializer.save(student=request.user, studentName=student_name, college=request.user.college)
-            
-            # Automatically assign the registrar if not already assigned
-            if not issue.assigned_to:
-                registrar = CustomUser.objects.filter(college=issue.college, role='registrar').first()
-                if registrar:
-                    issue.assigned_to = registrar
-                    issue.save()
+            issue = serializer.save(
+                student=request.user,
+                studentName=student_name,
+                college=request.user.college  # Always pull from logged-in student
+            )
 
-            # Handle file attachments
+            # Automatically assign registrar of that college
+            registrar = CustomUser.objects.filter(
+                college=issue.college,
+                role='registrar'
+            ).first()
+
+            if registrar:
+                issue.assigned_to = registrar
+                issue.save()
+
+            # Handle attachments
             files = request.FILES.getlist('attachments', [])
-            if files:
-                for file in files:
-                    IssueAttachment.objects.create(issue=issue, file=file)
-            
+            for file in files:
+                IssueAttachment.objects.create(issue=issue, file=file)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
     def update(self, request, *args, **kwargs):
@@ -105,6 +118,30 @@ class IssueViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+logger = logging.getLogger(__name__)
+
+class RegistrarProfileView(APIView):
+    permission_classes = [IsAuthenticated]  # This ensures the user is authenticated
+
+    def get(self, request):
+        user = request.user  # The user should be authenticated if the token is valid
+
+        if user.role != 'registrar':
+            logger.error(f"Access denied for user {user.username}. Not a registrar.")
+            return Response({"error": "Access denied. You are not a registrar."}, status=403)
+
+        # If user is registrar, return profile data
+        full_name = f"{user.first_name} {user.last_name}".strip()
+        data = {
+            'id': user.id,
+            'fullName': full_name,
+            'email': user.email,
+            'role': user.role,
+            'college': user.college
+        }
+
+        return Response(data, status=200)
+
 
 
 # Comment ViewSet
