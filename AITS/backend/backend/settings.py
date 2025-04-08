@@ -3,7 +3,9 @@ Django settings for backend project.
 """
 
 from pathlib import Path
+
 import os
+
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -119,6 +121,7 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 }
+
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'

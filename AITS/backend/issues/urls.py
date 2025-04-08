@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenVerifyView, TokenRefreshView
 from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
 from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView, UserRegistrationView, \
-    LecturerRegistrationView, CustomTokenObtainPairView, RegistrarSignupView, UserProfileView, LecturerDetailsView
+    LecturerRegistrationView, CustomTokenObtainPairView, RegistrarSignupView, UserProfileView, LecturerDetailsView,  RegistrarProfileView
 
 # Initialize the router
 router = DefaultRouter()
@@ -34,4 +34,6 @@ urlpatterns = [
 
     # Registrar signup route
     path('registrar/signup/', RegistrarSignupView.as_view(), name='registrar-signup'),
+    path('registrar-profile/', RegistrarProfileView.as_view(), name='registrar-profile'),
+
 ]
