@@ -122,6 +122,7 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
+
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 
