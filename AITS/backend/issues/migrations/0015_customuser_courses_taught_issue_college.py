@@ -11,13 +11,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
+<<<<<<< HEAD
            model_name='customuser',
            name='courses_taught',
            field=models.TextField(blank=True, null=True),
        ),
+=======
+            model_name='customuser',
+            name='courses_taught',
+            field=models.TextField(blank=True, null=True),
+        ),
+>>>>>>> 52e82d4adae58a419d7a22b9ecf2e1c9764f993f
         migrations.AddField(
             model_name='issue',
             name='college',
             field=models.CharField(blank=True, max_length=255, null=True),
+<<<<<<< HEAD
        ),
+=======
+        ),
+>>>>>>> 52e82d4adae58a419d7a22b9ecf2e1c9764f993f
     ]

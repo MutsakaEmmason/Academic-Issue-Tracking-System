@@ -188,7 +188,11 @@ const AcademicRegistrarDashboard = () => {
             toast({ title: "Please select an issue and a lecturer.", status: "warning", duration: 5000, isClosable: true });
             return;
         }
+<<<<<<< HEAD
 >>>>>>> f8eb0cbe85b60b3d1594176b7fc0272757b4619f
+=======
+>>>>>>> a2fdc410539f2af7ca7fdb4f42650793f248ba64
+>>>>>>> 52e82d4adae58a419d7a22b9ecf2e1c9764f993f
 
         try {
             const token = localStorage.getItem("accessToken");
@@ -400,7 +404,11 @@ const AcademicRegistrarDashboard = () => {
             </Box>
         </div>
     );
+<<<<<<< HEAD
 >>>>>>> f8eb0cbe85b60b3d1594176b7fc0272757b4619f
+=======
+>>>>>>> a2fdc410539f2af7ca7fdb4f42650793f248ba64
+>>>>>>> 52e82d4adae58a419d7a22b9ecf2e1c9764f993f
 };
 
 export default AcademicRegistrarDashboard;
