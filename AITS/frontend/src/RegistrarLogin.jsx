@@ -68,6 +68,7 @@ const RegistrarLogin = () => {
       borderRadius: '8px',
       backgroundColor: 'white'
     },
+
     title: {
       textAlign: 'center',
       color: '#2C7A7B',
