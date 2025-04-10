@@ -6,6 +6,7 @@ import {
     Select,
     Flex,
     useToast,
+    Spinner
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ const AcademicRegistrarDashboard = () => {
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [selectedLecturer, setSelectedLecturer] = useState("");
     const [issueDetails, setIssueDetails] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);  // Loading state
     const [activeMenu, setActiveMenu] = useState("dashboard");
     const toast = useToast();
     const navigate = useNavigate();
@@ -36,6 +38,7 @@ const AcademicRegistrarDashboard = () => {
         };
 
         const fetchIssues = async () => {
+            setIsLoading(true);  // Set loading true when fetching
             try {
                 const token = localStorage.getItem("accessToken");
                 if (!token) {
@@ -70,6 +73,8 @@ const AcademicRegistrarDashboard = () => {
             } catch (error) {
                 console.error("Error fetching issues:", error);
                 toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
+            } finally {
+                setIsLoading(false);  // Set loading false when fetching is done
             }
         };
 
@@ -106,6 +111,34 @@ const AcademicRegistrarDashboard = () => {
             }
         } catch (error) {
             toast({ title: "Error assigning issue.", status: "error", duration: 5000, isClosable: true });
+        }
+    };
+
+    const resolveIssue = async () => {
+        if (!selectedIssue) {
+            toast({ title: "Please select an issue to resolve.", status: "warning", duration: 5000, isClosable: true });
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(`http://127.0.0.1:8000/api/issues/${selectedIssue.id}/resolve/`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const updatedIssue = await response.json();
+                setIssueDetails(updatedIssue);
+                toast({ title: "Issue resolved successfully!", status: "success", duration: 5000, isClosable: true });
+            } else {
+                toast({ title: "Failed to resolve issue.", status: "error", duration: 5000, isClosable: true });
+            }
+        } catch (error) {
+            toast({ title: "Error resolving issue.", status: "error", duration: 5000, isClosable: true });
         }
     };
 
@@ -175,16 +208,13 @@ const AcademicRegistrarDashboard = () => {
                         </Select>
 
                         <Button colorScheme="green" onClick={assignIssue} mt={2}>Assign</Button>
+                        <Button colorScheme="blue" onClick={resolveIssue} mt={2}>Resolve</Button> {/* Resolve Button */}
                     </div>
                 </Box>
 
                 {/* Dynamic Content */}
                 <Box p={4} flex="1" ml={isOpen ? "250px" : "80px"}>
-                    {activeMenu === "dashboard" && <div>Dashboard Content</div>}
-                    {activeMenu === "issues" && <div>Manage Issues Content</div>}
-                    {activeMenu === "reports" && <div>Reports Content</div>}
-                    {activeMenu === "settings" && <div>Settings Content</div>}
-
+                    {isLoading && <Spinner size="xl" />}
                     {issueDetails && (
                         <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
                             <Text fontSize="xl" mb={2}>Issue Details</Text>
@@ -198,14 +228,11 @@ const AcademicRegistrarDashboard = () => {
                             <Text><strong>Department:</strong> {issueDetails.department}</Text>
                             <Text><strong>Semester:</strong> {issueDetails.semester}</Text>
                             <Text><strong>Academic Year:</strong> {issueDetails.academicYear}</Text>
-                            <Text><strong>Issue Date:</strong> {issueDetails.issueDate}</Text>
-                            <Text><strong>Assigned To:</strong> {issueDetails.assigned_to?.fullName || "Not Assigned"}</Text>
-                            <Text><strong>Created At:</strong> {issueDetails.created_at}</Text>
+                            <Text><strong>College:</strong> {issueDetails.college}</Text>
                         </Box>
                     )}
                 </Box>
             </Flex>
-
         </Flex>
     );
 };
