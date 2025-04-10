@@ -9,7 +9,6 @@ import {
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
-import Footer from "./components/Footer";
 import "./index.css";
 
 const AcademicRegistrarDashboard = () => {
@@ -207,8 +206,6 @@ const AcademicRegistrarDashboard = () => {
                 </Box>
             </Flex>
 
-            {/* Footer */}
-            <Footer userRole="academic registrar" />
         </Flex>
     );
 };
