@@ -125,7 +125,7 @@ const RegistrarLogin = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Registrar Login</h2>
+      <h2 style={styles.title}>Registrar login</h2>
       
       {error && <div style={styles.error}>{error}</div>}
       
