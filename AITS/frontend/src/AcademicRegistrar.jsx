@@ -162,7 +162,7 @@ const AcademicRegistrarDashboard = () => {
                 top="0"
                 zIndex="1000"
             >
-                <Text fontSize="2xl" fontWeight="bold">ACADEMIC REGISTRAR DASHBOARD</Text>
+                <Text fontSize="2xl" fontWeight="bold">ACADEMIc REGISTRAR DASHBOARD</Text>
                 <Flex gap={3}>
                     <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>About Us</Button>
                     <Button colorScheme="red" onClick={() => {
@@ -228,7 +228,6 @@ const AcademicRegistrarDashboard = () => {
                             <Text><strong>Department:</strong> {issueDetails.department}</Text>
                             <Text><strong>Semester:</strong> {issueDetails.semester}</Text>
                             <Text><strong>Academic Year:</strong> {issueDetails.academicYear}</Text>
-                            <Text><strong>College:</strong> {issueDetails.college}</Text>
                         </Box>
                     )}
                 </Box>
