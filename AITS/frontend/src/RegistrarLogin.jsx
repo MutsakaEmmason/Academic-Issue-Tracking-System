@@ -176,7 +176,7 @@ const RegistrarLogin = () => {
           style={styles.link}
           onClick={() => navigate('/registrar-signup')}
         >
-          Sign up
+          Sign Up
         </span>
       </div>
     </div>
