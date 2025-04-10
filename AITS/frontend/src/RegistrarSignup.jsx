@@ -1,124 +1,150 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
-    VStack,
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    Text,
-    Image,
-    Heading,
-    Box,
-    Select,
-    FormHelperText,
-    useToast,
+  Box,
+  Button,
+  Container,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Select,
+  Stack,
+  Text,
+  useToast,
+  VStack,
+  HStack,
+  Icon,
+  useColorModeValue,
+  Image,
 } from "@chakra-ui/react";
+import {
+  FiUser,
+  FiMail,
+  FiLock,
+  FiBriefcase,
+  FiBookOpen,
+  FiUserPlus,
+  FiArrowLeft,
+  FiCheckCircle
+} from 'react-icons/fi';
 
 const RegistrarSignup = () => {
-    const [formData, setFormData] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        college: "",
-        department: "",
-        studentRegNumber: "",
-        role: "registrar",
-        // Add username field to match backend requirements
-        username: ""
-    });
-    
-    const [error, setError] = useState("");
-    const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const toast = useToast();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    college: "",
+    department: "",
+    role: "registrar",
+    username: ""
+  });
+  
+  const [error, setError] = useState("");
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const toast = useToast();
+  
+  // Updated color scheme with light green
+  const bgColor = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('green.100', 'green.700');
+  const textColor = useColorModeValue('gray.800', 'white');
+  const secondaryTextColor = useColorModeValue('gray.600', 'gray.400');
+  const accentColor = useColorModeValue('green.500', 'green.300');
+  const lightGreenBg = useColorModeValue('green.50', 'green.900');
+  const buttonBgColor = useColorModeValue('green.500', 'green.400');
+  const buttonHoverColor = useColorModeValue('green.600', 'green.500');
 
-    const handleSubmit = async () => {
-        // Reset error state
-        setError("");
-        
-        // Check if password and confirm password match
-        if (formData.password !== formData.confirmPassword) {
-            setIsPasswordMismatch(true);
-            return;
+  const handleSubmit = async () => {
+    // Reset error state
+    setError("");
+    
+    // Check if password and confirm password match
+    if (formData.password !== formData.confirmPassword) {
+      setIsPasswordMismatch(true);
+      return;
+    }
+    setIsPasswordMismatch(false);
+    
+    // Validate required fields
+    const requiredFields = ['first_name', 'last_name', 'email', 'password', 'college', 'department'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setError(`Please fill in the ${field.replace('_', ' ')}`);
+        return;
+      }
+    }
+    
+    // Generate username from email if not provided
+    const dataToSend = { ...formData };
+    if (!dataToSend.username) {
+      dataToSend.username = dataToSend.email.split('@')[0];
+    }
+    
+    // Remove confirmPassword as it's not needed by the backend
+    delete dataToSend.confirmPassword;
+    
+    setLoading(true);
+    try {
+      // Send POST request to the backend
+      const response = await fetch("http://127.0.0.1:8000/api/registrar/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend),
+      });
+      
+      // Parse the response
+      const data = await response.json();
+      
+      if (!response.ok) {
+        // Handle specific error messages from the backend
+        if (data.username) {
+          throw new Error(`Username error: ${data.username}`);
+        } else if (data.email) {
+          throw new Error(`Email error: ${data.email}`);
+        } else if (data.password) {
+          throw new Error(`Password error: ${data.password}`);
+        } else if (data.error) {
+          throw new Error(data.error);
+        } else {
+          throw new Error("Failed to sign up. Please try again.");
         }
-        setIsPasswordMismatch(false);
-        
-        // Validate required fields
-        const requiredFields = ['first_name', 'last_name', 'email', 'password', 'college', 'department'];
-        for (const field of requiredFields) {
-            if (!formData[field]) {
-                setError(`Please fill in the ${field.replace('_', ' ')}`);
-                return;
-            }
-        }
-        
-        // Generate username from email if not provided
-        const dataToSend = { ...formData };
-        if (!dataToSend.username) {
-            dataToSend.username = dataToSend.email.split('@')[0];
-        }
-        
-        // Remove confirmPassword as it's not needed by the backend
-        delete dataToSend.confirmPassword;
-        
-        setLoading(true);
-        try {
-            // Send POST request to the backend
-            const response = await fetch("http://127.0.0.1:8000/api/registrar/signup/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dataToSend),
-            });
-            
-            // Parse the response
-            const data = await response.json();
-            
-            if (!response.ok) {
-                // Handle specific error messages from the backend
-                if (data.username) {
-                    throw new Error(`Username error: ${data.username}`);
-                } else if (data.email) {
-                    throw new Error(`Email error: ${data.email}`);
-                } else if (data.password) {
-                    throw new Error(`Password error: ${data.password}`);
-                } else if (data.error) {
-                    throw new Error(data.error);
-                } else {
-                    throw new Error("Failed to sign up. Please try again.");
-                }
-            }
-            
-            // Handle successful signup
-            toast({
-                title: "Signup Successful!",
-                description: "You can now log in with your credentials.",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
-            
-            // Redirect to login page
-            navigate("/academic-registrar");
-        } catch (error) {
-            setError(error.message);
-            toast({
-                title: "Signup Failed",
-                description: error.message,
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+      }
+      
+      // Handle successful signup
+      toast({
+        title: "Signup Successful!",
+        description: "You can now log in with your credentials.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      
+      // Redirect to login page
+      navigate("/academic-registrar");
+    } catch (error) {
+      setError(error.message);
+      toast({
+        title: "Signup Failed",
+        description: error.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Flex
@@ -306,6 +332,7 @@ const RegistrarSignup = () => {
                     <option value="School of Law">CHS</option>
                     <option value="School of Law">CEDAT</option>
                     <option value="School of Law">CAES</option>
+                    <option value="School of Law">PDD</option>
                     <option value="School of Law">SCHOOL OF LAW</option>
                     <option value="School of Law">CEDAT</option>
                     <option value="College of Arts and Sciences">College of Arts and Sciences</option>
