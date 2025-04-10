@@ -171,7 +171,7 @@ const RegistrarLogin = () => {
       </form>
       
       <div style={styles.signupLink}>
-        Don't have an account?{' '}
+        Do not have an account?{' '}
         <span 
           style={styles.link}
           onClick={() => navigate('/registrar-signup')}
