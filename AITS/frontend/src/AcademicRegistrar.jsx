@@ -6,7 +6,10 @@ import {
     Select,
     Flex,
     useToast,
-    Spinner
+    Spinner,
+    Heading,
+    Divider,
+    Badge
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
@@ -200,8 +203,19 @@ const AcademicRegistrarDashboard = () => {
         setIssueDetails(selected);
     };
 
+    // Function to get status badge color
+    const getStatusColor = (status) => {
+        switch(status) {
+            case 'pending': return 'yellow';
+            case 'assigned': return 'blue';
+            case 'in_progress': return 'purple';
+            case 'resolved': return 'green';
+            default: return 'gray';
+        }
+    };
+
     return (
-        <Flex direction="column" minHeight="100vh">
+        <Flex direction="column" minHeight="100vh" bg="gray.100">
             {/* Header */}
             <Flex
                 p={4}
@@ -213,6 +227,7 @@ const AcademicRegistrarDashboard = () => {
                 width="100%"
                 top="0"
                 zIndex="1000"
+                boxShadow="0 2px 10px rgba(0,0,0,0.1)"
             >
                 <Text fontSize="2xl" fontWeight="bold">ACADEMIC REGISTRAR DASHBOARD</Text>
                 <Flex gap={3}>
@@ -229,38 +244,54 @@ const AcademicRegistrarDashboard = () => {
             {/* Main Content */}
             <Flex mt="80px" flex="1">
                 {/* Sidebar */}
-                <Box className={`sidebar ${isOpen ? "open" : ""}`}>
+                <Box 
+                    className={`sidebar ${isOpen ? "open" : ""}`}
+                    bg="gray.800"
+                    color="white"
+                    boxShadow="2px 0 10px rgba(0,0,0,0.1)"
+                >
                     <button className="toggle-btn" onClick={toggleSidebar}><FaBars /></button>
-                    <div className="assignment-section">
-                        <h3>Assign Issue</h3>
-                        <Box mb={2}>
+                    <Box className="assignment-section" p={4}>
+                        <Heading as="h3" size="md" mb={4} color="white">Assign Issue</Heading>
+                        <Divider mb={4} borderColor="gray.600" />
+                        
+                        <Box mb={4}>
                             {issues.length > 0 ? (
-                                <Text fontSize="sm" color="gray.600">
+                                <Text fontSize="sm" color="gray.300">
                                     Showing {issues.length} pending issues
                                 </Text>
                             ) : (
-                                <Text fontSize="sm" color="green.500">
+                                <Text fontSize="sm" color="green.300">
                                     No pending issues available
                                 </Text>
                             )}
                         </Box>
+                        
                         <Select 
                             placeholder="Select Issue" 
                             onChange={(e) => handleIssueSelect(e.target.value)}
                             value={selectedIssue ? selectedIssue.id : ""}
+                            mb={4}
+                            bg="gray.700"
+                            color="white"
+                            borderColor="gray.600"
+                            _hover={{ borderColor: "gray.500" }}
+                            _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
                         >
                             {issues.map((issue) => (
-                                <option key={issue.id} value={issue.id}>{issue.title || "Untitled Issue"}</option>
+                                <option key={issue.id} value={issue.id} style={{backgroundColor: "#2D3748", color: "white"}}>
+                                    {issue.title || "Untitled Issue"}
+                                </option>
                             ))}
                         </Select>
                         
-                        <Box mt={2} mb={2}>
+                        <Box mb={4}>
                             {lecturers.length > 0 ? (
-                                <Text fontSize="sm" color="white.600">
+                                <Text fontSize="sm" color="gray.300">
                                     {lecturers.length} lecturers from {registrarCollege} college
                                 </Text>
                             ) : (
-                                <Text fontSize="sm" color="orange.500">
+                                <Text fontSize="sm" color="orange.300">
                                     No lecturers available in {registrarCollege} college
                                 </Text>
                             )}
@@ -270,30 +301,39 @@ const AcademicRegistrarDashboard = () => {
                             placeholder="Select Lecturer" 
                             onChange={(e) => setSelectedLecturer(e.target.value)}
                             value={selectedLecturer}
+                            mb={4}
+                            bg="gray.700"
+                            color="white"
+                            borderColor="gray.600"
+                            _hover={{ borderColor: "gray.500" }}
+                            _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
                         >
                             {lecturers.map((lecturer) => (
-                                <option key={lecturer.id} value={lecturer.id}>
+                                <option key={lecturer.id} value={lecturer.id} style={{backgroundColor: "#2D3748", color: "white"}}>
                                     {lecturer.first_name} {lecturer.last_name} ({lecturer.department || "No department"})
                                 </option>
                             ))}
                         </Select>
-                        <Button 
-                            colorScheme="green" 
-                            onClick={assignIssue} 
-                            mt={2}
-                            isDisabled={!selectedIssue || !selectedLecturer}
-                        >
-                            Assign
-                        </Button>
-                        <Button 
-                            colorScheme="blue" 
-                            onClick={resolveIssue} 
-                            mt={2}
-                            isDisabled={!selectedIssue}
-                        >
-                            Resolve
-                        </Button>
-                    </div>
+                        
+                        <Flex direction="column" gap={3}>
+                            <Button 
+                                colorScheme="green" 
+                                onClick={assignIssue}
+                                isDisabled={!selectedIssue || !selectedLecturer}
+                                _disabled={{ opacity: 0.6, cursor: "not-allowed" }}
+                            >
+                                Assign
+                            </Button>
+                            <Button 
+                                colorScheme="blue" 
+                                onClick={resolveIssue}
+                                isDisabled={!selectedIssue}
+                                _disabled={{ opacity: 0.6, cursor: "not-allowed" }}
+                            >
+                                Resolve
+                            </Button>
+                        </Flex>
+                    </Box>
                 </Box>
 
                 {/* Dynamic Content */}
@@ -301,43 +341,106 @@ const AcademicRegistrarDashboard = () => {
                     p={6}
                     flex="1"
                     ml={isOpen ? "250px" : "80px"}
-                    background="gray.50"
+                    background="gray.100"
                     minHeight="calc(100vh - 80px)"
+                    transition="margin-left 0.3s"
                 >
                     {isLoading && (
                         <Flex justify="center" align="center" minH="200px">
-                            <Spinner size="xl" />
+                            <Spinner size="xl" color="green.500" thickness="4px" />
                         </Flex>
                     )}
-                    {issueDetails ? (
-                        <Box
-                            bg="white"
-                            p={6}
-                            borderRadius="md"
-                            boxShadow="md"
-                            maxWidth="800px"
-                            mx="auto"
-                        >
-                            <Text fontSize="2xl" fontWeight="bold" mb={4}>Issue Details</Text>
-                            <Text mb={2}><strong>Student Name:</strong> {issueDetails.studentName || "N/A"}</Text>
-                            <Text mb={2}><strong>Title:</strong> {issueDetails.title || "Untitled Issue"}</Text>
-                            <Text mb={2}><strong>Description:</strong> {issueDetails.description || "No description provided."}</Text>
-                            <Text mb={2}><strong>Status:</strong> {issueDetails.status}</Text>
-                            <Text mb={2}><strong>Course Code:</strong> {issueDetails.courseCode}</Text>
-                            <Text mb={2}><strong>Student ID:</strong> {issueDetails.studentId}</Text>
-                            <Text mb={2}><strong>Lecturer:</strong> {issueDetails.lecturer}</Text>
-                            <Text mb={2}><strong>Department:</strong> {issueDetails.department}</Text>
-                            <Text mb={2}><strong>Semester:</strong> {issueDetails.semester}</Text>
-                            <Text mb={2}><strong>Academic Year:</strong> {issueDetails.academicYear}</Text>
-                        </Box>
-                    ) : (
-                        <Flex justify="center" align="center" minH="200px">
-                            <Text fontSize="lg" color="gray.600">
-                                {issues.length > 0 
-                                    ? "Select an issue to view its details" 
-                                    : "No pending issues available"}
-                            </Text>
-                        </Flex>
+                    
+                    {!isLoading && (
+                        issueDetails ? (
+                            <Box
+                                bg="white"
+                                p={6}
+                                borderRadius="md"
+                                boxShadow="md"
+                                maxWidth="800px"
+                                mx="auto"
+                                border="1px solid"
+                                borderColor="gray.200"
+                            >
+                                <Heading as="h2" size="lg" mb={4} color="green.600">Issue Details</Heading>
+                                <Divider mb={4} />
+                                
+                                <Flex direction="column" gap={3}>
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Student Name:</Text>
+                                        <Text color="gray.800">{issueDetails.studentName || "N/A"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Title:</Text>
+                                        <Text color="gray.800">{issueDetails.title || "Untitled Issue"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex alignItems="flex-start">
+                                    <Text fontWeight="bold" width="150px" color="gray.700">Description:</Text>
+                                        <Text color="gray.800">{issueDetails.description || "No description provided."}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Status:</Text>
+                                        <Badge colorScheme={getStatusColor(issueDetails.status)}>
+                                            {issueDetails.status ? issueDetails.status.replace('_', ' ').toUpperCase() : "UNKNOWN"}
+                                        </Badge>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Course Code:</Text>
+                                        <Text color="gray.800">{issueDetails.courseCode || "N/A"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Student ID:</Text>
+                                        <Text color="gray.800">{issueDetails.studentId || "N/A"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Lecturer:</Text>
+                                        <Text color="gray.800">{issueDetails.lecturer || "Not assigned"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Department:</Text>
+                                        <Text color="gray.800">{issueDetails.department || "N/A"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Semester:</Text>
+                                        <Text color="gray.800">{issueDetails.semester || "N/A"}</Text>
+                                    </Flex>
+                                    
+                                    <Flex>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Academic Year:</Text>
+                                        <Text color="gray.800">{issueDetails.academicYear || "N/A"}</Text>
+                                    </Flex>
+                                </Flex>
+                            </Box>
+                        ) : (
+                            <Flex 
+                                justify="center" 
+                                align="center" 
+                                minH="200px" 
+                                bg="white" 
+                                borderRadius="md" 
+                                boxShadow="sm"
+                                p={6}
+                                maxWidth="800px"
+                                mx="auto"
+                                border="1px dashed"
+                                borderColor="gray.300"
+                            >
+                                <Text fontSize="lg" color="gray.600">
+                                    {issues.length > 0 
+                                        ? "Select an issue to view its details" 
+                                        : "No pending issues available"}
+                                </Text>
+                            </Flex>
+                        )
                     )}
                 </Box>
             </Flex>
