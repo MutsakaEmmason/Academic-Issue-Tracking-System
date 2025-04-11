@@ -17,7 +17,7 @@ User Roles and Permissions
 
 Students: Log issues, view status, update issue details.
 
-Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads
+Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads.
 
 Lecturers/Heads of Departments: Resolve assigned issues, update issue status.
 
