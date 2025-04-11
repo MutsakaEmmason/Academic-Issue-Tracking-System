@@ -323,7 +323,7 @@ const AcademicRegistrarDashboard = () => {
                             </Box>
                             <Select 
                                 placeholder="Select Lecturer" 
-                                onChange={(e) => setSelectedLecturer(e.target.value)}
+                                 onChange={(e) => setSelectedLecturer(e.target.value)}
                                 value={selectedLecturer}
                                 bg="gray.700"
                                 color="white"
@@ -455,7 +455,7 @@ const AcademicRegistrarDashboard = () => {
                                                 This issue is currently assigned to {issueDetails.assigned_to.first_name} {issueDetails.assigned_to.last_name}
                                             </Text>
                                             <Text fontSize="sm" color="blue.600" mt={1}>
-                                                You reassign it by selecting another lecturer and clicking "Assign to Lecturer"
+                                                You can reassign it by selecting another lecturer and clicking "Assign to Lecturer"
                                             </Text>
                                         </Box>
                                     )}
