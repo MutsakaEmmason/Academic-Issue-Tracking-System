@@ -256,7 +256,7 @@ const AcademicRegistrarDashboard = () => {
                         
                         <Box mt={2} mb={2}>
                             {lecturers.length > 0 ? (
-                                <Text fontSize="sm" color="gray.600">
+                                <Text fontSize="sm" color="white.600">
                                     {lecturers.length} lecturers from {registrarCollege} college
                                 </Text>
                             ) : (
