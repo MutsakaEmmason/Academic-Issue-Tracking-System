@@ -19,7 +19,7 @@ const LecturerDashboard = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            navigate('/lecturer/login');
+            navigate('/lecturer-login'); // Updated to lecturer-login as per your preference
             return;
         }
 
@@ -35,7 +35,7 @@ const LecturerDashboard = () => {
 
                 if (response.status === 401 || response.status === 403) {
                     localStorage.removeItem('token');
-                    navigate('/lecturer/login');
+                    navigate('/lecturer-login');
                     return;
                 }
 
@@ -106,7 +106,7 @@ const LecturerDashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/lecturer/login');
+        navigate('/lecturer-login'); // Updated to lecturer-login
     };
 
     if (loading) {
@@ -130,7 +130,12 @@ const LecturerDashboard = () => {
             {/* Header with green background */}
             <Box bg="green.500" boxShadow="sm" p={4} position="sticky" top="0" zIndex="sticky">
                 <Flex justify="space-between" align="center" maxW="6xl" mx="auto">
-                    <Heading size="lg" color="white">Lecturer Dashboard</Heading>
+                    <VStack align="start" spacing={0}>
+                        <Heading size="lg" color="white">Lecturer Dashboard</Heading>
+                        <Text color="white" fontSize="md">
+                            Welcome, {lecturer?.fullName || 'Lecturer'}
+                        </Text>
+                    </VStack>
                     <HStack spacing={4}>
                         <Button 
                             colorScheme="whiteAlpha"
@@ -204,7 +209,7 @@ const LecturerDashboard = () => {
                                 </Table>
                             </Box>
                         ) : (
-                            <Text>No issues assigned </Text>
+                            <Text>No issues assigned</Text>
                         )}
                     </Box>
                 </VStack>
