@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Text, VStack, HStack, Heading, Table, Thead, Tbody, Tr, Th, Td, Spinner, Flex } from '@chakra-ui/react';
+import { 
+  Box, Button, Text, VStack, HStack, Heading, 
+  Table, Thead, Tbody, Tr, Th, Td, Spinner, 
+  Flex, useToast
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import Footer from './components/Footer.jsx';
 
 const LecturerDashboard = () => {
     const [lecturer, setLecturer] = useState(null);
@@ -8,13 +13,13 @@ const LecturerDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const toast = useToast();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            console.error("No token found. Redirecting to login.");
-            window.location.href = '/login';
+            navigate('/lecturer/login');
             return;
         }
 
@@ -29,9 +34,8 @@ const LecturerDashboard = () => {
                 });
 
                 if (response.status === 401 || response.status === 403) {
-                    console.error("Unauthorized access. Redirecting to login.");
                     localStorage.removeItem('token');
-                    window.location.href = '/home';
+                    navigate('/lecturer/login');
                     return;
                 }
 
@@ -43,8 +47,8 @@ const LecturerDashboard = () => {
                 setLecturer(data);
                 fetchAssignedIssues(data.id);
             } catch (error) {
-                console.error('Error fetching lecturer details:', error);
                 setError('Failed to load lecturer details.');
+                console.error('Error:', error);
             } finally {
                 setLoading(false);
             }
@@ -63,17 +67,14 @@ const LecturerDashboard = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setIssues(data);
-                } else {
-                    console.error('Failed to fetch assigned issues', response.statusText);
-                    setError('Failed to load assigned issues.');
                 }
             } catch (error) {
-                console.error('Error fetching assigned issues:', error);
+                console.error('Error fetching issues:', error);
             }
         };
 
         fetchLecturerDetails();
-    }, []);
+    }, [navigate]);
 
     const markIssueResolved = async (issueId) => {
         const token = localStorage.getItem('token');
@@ -88,10 +89,15 @@ const LecturerDashboard = () => {
             });
 
             if (response.ok) {
-                setIssues(issues.map(issue => issue.id === issueId ? { ...issue, status: 'Resolved' } : issue));
-                alert('Issue marked as resolved');
-            } else {
-                console.error('Failed to resolve issue', response.statusText);
+                setIssues(issues.map(issue => 
+                    issue.id === issueId ? { ...issue, status: 'Resolved' } : issue
+                ));
+                toast({
+                    title: 'Issue resolved',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
             }
         } catch (error) {
             console.error('Error resolving issue:', error);
@@ -100,92 +106,112 @@ const LecturerDashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/login');
-    };
-
-    const handleAboutUs = () => {
-        navigate('/about');
+        navigate('/lecturer/login');
     };
 
     if (loading) {
         return (
-            <Box p={4} textAlign="center">
+            <Box minH="100vh" display="flex" justifyContent="center" alignItems="center">
                 <Spinner size="xl" />
-                <Text>Loading lecturer details...</Text>
             </Box>
         );
     }
 
     if (error) {
         return (
-            <Box p={4} textAlign="center">
+            <Box minH="100vh" display="flex" justifyContent="center" alignItems="center">
                 <Text color="red.500">{error}</Text>
             </Box>
         );
     }
 
     return (
-        <Box minHeight="100vh" bg="gray.100" display="flex" flexDirection="column">
-            {/* Header */}
-            <Flex p={4} bg="green.500" color="white" justify="space-between" align="center" position="fixed" top="0" width="100%" zIndex="100">
-                <Box>
-                    <Heading size="lg">Lecturer Dashboard</Heading>
-                </Box>
-                <HStack spacing={4}>
-                    <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>About Us</Button>
-                    <Button onClick={handleLogout} colorScheme="red">Logout</Button>
-                </HStack>
-            </Flex>
+        <Box minH="100vh" bg="gray.50" display="flex" flexDirection="column">
+            {/* Header with green background */}
+            <Box bg="green.500" boxShadow="sm" p={4} position="sticky" top="0" zIndex="sticky">
+                <Flex justify="space-between" align="center" maxW="6xl" mx="auto">
+                    <Heading size="lg" color="white">Lecturer Dashboard</Heading>
+                    <HStack spacing={4}>
+                        <Button 
+                            colorScheme="whiteAlpha"
+                            variant="outline"
+                            onClick={() => navigate('/about')}
+                        >
+                            About Us
+                        </Button>
+                        <Button 
+                            colorScheme="whiteAlpha"
+                            variant="outline"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </HStack>
+                </Flex>
+            </Box>
 
-            {/* Content */}
-            <Box p={6} mt={20} borderRadius="md" boxShadow="lg" bg="white" width="100%" flex="1">
-                <VStack spacing={6} align="stretch">
-                    <Heading size="md" textAlign="center">Lecturer Details</Heading>
-                    <Box width="100%">
-                        <Text fontSize="xl"><strong>Full Name:</strong> {lecturer.fullName}</Text>
-                        <Text fontSize="xl"><strong>Email:</strong> {lecturer.email}</Text>
-                        <Text fontSize="xl">
-                            <strong>Courses Taught:</strong>
-                            {Array.isArray(lecturer.courses_taught)
-                                ? lecturer.courses_taught.join(', ')
-                                : (lecturer.courses_taught ? lecturer.courses_taught.split(', ').join(', ') : 'No courses assigned')
-                            }
-                        </Text>
+            {/* Main Content */}
+            <Box flex="1" p={6} maxW="6xl" mx="auto" width="100%">
+                <VStack spacing={8} align="stretch">
+                    {/* Lecturer Info Card */}
+                    <Box bg="white" borderRadius="lg" boxShadow="md" p={6}>
+                        <Heading size="md" mb={4} color="green.600">Your Profile</Heading>
+                        <VStack spacing={4} align="stretch">
+                            <Text><strong>Name:</strong> {lecturer?.fullName}</Text>
+                            <Text><strong>Email:</strong> {lecturer?.email}</Text>
+                            <Text>
+                                <strong>Courses:</strong> {lecturer?.courses_taught?.join(', ') || 'None assigned'}
+                            </Text>
+                        </VStack>
                     </Box>
 
-                    <Heading size="md">Assigned Issues</Heading>
-                    {issues.length === 0 ? (
-                        <Text>No assigned issues</Text>
-                    ) : (
-                        <Table variant="simple">
-                            <Thead>
-                                <Tr>
-                                    <Th>Issue ID</Th>
-                                    <Th>Type</Th>
-                                    <Th>Status</Th>
-                                    <Th>Action</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {issues.map(issue => (
-                                    <Tr key={issue.id}>
-                                        <Td>{issue.id}</Td>
-                                        <Td>{issue.type}</Td>
-                                        <Td>{issue.status}</Td>
-                                        <Td>
-                                            {issue.status !== 'Resolved' && (
-                                                <Button colorScheme="green" size="sm" onClick={() => markIssueResolved(issue.id)}>
-                                                    Mark Resolved
-                                                </Button>
-                                            )}
-                                        </Td>
-                                    </Tr>
-                                ))}
-                            </Tbody>
-                        </Table>
-                    )}
+                    {/* Issues Section */}
+                    <Box bg="white" borderRadius="lg" boxShadow="md" p={6}>
+                        <Heading size="md" mb={4} color="green.600">Assigned Issues</Heading>
+                        {issues.length > 0 ? (
+                            <Box overflowX="auto">
+                                <Table variant="simple">
+                                    <Thead>
+                                        <Tr>
+                                            <Th>ID</Th>
+                                            <Th>Type</Th>
+                                            <Th>Description</Th>
+                                            <Th>Status</Th>
+                                            <Th>Action</Th>
+                                        </Tr>
+                                    </Thead>
+                                    <Tbody>
+                                        {issues.map(issue => (
+                                            <Tr key={issue.id}>
+                                                <Td>{issue.id}</Td>
+                                                <Td>{issue.type}</Td>
+                                                <Td>{issue.description}</Td>
+                                                <Td>{issue.status}</Td>
+                                                <Td>
+                                                    {issue.status !== 'Resolved' && (
+                                                        <Button
+                                                            size="sm"
+                                                            colorScheme="green"
+                                                            onClick={() => markIssueResolved(issue.id)}
+                                                        >
+                                                            Resolve
+                                                        </Button>
+                                                    )}
+                                                </Td>
+                                            </Tr>
+                                        ))}
+                                    </Tbody>
+                                </Table>
+                            </Box>
+                        ) : (
+                            <Text>No issues assigned to you</Text>
+                        )}
+                    </Box>
                 </VStack>
             </Box>
+
+            {/* Footer */}
+            <Footer userRole="lecturer" />
         </Box>
     );
 };
