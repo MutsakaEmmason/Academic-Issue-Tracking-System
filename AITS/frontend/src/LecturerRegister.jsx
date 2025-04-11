@@ -4,6 +4,8 @@ import {
   Box, Button, FormControl, FormLabel, Input, 
   VStack, Text, Select, FormHelperText 
 } from "@chakra-ui/react";
+import Footer from './components/Footer.jsx';
+
 
 const collegeDepartments = {
   CAES: [
@@ -166,14 +168,13 @@ const LecturerRegister = () => {
       console.log("Response status:", response.status);
   
       if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.access); // Store the token in local storage
+        console.log("Stored token:", localStorage.getItem('token'));
         setMessage("Registration successful! Redirecting to dashboard...");
-        navigate("/lecturer-dashboard");
+        navigate("/lecturer-dashboard"); //login successful, redirect to dashboard
       } else {
         const data = await response.json();
-
-        console.error("Registration error:", data);
-        setMessage(data.error || "Registration failed, please try again.");
-
         console.error("Registration error:", data);
         setMessage(data.error || "Registration failed, please try again.");
       }
@@ -185,7 +186,8 @@ const LecturerRegister = () => {
   
 
   return (
-    <Box maxW="md" mx="auto" p={4} borderRadius="md" boxShadow="md" bg="white">
+    <Box minH="100vh" bg="green" display="flex" flexDirection="column">
+      <Box flex="1" maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white" my={10}>
       <VStack spacing={4} align="stretch">
         <Text fontSize="2xl" fontWeight="bold" textAlign="center">
           Lecturer Registration
@@ -268,8 +270,15 @@ const LecturerRegister = () => {
             </Button>
           </VStack>
         </form>
-      </VStack>
+      </VStack>     
+      
     </Box>
+    <Footer userRole="lecturer" />
+
+    
+    </Box>
+    
+    
   );
 };
 
