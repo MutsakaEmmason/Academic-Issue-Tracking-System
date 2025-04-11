@@ -9,7 +9,9 @@ import {
     Spinner,
     Heading,
     Divider,
-    Badge
+    Badge,
+    FormControl,
+    FormLabel
 } from "@chakra-ui/react";
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +25,7 @@ const AcademicRegistrarDashboard = () => {
     const [selectedLecturer, setSelectedLecturer] = useState("");
     const [issueDetails, setIssueDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAssigning, setIsAssigning] = useState(false);
     const [registrarCollege, setRegistrarCollege] = useState("");
     const toast = useToast();
     const navigate = useNavigate();
@@ -74,6 +77,7 @@ const AcademicRegistrarDashboard = () => {
                     if (lecturersResponse.ok) {
                         const data = await lecturersResponse.json();
                         setLecturers(data);
+                        console.log("Fetched lecturers:", data); // Debug log
                     } else {
                         toast({ title: "Error fetching lecturers.", status: "error", duration: 5000, isClosable: true });
                     }
@@ -117,6 +121,7 @@ const AcademicRegistrarDashboard = () => {
             return;
         }
 
+        setIsAssigning(true);
         try {
             const token = localStorage.getItem("accessToken");
             const response = await fetch(`http://127.0.0.1:8000/api/issues/${selectedIssue.id}/assign/`, {
@@ -130,8 +135,23 @@ const AcademicRegistrarDashboard = () => {
 
             if (response.ok) {
                 const updatedIssue = await response.json();
+                
+                // Update the issue in the issues list
+                setIssues(issues.map(issue => 
+                    issue.id === updatedIssue.id ? updatedIssue : issue
+                ));
+                
                 setIssueDetails(updatedIssue);
-                toast({ title: "Issue assigned successfully!", status: "success", duration: 5000, isClosable: true });
+                toast({ 
+                    title: "Issue assigned successfully!", 
+                    description: `Issue has been assigned to the selected lecturer.`,
+                    status: "success", 
+                    duration: 5000, 
+                    isClosable: true 
+                });
+                
+                // Reset the lecturer selection
+                setSelectedLecturer("");
             } else {
                 const errorData = await response.json();
                 toast({ 
@@ -145,6 +165,8 @@ const AcademicRegistrarDashboard = () => {
         } catch (error) {
             console.error("Error assigning issue:", error);
             toast({ title: "Error assigning issue.", status: "error", duration: 5000, isClosable: true });
+        } finally {
+            setIsAssigning(false);
         }
     };
 
@@ -255,74 +277,78 @@ const AcademicRegistrarDashboard = () => {
                         <Heading as="h3" size="md" mb={4} color="white">Assign Issue</Heading>
                         <Divider mb={4} borderColor="gray.600" />
                         
-                        <Box mb={4}>
-                            {issues.length > 0 ? (
-                                <Text fontSize="sm" color="gray.300">
-                                    Showing {issues.length} pending issues
-                                </Text>
-                            ) : (
-                                <Text fontSize="sm" color="green.300">
-                                    No pending issues available
-                                </Text>
-                            )}
-                        </Box>
+                        <FormControl mb={4}>
+                            <FormLabel color="gray.300">Select Issue</FormLabel>
+                            <Box mb={2}>
+                                {issues.length > 0 ? (
+                                    <Text fontSize="sm" color="gray.300">
+                                        Showing {issues.length} pending issues
+                                    </Text>
+                                ) : (
+                                    <Text fontSize="sm" color="green.300">
+                                        No pending issues available
+                                    </Text>
+                                )}
+                            </Box>
+                            <Select 
+                                placeholder="Select Issue" 
+                                onChange={(e) => handleIssueSelect(e.target.value)}
+                                value={selectedIssue ? selectedIssue.id : ""}
+                                bg="gray.700"
+                                color="white"
+                                borderColor="gray.600"
+                                _hover={{ borderColor: "gray.500" }}
+                                _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
+                            >
+                                {issues.map((issue) => (
+                                    <option key={issue.id} value={issue.id} style={{backgroundColor: "#2D3748", color: "white"}}>
+                                        {issue.title || "Untitled Issue"}
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
                         
-                        <Select 
-                            placeholder="Select Issue" 
-                            onChange={(e) => handleIssueSelect(e.target.value)}
-                            value={selectedIssue ? selectedIssue.id : ""}
-                            mb={4}
-                            bg="gray.700"
-                            color="white"
-                            borderColor="gray.600"
-                            _hover={{ borderColor: "gray.500" }}
-                            _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
-                        >
-                            {issues.map((issue) => (
-                                <option key={issue.id} value={issue.id} style={{backgroundColor: "#2D3748", color: "white"}}>
-                                    {issue.title || "Untitled Issue"}
-                                </option>
-                            ))}
-                        </Select>
-                        
-                        <Box mb={4}>
-                            {lecturers.length > 0 ? (
-                                <Text fontSize="sm" color="gray.300">
-                                    {lecturers.length} lecturers from {registrarCollege} college
-                                </Text>
-                            ) : (
-                                <Text fontSize="sm" color="orange.300">
-                                    No lecturers available in {registrarCollege} college
-                                </Text>
-                            )}
-                        </Box>
-                        
-                        <Select 
-                            placeholder="Select Lecturer" 
-                            onChange={(e) => setSelectedLecturer(e.target.value)}
-                            value={selectedLecturer}
-                            mb={4}
-                            bg="gray.700"
-                            color="white"
-                            borderColor="gray.600"
-                            _hover={{ borderColor: "gray.500" }}
-                            _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
-                        >
-                            {lecturers.map((lecturer) => (
-                                <option key={lecturer.id} value={lecturer.id} style={{backgroundColor: "#2D3748", color: "white"}}>
-                                    {lecturer.first_name} {lecturer.last_name} ({lecturer.department || "No department"})
-                                </option>
-                            ))}
-                        </Select>
+                        <FormControl mb={4}>
+                            <FormLabel color="gray.300">Select Lecturer</FormLabel>
+                            <Box mb={2}>
+                                {lecturers.length > 0 ? (
+                                    <Text fontSize="sm" color="gray.300">
+                                        {lecturers.length} lecturers from {registrarCollege} college
+                                    </Text>
+                                ) : (
+                                    <Text fontSize="sm" color="orange.300">
+                                        No lecturers available in {registrarCollege} college
+                                    </Text>
+                                )}
+                            </Box>
+                            <Select 
+                                placeholder="Select Lecturer" 
+                                onChange={(e) => setSelectedLecturer(e.target.value)}
+                                value={selectedLecturer}
+                                bg="gray.700"
+                                color="white"
+                                borderColor="gray.600"
+                                _hover={{ borderColor: "gray.500" }}
+                                _focus={{ borderColor: "green.400", boxShadow: "0 0 0 1px #48BB78" }}
+                            >
+                                {lecturers.map((lecturer) => (
+                                    <option key={lecturer.id} value={lecturer.id} style={{backgroundColor: "#2D3748", color: "white"}}>
+                                        {lecturer.first_name} {lecturer.last_name} ({lecturer.department || "No department"})
+                                    </option>
+                                ))}
+                            </Select>
+                        </FormControl>
                         
                         <Flex direction="column" gap={3}>
                             <Button 
                                 colorScheme="green" 
                                 onClick={assignIssue}
-                                isDisabled={!selectedIssue || !selectedLecturer}
+                                isDisabled={!selectedIssue || !selectedLecturer || isAssigning}
                                 _disabled={{ opacity: 0.6, cursor: "not-allowed" }}
+                                isLoading={isAssigning}
+                                loadingText="Assigning..."
                             >
-                                Assign
+                                Assign to Lecturer
                             </Button>
                             <Button 
                                 colorScheme="blue" 
@@ -330,7 +356,7 @@ const AcademicRegistrarDashboard = () => {
                                 isDisabled={!selectedIssue}
                                 _disabled={{ opacity: 0.6, cursor: "not-allowed" }}
                             >
-                                Resolve
+                                Resolve Issue
                             </Button>
                         </Flex>
                     </Box>
@@ -378,7 +404,7 @@ const AcademicRegistrarDashboard = () => {
                                     </Flex>
                                     
                                     <Flex alignItems="flex-start">
-                                    <Text fontWeight="bold" width="150px" color="gray.700">Description:</Text>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Description:</Text>
                                         <Text color="gray.800">{issueDetails.description || "No description provided."}</Text>
                                     </Flex>
                                     
@@ -400,8 +426,12 @@ const AcademicRegistrarDashboard = () => {
                                     </Flex>
                                     
                                     <Flex>
-                                        <Text fontWeight="bold" width="150px" color="gray.700">Lecturer:</Text>
-                                        <Text color="gray.800">{issueDetails.lecturer || "Not assigned"}</Text>
+                                        <Text fontWeight="bold" width="150px" color="gray.700">Assigned To:</Text>
+                                        <Text color="gray.800">
+                                            {issueDetails.assigned_to ? 
+                                                `${issueDetails.assigned_to.first_name} ${issueDetails.assigned_to.last_name}` : 
+                                                "Not assigned"}
+                                        </Text>
                                     </Flex>
                                     
                                     <Flex>
@@ -418,6 +448,17 @@ const AcademicRegistrarDashboard = () => {
                                         <Text fontWeight="bold" width="150px" color="gray.700">Academic Year:</Text>
                                         <Text color="gray.800">{issueDetails.academicYear || "N/A"}</Text>
                                     </Flex>
+                                    
+                                    {issueDetails.assigned_to && (
+                                        <Box mt={4} p={4} bg="blue.50" borderRadius="md" borderLeft="4px solid" borderColor="blue.500">
+                                            <Text fontWeight="bold" color="blue.700">
+                                                This issue is currently assigned to {issueDetails.assigned_to.first_name} {issueDetails.assigned_to.last_name}
+                                            </Text>
+                                            <Text fontSize="sm" color="blue.600" mt={1}>
+                                                You can reassign it by selecting another lecturer and clicking "Assign to Lecturer"
+                                            </Text>
+                                        </Box>
+                                    )}
                                 </Flex>
                             </Box>
                         ) : (
