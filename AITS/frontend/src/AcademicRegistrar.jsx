@@ -475,7 +475,7 @@ const AcademicRegistrarDashboard = () => {
                                 border="1px dashed"
                                 borderColor="gray.300"
                             >
-                                <Text fontSize="lg" color="gray.600">
+                                <Text fontSize="lg" color="white.600">
                                     {issues.length > 0 
                                         ? "Select an issue to view its details" 
                                         : "No pending issues available"}
