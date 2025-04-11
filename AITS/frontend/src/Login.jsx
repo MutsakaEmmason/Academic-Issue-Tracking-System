@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, FormControl, FormLabel, Input, VStack, Text } from "@chakra-ui/react";
+import Footer from './components/Footer.jsx';
 
 const LecturerLogin = () => {
     const navigate = useNavigate();
@@ -69,7 +70,8 @@ const LecturerLogin = () => {
     };
 
     return (
-        <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white">
+    <Box minH="100vh"  bg="green"  p={0} m={0} overflow="auto">
+        <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white" my={10}>
             <VStack spacing={4} align="stretch">
                 <Text fontSize="2xl" fontWeight="bold" textAlign="center">
                     Lecturer Login
@@ -99,7 +101,7 @@ const LecturerLogin = () => {
                             />
                         </FormControl>
 
-                        <Button colorScheme="red" type="submit" width="full" mt={4} isLoading={loading}>
+                        <Button colorScheme="blue" type="submit" width="full" mt={4} isLoading={loading}>
                             Login
                         </Button>
                     </VStack>
@@ -109,7 +111,7 @@ const LecturerLogin = () => {
                     Don't have an account?{" "}
                     <Button
                         variant="link"
-                        color="purple.500"
+                        color="red.500"
                         onClick={() => navigate("/lecturer-register")}
                     >
                         Register here
@@ -117,6 +119,8 @@ const LecturerLogin = () => {
                 </Text>
             </VStack>
         </Box>
+        <Footer userRole="lecturer" />
+    </Box>
     );
 };
 
