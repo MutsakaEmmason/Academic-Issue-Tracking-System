@@ -19,7 +19,7 @@ const AcademicRegistrarDashboard = () => {
     const [selectedIssue, setSelectedIssue] = useState(null);
     const [selectedLecturer, setSelectedLecturer] = useState("");
     const [issueDetails, setIssueDetails] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);  // Loading state
+    const [isLoading, setIsLoading] = useState(false);
     const [activeMenu, setActiveMenu] = useState("dashboard");
     const toast = useToast();
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ const AcademicRegistrarDashboard = () => {
         };
 
         const fetchIssues = async () => {
-            setIsLoading(true);  // Set loading true when fetching
+            setIsLoading(true);
             try {
                 const token = localStorage.getItem("accessToken");
                 if (!token) {
@@ -66,7 +66,9 @@ const AcademicRegistrarDashboard = () => {
 
                 if (issuesResponse.ok) {
                     const data = await issuesResponse.json();
-                    setIssues(data);
+                    // Only show unresolved issues
+                    const unresolvedIssues = data.filter(issue => issue.status !== 'resolved');
+                    setIssues(unresolvedIssues);
                 } else {
                     toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
                 }
@@ -74,7 +76,7 @@ const AcademicRegistrarDashboard = () => {
                 console.error("Error fetching issues:", error);
                 toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
             } finally {
-                setIsLoading(false);  // Set loading false when fetching is done
+                setIsLoading(false);
             }
         };
 
@@ -122,22 +124,43 @@ const AcademicRegistrarDashboard = () => {
 
         try {
             const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/issues/${selectedIssue.id}/resolve/`, {
-                method: "PATCH",
+            const response = await fetch(`http://127.0.0.1:8000/api/resolve-issue/${selectedIssue.id}/`, {
+                method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
+                body: JSON.stringify({ 
+                    resolution_note: "Issue resolved by registrar" 
+                }),
             });
-
+            
             if (response.ok) {
-                const updatedIssue = await response.json();
-                setIssueDetails(updatedIssue);
-                toast({ title: "Issue resolved successfully!", status: "success", duration: 5000, isClosable: true });
+                // Remove the resolved issue from the issues list
+                setIssues(issues.filter(issue => issue.id !== selectedIssue.id));
+                
+                // Clear the selected issue and issue details if the resolved issue was selected
+                setSelectedIssue(null);
+                setIssueDetails(null);
+                
+                toast({ 
+                    title: "Issue resolved successfully!", 
+                    status: "success", 
+                    duration: 5000, 
+                    isClosable: true 
+                });
             } else {
-                toast({ title: "Failed to resolve issue.", status: "error", duration: 5000, isClosable: true });
+                const errorData = await response.json();
+                toast({ 
+                    title: "Failed to resolve issue.", 
+                    description: errorData.error || "Unknown error occurred",
+                    status: "error", 
+                    duration: 5000, 
+                    isClosable: true 
+                });
             }
         } catch (error) {
+            console.error("Error resolving issue:", error);
             toast({ title: "Error resolving issue.", status: "error", duration: 5000, isClosable: true });
         }
     };
@@ -162,7 +185,7 @@ const AcademicRegistrarDashboard = () => {
                 top="0"
                 zIndex="1000"
             >
-                <Text fontSize="2xl" fontWeight="bold">ACADEMIc REGISTRAR DASHBOARD</Text>
+                <Text fontSize="2xl" fontWeight="bold">ACADEMIC REGISTRAR DASHBOARD</Text>
                 <Flex gap={3}>
                     <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>About Us</Button>
                     <Button colorScheme="red" onClick={() => {
@@ -174,61 +197,103 @@ const AcademicRegistrarDashboard = () => {
                 </Flex>
             </Flex>
 
-            {/* Main Content Area */}
+            {/* Main Content */}
             <Flex mt="80px" flex="1">
                 {/* Sidebar */}
                 <Box className={`sidebar ${isOpen ? "open" : ""}`}>
                     <button className="toggle-btn" onClick={toggleSidebar}><FaBars /></button>
-
                     <div className="assignment-section">
                         <h3>Assign Issue</h3>
-
                         <Box mb={2}>
                             {issues.length > 0 ? (
                                 <Text fontSize="sm" color="gray.600">
-                                    Showing {issues.length} issues
+                                    Showing {issues.length} pending issues
                                 </Text>
                             ) : (
-                                <Text fontSize="sm" color="red.500">
-                                    No issues available
+                                <Text fontSize="sm" color="green.500">
+                                    No pending issues available
                                 </Text>
                             )}
                         </Box>
-
-                        <Select placeholder="Select Issue" onChange={(e) => handleIssueSelect(e.target.value)}>
+                        <Select 
+                            placeholder="Select Issue" 
+                            onChange={(e) => handleIssueSelect(e.target.value)}
+                            value={selectedIssue ? selectedIssue.id : ""}
+                        >
                             {issues.map((issue) => (
                                 <option key={issue.id} value={issue.id}>{issue.title || "Untitled Issue"}</option>
                             ))}
                         </Select>
-
-                        <Select placeholder="Select Lecturer" onChange={(e) => setSelectedLecturer(e.target.value)}>
+                        <Select 
+                            placeholder="Select Lecturer" 
+                            onChange={(e) => setSelectedLecturer(e.target.value)}
+                            value={selectedLecturer}
+                        >
                             {lecturers.map((lecturer) => (
                                 <option key={lecturer.id} value={lecturer.id}>{lecturer.fullName}</option>
                             ))}
                         </Select>
-
-                        <Button colorScheme="green" onClick={assignIssue} mt={2}>Assign</Button>
-                        <Button colorScheme="blue" onClick={resolveIssue} mt={2}>Resolve</Button> {/* Resolve Button */}
+                        <Button 
+                            colorScheme="green" 
+                            onClick={assignIssue} 
+                            mt={2}
+                            isDisabled={!selectedIssue || !selectedLecturer}
+                        >
+                            Assign
+                        </Button>
+                        <Button 
+                            colorScheme="blue" 
+                            onClick={resolveIssue} 
+                            mt={2}
+                            isDisabled={!selectedIssue}
+                        >
+                            Resolve
+                        </Button>
                     </div>
                 </Box>
 
                 {/* Dynamic Content */}
-                <Box p={4} flex="1" ml={isOpen ? "250px" : "80px"}>
-                    {isLoading && <Spinner size="xl" />}
-                    {issueDetails && (
-                        <Box mt={4} p={4} borderWidth="1px" borderRadius="lg">
-                            <Text fontSize="xl" mb={2}>Issue Details</Text>
-                            <Text><strong>Student Name:</strong> {issueDetails.studentName}</Text>
-                            <Text><strong>Title:</strong> {issueDetails.title}</Text>
-                            <Text><strong>Description:</strong> {issueDetails.description}</Text>
-                            <Text><strong>Status:</strong> {issueDetails.status}</Text>
-                            <Text><strong>Course Code:</strong> {issueDetails.courseCode}</Text>
-                            <Text><strong>Student ID:</strong> {issueDetails.studentId}</Text>
-                            <Text><strong>Lecturer:</strong> {issueDetails.lecturer}</Text>
-                            <Text><strong>Department:</strong> {issueDetails.department}</Text>
-                            <Text><strong>Semester:</strong> {issueDetails.semester}</Text>
-                            <Text><strong>Academic Year:</strong> {issueDetails.academicYear}</Text>
+                <Box
+                    p={6}
+                    flex="1"
+                    ml={isOpen ? "250px" : "80px"}
+                    background="gray.50"
+                    minHeight="calc(100vh - 80px)"
+                >
+                    {isLoading && (
+                        <Flex justify="center" align="center" minH="200px">
+                            <Spinner size="xl" />
+                        </Flex>
+                    )}
+                    {issueDetails ? (
+                        <Box
+                            bg="white"
+                            p={6}
+                            borderRadius="md"
+                            boxShadow="md"
+                            maxWidth="800px"
+                            mx="auto"
+                        >
+                            <Text fontSize="2xl" fontWeight="bold" mb={4}>Issue Details</Text>
+                            <Text mb={2}><strong>Student Name:</strong> {issueDetails.studentName || "N/A"}</Text>
+                            <Text mb={2}><strong>Title:</strong> {issueDetails.title || "Untitled Issue"}</Text>
+                            <Text mb={2}><strong>Description:</strong> {issueDetails.description || "No description provided."}</Text>
+                            <Text mb={2}><strong>Status:</strong> {issueDetails.status}</Text>
+                            <Text mb={2}><strong>Course Code:</strong> {issueDetails.courseCode}</Text>
+                            <Text mb={2}><strong>Student ID:</strong> {issueDetails.studentId}</Text>
+                            <Text mb={2}><strong>Lecturer:</strong> {issueDetails.lecturer}</Text>
+                            <Text mb={2}><strong>Department:</strong> {issueDetails.department}</Text>
+                            <Text mb={2}><strong>Semester:</strong> {issueDetails.semester}</Text>
+                            <Text mb={2}><strong>Academic Year:</strong> {issueDetails.academicYear}</Text>
                         </Box>
+                    ) : (
+                        <Flex justify="center" align="center" minH="200px">
+                            <Text fontSize="lg" color="gray.600">
+                                {issues.length > 0 
+                                    ? "Select an issue to view its details" 
+                                    : "No pending issues available"}
+                            </Text>
+                        </Flex>
                     )}
                 </Box>
             </Flex>
