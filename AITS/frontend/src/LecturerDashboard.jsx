@@ -204,7 +204,7 @@ const LecturerDashboard = () => {
                                 </Table>
                             </Box>
                         ) : (
-                            <Text>No issues assigned to you</Text>
+                            <Text>No issues assigned </Text>
                         )}
                     </Box>
                 </VStack>
