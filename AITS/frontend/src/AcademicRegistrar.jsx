@@ -20,31 +20,19 @@ const AcademicRegistrarDashboard = () => {
     const [selectedLecturer, setSelectedLecturer] = useState("");
     const [issueDetails, setIssueDetails] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [activeMenu, setActiveMenu] = useState("dashboard");
+    const [registrarCollege, setRegistrarCollege] = useState("");
     const toast = useToast();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchLecturers = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:8000/api/lecturers/");
-                if (response.ok) {
-                    const data = await response.json();
-                    setLecturers(data);
-                }
-            } catch (error) {
-                console.error("Error fetching lecturers:", error);
-            }
-        };
-
-        const fetchIssues = async () => {
-            setIsLoading(true);
+        // First fetch the registrar profile to get the college
+        const fetchRegistrarProfile = async () => {
             try {
                 const token = localStorage.getItem("accessToken");
                 if (!token) {
                     toast({ title: "Please log in.", status: "error", duration: 5000, isClosable: true });
                     navigate('/login');
-                    return;
+                    return null;
                 }
 
                 const profileResponse = await fetch("http://127.0.0.1:8000/api/registrar-profile/", {
@@ -54,38 +42,71 @@ const AcademicRegistrarDashboard = () => {
                 if (!profileResponse.ok) {
                     toast({ title: "Failed to fetch profile.", status: "error", duration: 5000, isClosable: true });
                     navigate('/login');
-                    return;
+                    return null;
                 }
 
                 const registrarData = await profileResponse.json();
-                const college = registrarData.college;
-
-                const issuesResponse = await fetch(`http://127.0.0.1:8000/api/issues/?college=${college}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (issuesResponse.ok) {
-                    const data = await issuesResponse.json();
-                    // Only show unresolved issues
-                    const unresolvedIssues = data.filter(issue => issue.status !== 'resolved');
-                    setIssues(unresolvedIssues);
-                } else {
-                    toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
-                }
+                setRegistrarCollege(registrarData.college);
+                return registrarData.college;
             } catch (error) {
-                console.error("Error fetching issues:", error);
-                toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
-            } finally {
-                setIsLoading(false);
+                console.error("Error fetching registrar profile:", error);
+                toast({ title: "Error fetching profile.", status: "error", duration: 5000, isClosable: true });
+                return null;
             }
         };
 
-        fetchLecturers();
-        fetchIssues();
+        // Then fetch lecturers and issues based on the college
+        const fetchData = async () => {
+            setIsLoading(true);
+            const college = await fetchRegistrarProfile();
+            
+            if (college) {
+                // Fetch lecturers from the same college
+                try {
+                    const token = localStorage.getItem("accessToken");
+                    const lecturersResponse = await fetch(`http://127.0.0.1:8000/api/users/?role=lecturer&college=${college}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    if (lecturersResponse.ok) {
+                        const data = await lecturersResponse.json();
+                        setLecturers(data);
+                    } else {
+                        toast({ title: "Error fetching lecturers.", status: "error", duration: 5000, isClosable: true });
+                    }
+                } catch (error) {
+                    console.error("Error fetching lecturers:", error);
+                    toast({ title: "Error fetching lecturers.", status: "error", duration: 5000, isClosable: true });
+                }
+
+                // Fetch issues from the same college
+                try {
+                    const token = localStorage.getItem("accessToken");
+                    const issuesResponse = await fetch(`http://127.0.0.1:8000/api/issues/?college=${college}`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    if (issuesResponse.ok) {
+                        const data = await issuesResponse.json();
+                        // Only show unresolved issues
+                        const unresolvedIssues = data.filter(issue => issue.status !== 'resolved');
+                        setIssues(unresolvedIssues);
+                    } else {
+                        toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
+                    }
+                } catch (error) {
+                    console.error("Error fetching issues:", error);
+                    toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
+                }
+            }
+            
+            setIsLoading(false);
+        };
+
+        fetchData();
     }, [navigate, toast]);
 
     const toggleSidebar = () => setIsOpen(!isOpen);
-    const handleMenuClick = (menu) => setActiveMenu(menu);
 
     const assignIssue = async () => {
         if (!selectedIssue || !selectedLecturer) {
@@ -109,9 +130,17 @@ const AcademicRegistrarDashboard = () => {
                 setIssueDetails(updatedIssue);
                 toast({ title: "Issue assigned successfully!", status: "success", duration: 5000, isClosable: true });
             } else {
-                toast({ title: "Failed to assign issue.", status: "error", duration: 5000, isClosable: true });
+                const errorData = await response.json();
+                toast({ 
+                    title: "Failed to assign issue.", 
+                    description: errorData.error || "Unknown error occurred",
+                    status: "error", 
+                    duration: 5000, 
+                    isClosable: true 
+                });
             }
         } catch (error) {
+            console.error("Error assigning issue:", error);
             toast({ title: "Error assigning issue.", status: "error", duration: 5000, isClosable: true });
         }
     };
@@ -224,13 +253,28 @@ const AcademicRegistrarDashboard = () => {
                                 <option key={issue.id} value={issue.id}>{issue.title || "Untitled Issue"}</option>
                             ))}
                         </Select>
+                        
+                        <Box mt={2} mb={2}>
+                            {lecturers.length > 0 ? (
+                                <Text fontSize="sm" color="gray.600">
+                                    {lecturers.length} lecturers from {registrarCollege} college
+                                </Text>
+                            ) : (
+                                <Text fontSize="sm" color="orange.500">
+                                    No lecturers available in {registrarCollege} college
+                                </Text>
+                            )}
+                        </Box>
+                        
                         <Select 
                             placeholder="Select Lecturer" 
                             onChange={(e) => setSelectedLecturer(e.target.value)}
                             value={selectedLecturer}
                         >
                             {lecturers.map((lecturer) => (
-                                <option key={lecturer.id} value={lecturer.id}>{lecturer.fullName}</option>
+                                <option key={lecturer.id} value={lecturer.id}>
+                                    {lecturer.first_name} {lecturer.last_name} ({lecturer.department || "No department"})
+                                </option>
                             ))}
                         </Select>
                         <Button 
