@@ -455,7 +455,7 @@ const AcademicRegistrarDashboard = () => {
                                                 This issue is currently assigned to {issueDetails.assigned_to.first_name} {issueDetails.assigned_to.last_name}
                                             </Text>
                                             <Text fontSize="sm" color="blue.600" mt={1}>
-                                                You can reassign it by selecting another lecturer and clicking "Assign to Lecturer"
+                                                You reassign it by selecting another lecturer and clicking "Assign to Lecturer"
                                             </Text>
                                         </Box>
                                     )}
