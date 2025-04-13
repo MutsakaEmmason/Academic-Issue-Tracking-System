@@ -17,7 +17,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validated_data['role'] = role
         password = validated_data.pop('password')
         user = CustomUser(**validated_data)
-        user.set_password(password)  # Hash the password before saving
+        user.set_password(password)  # Hash the password before 
         user.save()
         return user
 
