@@ -87,7 +87,7 @@ const LecturerLogin = () => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
+                                placeholder="Enter your email here"
                             />
                         </FormControl>
 
