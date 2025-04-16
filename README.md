@@ -30,7 +30,7 @@ Details: Students provide relevant information such as course codes and descript
    
    Notifications
 
-In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues.
+In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues
 
   Dashboard
  
@@ -43,7 +43,7 @@ Activity Log: A log of all actions performed on each issue for transparency and 
 Security
 Role-Based Access Control: Ensures users only have access to features and data they are authorized to view
 
-     Setup Instructions
+     Setup Instructions.
  
  
  Backend Setup (Django)
