@@ -50,7 +50,7 @@ Role-Based Access Control: Ensures users only have access to features and data t
 Clone the repository:
 
 bash
-git clone https://github.com/your-username/aits.git
+git clone https://github.com/your-username/aits.git,
 cd aits
 Set up a Python virtual environment (optional but recommended):
 
