@@ -138,15 +138,15 @@ const LecturerDashboard = () => {
                     </VStack>
                     <HStack spacing={4}>
                         <Button 
-                            colorScheme="whiteAlpha"
-                            variant="outline"
+                            colorScheme="purple"
+                            variant="solid"
                             onClick={() => navigate('/about')}
                         >
                             About Us
                         </Button>
                         <Button 
-                            colorScheme="whiteAlpha"
-                            variant="outline"
+                            colorScheme="purple"
+                            variant="solid"
                             onClick={handleLogout}
                         >
                             Logout
@@ -165,7 +165,7 @@ const LecturerDashboard = () => {
                             <Text><strong>Name:</strong> {lecturer?.fullName}</Text>
                             <Text><strong>Email:</strong> {lecturer?.email}</Text>
                             <Text>
-                                <strong>Courses:</strong> {lecturer?.courses_taught?.join(', ') || 'None assigned'}
+                                <strong>courses_taught:</strong> {lecturer?.courses_taught?.join(', ') || 'None assigned'}
                             </Text>
                         </VStack>
                     </Box>
