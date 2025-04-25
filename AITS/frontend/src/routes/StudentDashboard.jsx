@@ -83,7 +83,7 @@ const StudentDashboard = () => {
 
     if (loading) {
         return (
-            <Flex justify="center" align="center" height="100vh">
+            <Flex justify="center" align="center" height="100vh" bg="gray.50">
                 <Spinner size="xl" />
             </Flex>
         );
@@ -94,83 +94,130 @@ const StudentDashboard = () => {
     }
 
     return (
-        <Flex direction="column" minHeight="100vh">
-            <Flex p={4} bg="green.500" color="white" justify="space-between" align="center" width="100%" position="fixed" top="0" zIndex="100">
+        <Flex direction="column" minHeight="100vh" bg="gray.50">
+            {/* HEADER */}
+            <Flex
+                p={4}
+                bg="green.600"
+                color="white"
+                justify="space-between"
+                align="center"
+                width="100%"
+                position="fixed"
+                top="0"
+                zIndex="100"
+                shadow="md"
+            >
                 <Box>
-                    <h1 style={{ fontSize: '2.5em' }}>STUDENT DASHBOARD</h1>
+                    <h1 style={{ fontSize: '2.2em', fontWeight: 'bold' }}>Student Dashboard</h1>
                 </Box>
-                <Flex align="center">
-                    <p style={{ marginRight: '20px' }}>WELCOME, {studentData.fullName}</p>
-                    <Button onClick={() => navigate('/issue-submission', { state: { studentName: studentData.fullName } })} colorScheme="green" mr={2}>Submit Issue</Button>
-                    <Button onClick={() => navigate('/about')} colorScheme="green" mr={2}>About Us</Button>
-                    <Button onClick={handleLogout} colorScheme="red">Logout</Button>
+                <Flex align="center" gap={3}>
+                    <Box fontWeight="medium">Welcome, {studentData.fullName}</Box>
+                    <Button
+                        onClick={() =>
+                            navigate('/issue-submission', { state: { studentName: studentData.fullName } })
+                        }
+                        colorScheme="whiteAlpha"
+                        variant="outline"
+                    >
+                        Submit Issue
+                    </Button>
+                    <Button onClick={() => navigate('/about')} colorScheme="whiteAlpha" variant="outline">
+                        About Us
+                    </Button>
+                    <Button onClick={handleLogout} colorScheme="red" variant="solid">
+                        Logout
+                    </Button>
                 </Flex>
             </Flex>
 
-            <Flex mt={20} justify="center" align="center"> {/* Center the search bar */} 
-                <Box width="80%" maxWidth="900px" mt={4}>
+            {/* SEARCH BAR */}
+            <Flex mt={24} justify="center" px={4}>
+                <Box
+                    width="100%"
+                    maxWidth="1000px"
+                    bg="white"
+                    p={6}
+                    rounded="xl"
+                    shadow="md"
+                    border="1px solid"
+                    borderColor="gray.100"
+                >
                     <FormControl>
-                        <FormLabel>Search by Category</FormLabel>
-                        <Flex alignItems="center" gap={2}>
-                            <Input 
-                                type="text" 
-                                placeholder="Enter issue category..." 
-                                value={searchTerm} 
-                                onChange={(e) => setSearchTerm(e.target.value)} 
-                                border="1px solid green" 
-                                width="80%" 
+                        <FormLabel fontWeight="bold" fontSize="md">Search by Category</FormLabel>
+                        <Flex alignItems="center" gap={3}>
+                            <Input
+                                type="text"
+                                placeholder="Enter issue category..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                borderColor="green.400"
+                                focusBorderColor="green.600"
                             />
-                            <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>Search</Button>
+                            <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>
+                                Search
+                            </Button>
                         </Flex>
                     </FormControl>
                 </Box>
             </Flex>
 
-            <Box width="100%" overflowX="auto" mt={4} flexGrow={1} align="center">
-                {filteredIssues.length > 0 ? (
-                    <Table variant="simple" size="sm">
-                        <Thead>
-                            <Tr>
-                                <Th minWidth="150px">Title</Th>
-                                <Th minWidth="150px">Student Name</Th>
-                                <Th minWidth="100px">Student ID</Th>
-                                <Th minWidth="100px">Status</Th>
-                                <Th minWidth="150px">Category</Th>
-                                <Th minWidth="120px">Course Code</Th>
-                                <Th minWidth="100px">Priority</Th>
-                                <Th minWidth="150px">Lecturer</Th>
-                                <Th minWidth="150px">Department</Th>
-                                <Th minWidth="100px">Semester</Th>
-                                <Th minWidth="150px">Academic Year</Th>
-                                <Th minWidth="150px">Issue Date</Th>
-                                <Th minWidth="100px">Actions</Th>
-                            </Tr>
-                        </Thead>
-                        <Tbody>
-                            {filteredIssues.map((issue) => (
-                                <Tr key={issue.id}>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.title}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentName}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.studentId}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.status}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.category}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.courseCode}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.priority}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.lecturer}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.department}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.semester}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.academicYear}</Td>
-                                    <Td whiteSpace="nowrap" fontSize="sm" p={1}>{issue.issueDate}</Td>
-                                    <Td>
-                                        <Button size="sm" onClick={() => handleViewDetails(issue.id)}>View</Button>
-                                    </Td>
+            {/* TABLE */}
+            <Box px={4} py={6} width="100%" flexGrow={1} display="flex" justifyContent="center">
+                <Box width="100%" maxWidth="1000px" bg="white" p={6} rounded="xl" shadow="md" overflowX="auto">
+                    {filteredIssues.length > 0 ? (
+                        <Table variant="striped" colorScheme="green" size="sm">
+                            <Thead bg="green.100">
+                                <Tr>
+                                    <Th>Title</Th>
+                                    <Th>Student Name</Th>
+                                    <Th>Student ID</Th>
+                                    <Th>Status</Th>
+                                    <Th>Category</Th>
+                                    <Th>Course Code</Th>
+                                    <Th>Priority</Th>
+                                    <Th>Lecturer</Th>
+                                    <Th>Department</Th>
+                                    <Th>Semester</Th>
+                                    <Th>Academic Year</Th>
+                                    <Th>Issue Date</Th>
+                                    <Th>Actions</Th>
                                 </Tr>
-                            ))}
-                        </Tbody>
-                    </Table>
-                ) : (
-                    <p>No issue submitted. Please submit an issue.</p>
-                )}
+                            </Thead>
+                            <Tbody>
+                                {filteredIssues.map((issue) => (
+                                    <Tr
+                                        key={issue.id}
+                                        _hover={{ bg: 'gray.50', cursor: 'pointer' }}
+                                        transition="0.2s"
+                                    >
+                                        <Td>{issue.title}</Td>
+                                        <Td>{issue.studentName}</Td>
+                                        <Td>{issue.studentId}</Td>
+                                        <Td>{issue.status}</Td>
+                                        <Td>{issue.category}</Td>
+                                        <Td>{issue.courseCode}</Td>
+                                        <Td>{issue.priority}</Td>
+                                        <Td>{issue.lecturer}</Td>
+                                        <Td>{issue.department}</Td>
+                                        <Td>{issue.semester}</Td>
+                                        <Td>{issue.academicYear}</Td>
+                                        <Td>{issue.issueDate}</Td>
+                                        <Td>
+                                            <Button size="xs" colorScheme="blue" onClick={() => handleViewDetails(issue.id)}>
+                                                View
+                                            </Button>
+                                        </Td>
+                                    </Tr>
+                                ))}
+                            </Tbody>
+                        </Table>
+                    ) : (
+                        <Box textAlign="center" py={4} color="gray.600">
+                            No issue submitted. Please submit an issue.
+                        </Box>
+                    )}
+                </Box>
             </Box>
 
             <Footer userRole="student" />
