@@ -7,7 +7,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import LecturerRegister from "./LecturerRegister"; // Import the missing component
 import StudentLogin from "./student_login";
 
-
+import AboutUs from './components/AboutUs';
 import Home from "./home";
 import Register from "./routes/register"
 import LecturerLogin from "./Login";
@@ -63,7 +63,7 @@ const App = () => {
                     {/* Registrar Routes */}
                     <Route path="/registrar-login" element={<RegistrarLogin />} />
                     <Route path="/registrar-signup" element={<RegistrarSignup />} />  
-
+                    <Route path="/about" element={<AboutUs />} />
                     <Route path="/issue/:issueId" element={
                         <ProtectedRoute>
                             <IssueData />
