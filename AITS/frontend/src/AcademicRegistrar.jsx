@@ -41,7 +41,7 @@ const AcademicRegistrarDashboard = () => {
                         duration: 5000,
                         isClosable: true
                     });
-                    navigate('/login'); // Redirect to login if no token
+                    navigate('/registrar-login'); // Redirect to login if no token
                     return;
                 }
 
@@ -60,7 +60,7 @@ const AcademicRegistrarDashboard = () => {
                         duration: 5000,
                         isClosable: true
                     });
-                    navigate('/login'); // Redirect on unauthorized
+                    navigate('/registrar-login'); // Redirect on unauthorized
                     return;
                 }
 
@@ -94,7 +94,7 @@ const AcademicRegistrarDashboard = () => {
                         duration: 5000,
                         isClosable: true
                     });
-                    navigate('/login'); // Redirect on unauthorized
+                    navigate('/registrar-login'); // Redirect on unauthorized
                     return;
                 }
 
@@ -153,7 +153,7 @@ const AcademicRegistrarDashboard = () => {
                 setIssueDetails(updatedIssue);
             } else if (response.status === 401 || response.status === 403) {
                 toast({ title: "Unauthorized.", status: "error", duration: 5000, isClosable: true });
-                navigate('/login');
+                navigate('/registrar-login');
             } else {
                 toast({ title: "Failed to assign issue.", status: "error", duration: 5000, isClosable: true });
             }
