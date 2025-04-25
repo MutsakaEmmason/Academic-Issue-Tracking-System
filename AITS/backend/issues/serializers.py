@@ -7,18 +7,28 @@ from django.contrib.auth.hashers import make_password
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
     role = serializers.CharField(write_only=True, default='registrar')  # Default role set to 'registrar'
+    courses_taught = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=False)  # Accept array from frontend
+   
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy')
+        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy','courses_taught')
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         role = validated_data.get('role', 'registrar')  # Default to 'registrar' if not provided
         validated_data['role'] = role
         password = validated_data.pop('password')
+        courses_taught = validated_data.pop('courses_taught', [])  # Get array, default to empty
+        
+        # Convert list to comma-separated string for TextField
+        validated_data['courses_taught'] = ', '.join(courses_taught) if courses_taught else ''
+        
         user = CustomUser(**validated_data)
         user.set_password(password)  # Hash the password before saving
         user.save()
+        print("Saved user:", user.__dict__)  # Debug
+        
         return user
 
 

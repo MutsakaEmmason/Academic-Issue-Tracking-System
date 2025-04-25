@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenVerifyView, TokenRefreshView
 from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
 from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView, UserRegistrationView, \
-    LecturerRegistrationView, CustomTokenObtainPairView, RegistrarSignupView, UserProfileView, LecturerDetailsView,  RegistrarProfileView
+    LecturerRegistrationView, CustomTokenObtainPairView, AssignIssueView, ResolveIssueView, RegistrarSignupView, UserProfileView, LecturerDetailsView,  RegistrarProfileView
 
 # Initialize the router
 router = DefaultRouter()
@@ -27,6 +27,11 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='user-registration'),
     path('lecturer/register/', LecturerRegistrationView.as_view(), name='lecturer-registration'),
     path('lecturer/login/', CustomTokenObtainPairView.as_view(), name='lecturer-login'),
+    path('resolve-issue/<int:issue_id>/', ResolveIssueView.as_view(), name='resolve-issue'),
+    path('issues/<int:issue_id>/assign/', AssignIssueView.as_view(), name='assign-issue'),
+
+
+
 
     # Profile and details
     path('student-profile/', UserProfileView.as_view(), name='student-profile'),

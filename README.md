@@ -17,7 +17,7 @@ User Roles and Permissions
 
 Students: Log issues, view status, update issue details.
 
-Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads
+Academic Registrar: Review and resolve issues, assign issues to lecturers or department heads.
 
 Lecturers/Heads of Departments: Resolve assigned issues, update issue status.
 
@@ -30,7 +30,7 @@ Details: Students provide relevant information such as course codes and descript
    
    Notifications
 
-In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues.
+In-app & Email Notifications: Users are notified of status changes, and alerts are generated for overdue or unresolved issues
 
   Dashboard
  
@@ -43,14 +43,14 @@ Activity Log: A log of all actions performed on each issue for transparency and 
 Security
 Role-Based Access Control: Ensures users only have access to features and data they are authorized to view
 
-     Setup Instructions
+     Setup Instructions.
  
  
  Backend Setup (Django)
 Clone the repository:
 
 bash
-git clone https://github.com/your-username/aits.git
+git clone https://github.com/your-username/aits.git,
 cd aits
 Set up a Python virtual environment (optional but recommended):
 

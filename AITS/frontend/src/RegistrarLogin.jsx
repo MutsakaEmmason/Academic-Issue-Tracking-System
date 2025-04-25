@@ -68,6 +68,7 @@ const RegistrarLogin = () => {
       borderRadius: '8px',
       backgroundColor: 'white'
     },
+
     title: {
       textAlign: 'center',
       color: '#2C7A7B',
@@ -175,7 +176,7 @@ const RegistrarLogin = () => {
           style={styles.link}
           onClick={() => navigate('/registrar-signup')}
         >
-          Sign up
+          Sign Up
         </span>
       </div>
     </div>

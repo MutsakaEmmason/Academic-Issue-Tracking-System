@@ -235,6 +235,81 @@ class RegistrarSignupView(generics.CreateAPIView):
             }
             return Response(res, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class ResolveIssueView(APIView):
+    permission_classes = [IsAuthenticated, IsRegistrar]  # Only allow registrars to access this view
+
+    def post(self, request, issue_id, *args, **kwargs):
+        # Ensure the user is a registrar
+        user = request.user
+        if user.role != 'registrar':
+            return Response({"error": "Only registrars can resolve issues."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Get the issue object
+        issue = get_object_or_404(Issue, id=issue_id)
+
+        # Check if the registrar is from the same college as the issue
+        if issue.college != user.college:
+            return Response({"error": "You can only resolve issues from your own college."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Update the issue status to 'resolved'
+        issue.status = 'resolved'
+        issue.resolution_note = request.data.get("resolution_note", "No resolution note provided.")  # Optional note
+        issue.save()
+
+        # Optionally, create a comment indicating the issue was resolved by the registrar
+        Comment.objects.create(
+            issue=issue,
+            user=user,
+            text=f"Issue resolved by registrar: {issue.resolution_note}"
+        )
+
+        # Send a notification (or email) about the resolution
+        send_email_notification(issue.student, "Issue Resolved", f"Your issue '{issue.title}' has been resolved by the registrar.")
+
+        return Response({"message": "Issue resolved successfully."}, status=status.HTTP_200_OK)
+    
+class AssignIssueView(APIView):
+    permission_classes = [IsAuthenticated, IsRegistrar]
+    
+    def patch(self, request, issue_id, *args, **kwargs):
+        # Ensure the user is a registrar
+        user = request.user
+        if user.role != 'registrar':
+            return Response({"error": "Only registrars can assign issues."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Get the issue object
+        issue = get_object_or_404(Issue, id=issue_id)
+        
+        # Check if the registrar is from the same college as the issue
+        if issue.college != user.college:
+            return Response({"error": "You can only assign issues from your own college."}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Get the lecturer to assign the issue to
+        lecturer_id = request.data.get('assigned_to')
+        if not lecturer_id:
+            return Response({"error": "No lecturer specified."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            lecturer = CustomUser.objects.get(id=lecturer_id, role='lecturer', college=user.college)
+        except CustomUser.DoesNotExist:
+            return Response({"error": "Lecturer not found or not from your college."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Assign the issue to the lecturer
+        issue.assigned_to = lecturer
+        issue.status = 'assigned'  # Update status to reflect assignment
+        issue.save()
+        
+        # Create a comment to log the assignment
+        Comment.objects.create(
+            issue=issue,
+            user=user,
+            text=f"Issue assigned to lecturer {lecturer.first_name} {lecturer.last_name} by registrar."
+        )
+        
+        # Return the updated issue
+        serializer = IssueSerializer(issue)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Student Profile View
 class StudentProfileView(generics.RetrieveAPIView):

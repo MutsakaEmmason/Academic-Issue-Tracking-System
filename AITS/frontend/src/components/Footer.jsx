@@ -23,8 +23,8 @@ const Footer = () => {
         <VStack align="start">
           <Text fontWeight="bold" color="red">Contact Us</Text>
           <Text>Email: info@aits.com</Text>
-          <Text>Phone: +1 123 456 7890</Text>
-          <Text>Address: 123 Main St, City</Text>
+          <Text>Phone: +(414) 531343437</Text>
+          <Text>Address: Makerere, Kampala, Uganda</Text>
         </VStack>
 
         {/* Follow Us Section */}
