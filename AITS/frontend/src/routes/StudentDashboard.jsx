@@ -17,6 +17,7 @@ import {
     Spinner,
 } from '@chakra-ui/react';
 import Footer from '../components/Footer';
+import AboutUs from '../components/AboutUs';
 
 const StudentDashboard = () => {
     const navigate = useNavigate();
