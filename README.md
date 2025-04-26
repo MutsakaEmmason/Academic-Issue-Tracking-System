@@ -146,7 +146,7 @@ Configure EC2 or Elastic Beanstalk for hosting the application on AWS.
    
    Testing
 
-Backend Testing (Pytest)
+Backend Testing (Pytest).
 
 To run tests for the backend, use:
 
