@@ -10,12 +10,16 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.db.models import Q
 import logging
 from .permissions import IsStudent, IsLecturer, IsRegistrar
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404,render
+
+
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
-
+# Define a view for the root URL to render index.html
+def home(request):
+    return render(request, 'index.html')
 # CustomUser ViewSet
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()

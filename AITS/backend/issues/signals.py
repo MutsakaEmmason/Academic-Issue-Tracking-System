@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
+from django.conf import settings  # <-- CORRECT WAY
 from .models import Issue
-from backend.settings import EMAIL_HOST_USER
 
 
 @receiver(post_save, sender=Issue)
@@ -13,6 +13,11 @@ def send_issue_notification(sender, instance, created, **kwargs):
         message = f"The status of your issue '{instance.title}' has been updated to '{instance.status}'."
 
         recipient_list = [instance.student.email]
-        
 
-        send_mail(subject, message, EMAIL_HOST_USER, recipient_list, fail_silently=True)
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,  # <-- USE settings.EMAIL_HOST_USER
+            recipient_list,
+            fail_silently=True
+        )
