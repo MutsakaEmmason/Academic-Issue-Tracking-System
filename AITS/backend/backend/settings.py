@@ -3,9 +3,7 @@ Django settings for backend project.
 """
 
 from pathlib import Path
-
 import os
-
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,7 +18,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-
 INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.admin',
@@ -32,7 +29,7 @@ INSTALLED_APPS = [
     'issues',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt',  #  Added SimpleJWT
+    'rest_framework_simplejwt',
     'authentication',
     'django_filters',
     'import_export',
@@ -50,16 +47,16 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  #  Vite React frontend
+    "http://localhost:5173",
     "http://localhost:5174",
 ]
-
 ROOT_URLCONF = 'backend.urls'
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],  # 👈 UPDATED PATH
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +68,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -99,12 +97,12 @@ USE_TZ = True
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',  #  JWT authentication
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',  #  Removed conflicting `AllowAny`
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
@@ -122,19 +120,26 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),  # 👈 Adjusted path
+]
+
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Custom user model
 AUTH_USER_MODEL = 'issues.CustomUser'
 
-# Email Configuration (DO NOT hardcode passwords like this in production)
+# Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'emmasonmutsaka@gmail.com'
-EMAIL_HOST_PASSWORD = 'emmason2023'   # Use App Password for Gmail
+EMAIL_HOST_PASSWORD = 'emmason2023'  # Use App Password in production
 EMAIL_USE_SSL = False
