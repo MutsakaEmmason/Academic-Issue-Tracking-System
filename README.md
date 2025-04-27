@@ -163,7 +163,8 @@ Feel free to fork this repository and submit pull requests. For major changes, p
 
 Acknowledgements
 Thanks to the Django and React communities for providing such powerful frameworks. Special thanks to the creators of Django REST Framework, React, and Redux for enabling efficient development of this system.
-We sincerely appreciate and acknowledge our lecturer, Dr Wakoli for the guidanc he gave us because it contributed to us understanding.
+We sincerely appreciate and acknowledge our lecturer, Dr Wakoli for the guidanc he gave us because it contributed to us understanding inorder to come up with this application
+
 
 
 
