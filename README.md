@@ -59,7 +59,7 @@ For macOS/Linux:
 bash
 python -m venv env
 source env/bin/activate
-For Windows:
+For Windows
 
 bash
 env\Scripts\activate
