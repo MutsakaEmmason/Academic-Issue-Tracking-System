@@ -1,6 +1,7 @@
 __pycache__/
-.pyc
-.pyo
-.pyd
-.dist-info/
-AITS/env/
+*.pyc
+db.sqlite3
+# .gitignore
+/env/
+*.pyc
+__pycache__/
