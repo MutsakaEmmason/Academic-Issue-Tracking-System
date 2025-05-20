@@ -57,7 +57,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "academic-issue-tracking-system-ba1p.onrender.com", # <<<<<<<<<< ADD THIS LINE
+    "https://academic-issue-tracking-system-ba1p.onrender.com",  # ✅ Correct format
+
 ]
 ROOT_URLCONF = 'backend.urls'
 
