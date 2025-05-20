@@ -1,0 +1,45 @@
+/* index.css */
+body {
+       margin: 0; /* Example: Reset default body margin */
+   }
+
+
+   .sidebar {
+    width: 60px;
+    height: 100vh;
+    background: #2c3e50;
+    color: white;
+    transition: width 0.3s;
+    position: fixed;
+  }
+  
+  .sidebar.open {
+    width: 200px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .sidebar ul li span {
+    margin-left: 10px;
+    white-space: nowrap;
+  }
+  
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 10px;
+  }
+  
