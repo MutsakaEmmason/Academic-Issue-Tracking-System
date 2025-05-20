@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles', # Keep this
     'issues',
     'rest_framework',
     'rest_framework.authtoken',
@@ -41,8 +41,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    # WhiteNoiseMiddleware must be listed after Django's SecurityMiddleware
+    # and before any other middleware that might need to serve static files.
+    'whitenoise.middleware.WhiteNoiseMiddleware', # ADD THIS LINE
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -60,7 +63,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # Corrected path
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # This path for index.html is correct
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,12 +128,27 @@ SIMPLE_JWT = {
 }
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Vite outputs assets with paths like /assets/index.js.
+# By setting STATIC_URL to '/assets/', WhiteNoise will serve files from STATIC_ROOT
+# at the URL path /assets/.
+STATIC_URL = '/assets/' # CRITICAL: Change to '/assets/' to match Vite's output
+
+# STATIC_ROOT is where collectstatic will gather all static files.
+# For WhiteNoise to directly serve frontend/dist, STATIC_ROOT should point to it.
+STATIC_ROOT = os.path.join(BASE_DIR.parent, 'frontend', 'dist') # CRITICAL: Point STATIC_ROOT directly to frontend/dist
+
+# STATICFILES_DIRS is for additional locations for Django to find static files
+# before collecting them to STATIC_ROOT. If STATIC_ROOT is dist, you typically
+# don't need STATICFILES_DIRS for the frontend assets themselves.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'build', 'static'), # This path might also be problematic for Render, but let's fix templates first.
-    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),
+    # If you have other Django static files (e.g., from admin that aren't collected
+    # directly by apps), you might list them here. Otherwise, leave empty.
+    # We are explicitly pointing STATIC_ROOT to the dist folder, so we don't
+    # need to list it again here.
 ]
+
+# Configure WhiteNoise storage for compressed and versioned static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # ADD THIS LINE
 
 
 # Default primary key field type
