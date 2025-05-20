@@ -1,3 +1,4 @@
+<<<<<<< ours
 <<<<<<< HEAD
 <<<<<<< HEAD
 web: gunicorn academic-issue-tracking-system.wsgi
@@ -9,3 +10,8 @@ web: gunicorn backend.wsgi:application
 web: gunicorn academic-issue-tracking-system.wsgi
 
 >>>>>>> 6e3a6abca8c523c2c063ea6bc190ee1a8842d6cf
+=======
+
+web: gunicorn academic-issue-tracking-system.wsgi
+
+>>>>>>> theirs
