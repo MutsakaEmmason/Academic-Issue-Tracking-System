@@ -10,10 +10,10 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-49a@$=$ontb06%au1wsyjm=1i4#(gbgfmm1$d+6#_i_l(^-^vp'
+SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002d174c4ca5a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG','False')=='True'
 
 ALLOWED_HOSTS = [
     'academic-issue-tracking-system-3-qvmp.onrender.com',
@@ -56,23 +56,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
 ]
 ROOT_URLCONF = 'backend.urls'
-# Ensure this BASE_DIR is at the top of your settings.py
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Change this line:
-        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],
-        # TO THIS:
-        # 'DIRS': [os.path.join(BASE_DIR, 'backend/templates')], # Option 1: more direct
-        # OR, more robustly, using BASE_DIR.parent if 'AITS' is the true BASE_DIR for everything:
-        # 'DIRS': [os.path.join(BASE_DIR.parent, 'backend', 'templates')], # Option 2
-        # Let's stick with Option 1 for now, as BASE_DIR is likely 'AITS/backend/backend'
-        # Based on your image, BASE_DIR.parent should lead to AITS/backend
-        # And then 'templates'
-        'DIRS': [os.path.join(BASE_DIR.parent, 'templates')], # This is the correct path for 'AITS/backend/templates' if BASE_DIR is AITS/backend/backend
-        'APP_DIRS': True, # Keep this if you use app-specific templates
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # Corrected path
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -139,11 +128,9 @@ SIMPLE_JWT = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR,'build', 'static'),
-    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),  # 👈 Adjusted path
+    os.path.join(BASE_DIR,'build', 'static'), # This path might also be problematic for Render, but let's fix templates first.
+    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),
 ]
-
-TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'build')]
 
 
 # Default primary key field type
@@ -158,5 +145,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'emmasonmutsaka@gmail.com'
-EMAIL_HOST_PASSWORD = 'emmason2023'  # Use App Password in production
+EMAIL_HOST_PASSWORD = 'emmason2023' # Use App Password in production
 EMAIL_USE_SSL = False
