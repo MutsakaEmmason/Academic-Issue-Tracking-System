@@ -2,13 +2,17 @@ services:
   - type: web
     name: academic-issue-tracker
     env: python
-    # Combined build command: frontend build, copy index.html, then backend setup
+    # Use the consolidated buildCommand:
     buildCommand: |
-      npm install --prefix frontend && npm run build --prefix frontend && \
+      rm -rf frontend/node_modules && \
+      rm -f frontend/package-lock.json && \
+      cd frontend && npm install && npm run build && \
+      cd .. && \
+      mkdir -p backend/templates && \
       cp frontend/dist/index.html backend/templates/index.html && \
-      pip install -r requirements.txt && \
+      cd backend && \
+      pip install -r ../requirements.txt && \
       python backend/manage.py collectstatic --noinput
-    # Start command for Gunicorn, binding to Render's PORT
     startCommand: gunicorn backend.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: DATABASE_URL
@@ -18,15 +22,15 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: "False" # Ensure this is a string for os.environ.get
+        value: "False"
       - key: EMAIL_HOST_USER
         value: emmasonmutsaka@gmail.com
       - key: EMAIL_HOST_PASSWORD
-        sync: false # This will prompt you to set it securely on Render
+        sync: false
       - key: ALLOWED_HOSTS
-        value: academic-issue-tracking-system-3-qvmp.onrender.com,localhost,127.0.0.1 # More explicit
+        value: academic-issue-tracking-system-3-qvmp.onrender.com,localhost,127.0.0.1
       - key: PYTHON_VERSION
-        value: 3.9.18 # Or the specific Python version you are using, e.g., 3.10.13, 3.11.8
+        value: 3.9.18 # Or your specific Python version
 
 databases:
   - name: academic_issue_db
