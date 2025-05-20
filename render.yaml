@@ -2,8 +2,14 @@ services:
   - type: web
     name: academic-issue-tracker
     env: python
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: gunicorn backend.wsgi:application
+    # Combined build command: frontend build, copy index.html, then backend setup
+    buildCommand: |
+      npm install --prefix frontend && npm run build --prefix frontend && \
+      cp frontend/dist/index.html backend/templates/index.html && \
+      pip install -r requirements.txt && \
+      python backend/manage.py collectstatic --noinput
+    # Start command for Gunicorn, binding to Render's PORT
+    startCommand: gunicorn backend.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -12,13 +18,15 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
-        value: false
+        value: "False" # Ensure this is a string for os.environ.get
       - key: EMAIL_HOST_USER
         value: emmasonmutsaka@gmail.com
       - key: EMAIL_HOST_PASSWORD
-        sync: false
+        sync: false # This will prompt you to set it securely on Render
       - key: ALLOWED_HOSTS
-        value: .render.com
+        value: academic-issue-tracking-system-3-qvmp.onrender.com,localhost,127.0.0.1 # More explicit
+      - key: PYTHON_VERSION
+        value: 3.9.18 # Or the specific Python version you are using, e.g., 3.10.13, 3.11.8
 
 databases:
   - name: academic_issue_db
