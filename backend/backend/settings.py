@@ -57,6 +57,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://academic-issue-tracking-system-3-qvmp.onrender.com", # <<<<<<<<<< ADD THIS LINE
 ]
 ROOT_URLCONF = 'backend.urls'
 
