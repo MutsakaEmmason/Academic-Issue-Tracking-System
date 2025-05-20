@@ -61,7 +61,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],  # 👈 UPDATED PATH
+        # Add the path to your frontend's build/dist directory here
+        'DIRS': [
+            os.path.join(BASE_DIR, 'backend', 'templates'),
+            os.path.join(BASE_DIR.parent, 'frontend', 'dist'), # <-- ADD THIS LINE
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
