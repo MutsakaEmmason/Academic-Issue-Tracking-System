@@ -136,7 +136,8 @@ STATIC_URL = '/assets/' # CRITICAL: Change to '/assets/' to match Vite's output
 
 # STATIC_ROOT is where collectstatic will gather all static files.
 # For WhiteNoise to directly serve frontend/dist, STATIC_ROOT should point to it.
-STATIC_ROOT = os.path.join(BASE_DIR.parent, 'frontend', 'dist') # CRITICAL: Point STATIC_ROOT directly to frontend/dist
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+ # CRITICAL: Point STATIC_ROOT directly to frontend/dist
 
 # STATICFILES_DIRS is for additional locations for Django to find static files
 # before collecting them to STATIC_ROOT. If STATIC_ROOT is dist, you typically
