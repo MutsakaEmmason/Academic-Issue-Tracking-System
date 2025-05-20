@@ -18,8 +18,14 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
 # Define a view for the root URL to render index.html
+from django.http import HttpResponse
+
 def home(request):
-    return render(request, 'index.html')
+    try:
+        return render(request, 'home.html')
+    except Exception as e:
+        return HttpResponse(f"Error: {e}")
+
 # CustomUser ViewSet
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()

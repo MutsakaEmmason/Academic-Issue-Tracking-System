@@ -5,17 +5,17 @@ Django settings for backend project.
 from pathlib import Path
 import os
 from datetime import timedelta
-
+import django_heroku
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-49a@$=$ontb06%au1wsyjm=1i4#(gbgfmm1$d+6#_i_l(^-^vp'
+SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002d174c4ca5a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG','False')=='True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -143,3 +143,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'emmasonmutsaka@gmail.com'
 EMAIL_HOST_PASSWORD = 'emmason2023'  # Use App Password in production
 EMAIL_USE_SSL = False
+django_heroku.settings(locals())

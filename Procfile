@@ -1,1 +1,3 @@
-web: gunicorn backend.wsgi:application
+
+web: gunicorn academic-issue-tracking-system.wsgi
+
