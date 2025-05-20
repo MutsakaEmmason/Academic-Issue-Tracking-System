@@ -15,7 +15,12 @@ SECRET_KEY = 'django-insecure-49a@$=$ontb06%au1wsyjm=1i4#(gbgfmm1$d+6#_i_l(^-^vp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'academic-issue-tracking-system-3-qvmp.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
+
 
 # Application definition
 INSTALLED_APPS = [
