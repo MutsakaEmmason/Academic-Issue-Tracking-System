@@ -16,10 +16,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002
 DEBUG = os.environ.get('DEBUG','False')=='True'
 
 ALLOWED_HOSTS = [
-    'academic-issue-tracking-system-2-s4sl.onrender.com',
+    'academic-issue-tracking-system-3-qvmp.onrender.com',
     'localhost',
     '127.0.0.1',
 ]
+
+
 
 
 # Application definition
