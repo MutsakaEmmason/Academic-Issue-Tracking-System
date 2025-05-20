@@ -56,17 +56,23 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
 ]
 ROOT_URLCONF = 'backend.urls'
+# Ensure this BASE_DIR is at the top of your settings.py
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Add the path to your frontend's build/dist directory here
-        'DIRS': [
-            os.path.join(BASE_DIR, 'backend', 'templates'),
-            os.path.join(BASE_DIR.parent, 'frontend', 'dist'), # <-- ADD THIS LINE
-        ],
-        'APP_DIRS': True,
+        # Change this line:
+        'DIRS': [os.path.join(BASE_DIR, 'backend', 'templates')],
+        # TO THIS:
+        # 'DIRS': [os.path.join(BASE_DIR, 'backend/templates')], # Option 1: more direct
+        # OR, more robustly, using BASE_DIR.parent if 'AITS' is the true BASE_DIR for everything:
+        # 'DIRS': [os.path.join(BASE_DIR.parent, 'backend', 'templates')], # Option 2
+        # Let's stick with Option 1 for now, as BASE_DIR is likely 'AITS/backend/backend'
+        # Based on your image, BASE_DIR.parent should lead to AITS/backend
+        # And then 'templates'
+        'DIRS': [os.path.join(BASE_DIR.parent, 'templates')], # This is the correct path for 'AITS/backend/templates' if BASE_DIR is AITS/backend/backend
+        'APP_DIRS': True, # Keep this if you use app-specific templates
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
