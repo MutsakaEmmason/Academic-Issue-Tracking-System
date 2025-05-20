@@ -2,6 +2,7 @@ services:
   - type: web
     name: academic-issue-tracker
     env: python
+    # Use the single-line, unbroken build command
     buildCommand: rm -rf frontend/node_modules && rm -f frontend/package-lock.json && cd frontend && npm install && npm run build && cd .. && mkdir -p backend/templates && cp frontend/dist/index.html backend/templates/index.html && cd backend && pip install -r ../requirements.txt && python backend/manage.py collectstatic --noinput
     startCommand: gunicorn backend.wsgi --bind 0.0.0.0:$PORT
     envVars:
