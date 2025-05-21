@@ -11,6 +11,8 @@ from django.db.models import Q
 import logging
 from .permissions import IsStudent, IsLecturer, IsRegistrar
 from django.shortcuts import get_object_or_404,render
+from django.http import HttpResponse
+import requests
 
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
@@ -437,3 +439,37 @@ def send_issue_update_email(issue):
         print(f"Issue update email sent successfully to {issue.student.email}")
     except Exception as e:
         print(f"Error sending issue update email to {issue.student.email}: {e}")
+
+
+
+def api_proxy(request, path):
+    """
+    Proxy API requests from hardcoded localhost URLs to the current domain
+    """
+    url = f"{request.scheme}://{request.get_host()}/api/{path}"
+    
+    # Forward the request to the actual API endpoint
+    try:
+        response = requests.request(
+            method=request.method,
+            url=url,
+            headers={k: v for k, v in request.headers.items() if k != 'Host'},
+            data=request.body,
+            cookies=request.COOKIES,
+            allow_redirects=False
+        )
+        
+        # Return the response from the API
+        django_response = HttpResponse(
+            content=response.content,
+            status=response.status_code,
+        )
+        
+        # Copy relevant headers from the API response
+        for header, value in response.headers.items():
+            if header.lower() not in ['content-length', 'content-encoding', 'transfer-encoding']:
+                django_response[header] = value
+                
+        return django_response
+    except Exception as e:
+        return HttpResponse(f"Error proxying request: {str(e)}", status=500)
