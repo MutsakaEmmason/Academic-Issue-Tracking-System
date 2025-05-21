@@ -1,7 +1,4 @@
-"""
-Django settings for backend project.
-"""
-
+"""Django settings for backend project."""
 from pathlib import Path
 import os
 from datetime import timedelta
@@ -10,10 +7,10 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002d174c4ca5a')
+SECRET_KEY = os.environ.get('SECRET_KEY', '627c6fc400fe01c955f42aed260f4805430002d174c4ca5a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG','False')=='True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # CRITICAL: No http:// or https:// here!
 ALLOWED_HOSTS = [
@@ -23,7 +20,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-
 # Application definition
 INSTALLED_APPS = [
     'corsheaders',
@@ -32,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles', # Keep this
+    'django.contrib.staticfiles',  # Keep this
     'issues',
     'rest_framework',
     'rest_framework.authtoken',
@@ -46,7 +42,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # WhiteNoiseMiddleware must be listed after Django's SecurityMiddleware
     # and before any other middleware that might need to serve static files.
-    'whitenoise.middleware.WhiteNoiseMiddleware', # ADD THIS LINE
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ADD THIS LINE
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,12 +58,16 @@ CORS_ALLOWED_ORIGINS = [
     "https://academic-issue-tracking-system-ba1p.onrender.com",
     "https://academic-issue-tracking-system-1-8cyq.onrender.com",
 ]
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+            os.path.join(BASE_DIR.parent, 'frontend', 'dist'),  # Add Vite build output
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,7 +79,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -132,9 +131,6 @@ SIMPLE_JWT = {
 }
 
 # Static files (CSS, JavaScript, Images)
-
-# STATIC_URL is the URL prefix for static files.
-# For Vite with 'base: "/static/"', this should be '/static/'.
 STATIC_URL = '/static/'
 
 # STATIC_ROOT is the absolute path to the directory where Django's collectstatic
@@ -143,14 +139,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # STATICFILES_DIRS is a list of additional directories where Django will look for
 # static files, beyond the 'static' folder within each app.
-# This is where we tell Django to find our Vite build output.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend', 'dist'), # Your Vite build output
+    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),  # Updated path
 ]
 
 # Configure WhiteNoise storage for compressed and versioned static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -164,5 +158,5 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'emmasonmutsaka@gmail.com'
-EMAIL_HOST_PASSWORD = 'cewk tkgj bdcj rqgi' # Use App Password in production
+EMAIL_HOST_PASSWORD = 'cewk tkgj bdcj rqgi'  # Use App Password in production
 EMAIL_USE_SSL = False
