@@ -1,42 +1,28 @@
+# backend/backend/urls.py
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import TokenVerifyView, TokenRefreshView
-from .views import (
-    CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet,
-    IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView, UserRegistrationView,
-    LecturerRegistrationView, CustomTokenObtainPairView, AssignIssueView, ResolveIssueView, 
-    RegistrarSignupView, UserProfileView, LecturerDetailsView, RegistrarProfileView, api_proxy
-)
-
-# Initialize the router
-router = DefaultRouter()
-router.register(r'users', CustomUserViewSet)
-router.register(r'issues', IssueViewSet, basename='issue')
-router.register(r'comments', CommentViewSet)
-router.register(r'notifications', NotificationViewSet)
-router.register(r'audit-logs', AuditLogViewSet)
-router.register(r'attachments', IssueAttachmentViewSet)
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    # Include the router URLs for the viewsets
-    path('', include(router.urls)),
-    # JWT Token paths
-    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    # Registration and Lecturer routes
-    path('register/', UserRegistrationView.as_view(), name='user-registration'),
-    path('lecturer/register/', LecturerRegistrationView.as_view(), name='lecturer-registration'),
-    path('lecturer/login/', CustomTokenObtainPairView.as_view(), name='lecturer-login'),
-    path('resolve-issue/<int:issue_id>/', ResolveIssueView.as_view(), name='resolve-issue'),
-    path('issues/<int:issue_id>/assign/', AssignIssueView.as_view(), name='assign-issue'),
-    # Profile and details
-    path('student-profile/', UserProfileView.as_view(), name='student-profile'),
-    path('lecturer/details/', LecturerDetailsView.as_view(), name='lecturer-details'),
-    # Registrar signup route
-    path('registrar/signup/', RegistrarSignupView.as_view(), name='registrar-signup'),
-    path('registrar-profile/', RegistrarProfileView.as_view(), name='registrar-profile'),
+    # Your existing URLs
+    path('api/', include('issues.urls')),
     
-    # Add this proxy route to handle hardcoded localhost URLs
-    path('127.0.0.1:8000/api/<path:path>', api_proxy, name='api-proxy'),
+    # Add these redirects for direct access to endpoints
+    path('register/', RedirectView.as_view(url='/api/register/', permanent=False)),
+    path('token/', RedirectView.as_view(url='/api/token/', permanent=False)),
+    path('lecturer/register/', RedirectView.as_view(url='/api/lecturer/register/', permanent=False)),
+    path('lecturer/login/', RedirectView.as_view(url='/api/lecturer/login/', permanent=False)),
+    path('student-profile/', RedirectView.as_view(url='/api/student-profile/', permanent=False)),
+    path('lecturer/details/', RedirectView.as_view(url='/api/lecturer/details/', permanent=False)),
+    path('registrar/signup/', RedirectView.as_view(url='/api/registrar/signup/', permanent=False)),
+    path('registrar-profile/', RedirectView.as_view(url='/api/registrar-profile/', permanent=False)),
+    
+    # Add a catch-all redirect for any other API paths
+    path('issues/', RedirectView.as_view(url='/api/issues/', permanent=False)),
+    path('comments/', RedirectView.as_view(url='/api/comments/', permanent=False)),
+    path('notifications/', RedirectView.as_view(url='/api/notifications/', permanent=False)),
+    path('audit-logs/', RedirectView.as_view(url='/api/audit-logs/', permanent=False)),
+    path('attachments/', RedirectView.as_view(url='/api/attachments/', permanent=False)),
+    
+    # Redirect for the proxy
+    path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
 ]
