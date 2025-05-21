@@ -1,10 +1,9 @@
 # authentication/urls.py
 from django.urls import path
-# Correct the import statement to use UserRegistrationView
-from .views import UserRegistrationView, LoginView # <-- Changed from RegisterView
+# Make sure this imports RegisterView, not UserRegistrationView
+from .views import RegisterView, LoginView
 
 urlpatterns = [
-    # Map 'register/' to UserRegistrationView
-    path('register/', UserRegistrationView.as_view(), name='register'),
+    path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
 ]
