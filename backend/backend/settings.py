@@ -15,9 +15,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG','False')=='True'
 
+# CRITICAL: No http:// or https:// here!
 ALLOWED_HOSTS = [
-    'https://academic-issue-tracking-system-ba1p.onrender.com',
-    'https://academic-issue-tracking-system-1-8cyq.onrender.com',
+    'academic-issue-tracking-system-ba1p.onrender.com',
+    'academic-issue-tracking-system-1-8cyq.onrender.com',
     'localhost',
     '127.0.0.1',
 ]
@@ -58,16 +59,15 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://academic-issue-tracking-system-ba1p.onrender.com",  # ✅ Correct format
+    "https://academic-issue-tracking-system-ba1p.onrender.com",
     "https://academic-issue-tracking-system-1-8cyq.onrender.com",
-
 ]
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # This path for index.html is correct
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,54 +130,26 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 }
+
 # Static files (CSS, JavaScript, Images)
 
-# Vite outputs assets with paths like /assets/index.js.
+# STATIC_URL is the URL prefix for static files.
+# For Vite with 'base: "/static/"', this should be '/static/'.
+STATIC_URL = '/static/'
 
-# By setting STATIC_URL to '/assets/', WhiteNoise will serve files from STATIC_ROOT
-
-# at the URL path /assets/.
-
-STATIC_URL = '/assets/' # CRITICAL: Change to '/assets/' to match Vite's output
-
-
-
-# STATIC_ROOT is where collectstatic will gather all static files.
-
-# For WhiteNoise to directly serve frontend/dist, STATIC_ROOT should point to it.
-
+# STATIC_ROOT is the absolute path to the directory where Django's collectstatic
+# command will gather all static files for deployment.
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
- # CRITICAL: Point STATIC_ROOT directly to frontend/dist
-
-
-
-# STATICFILES_DIRS is for additional locations for Django to find static files
-
-# before collecting them to STATIC_ROOT. If STATIC_ROOT is dist, you typically
-
-# don't need STATICFILES_DIRS for the frontend assets themselves.
-
+# STATICFILES_DIRS is a list of additional directories where Django will look for
+# static files, beyond the 'static' folder within each app.
+# This is where we tell Django to find our Vite build output.
 STATICFILES_DIRS = [
-
-    # If you have other Django static files (e.g., from admin that aren't collected
-
-    # directly by apps), you might list them here. Otherwise, leave empty.
-
-    # We are explicitly pointing STATIC_ROOT to the dist folder, so we don't
-
-    # need to list it again here.
-
+    os.path.join(BASE_DIR, 'frontend', 'dist'), # Your Vite build output
 ]
 
-
-
 # Configure WhiteNoise storage for compressed and versioned static files
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # ADD THIS LINE
-
-
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Default primary key field type
