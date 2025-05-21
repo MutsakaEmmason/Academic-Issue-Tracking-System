@@ -130,28 +130,21 @@ SIMPLE_JWT = {
 }
 
 # Static files (CSS, JavaScript, Images)
-# Vite outputs assets with paths like /assets/index.js.
-# By setting STATIC_URL to '/assets/', WhiteNoise will serve files from STATIC_ROOT
-# at the URL path /assets/.
-STATIC_URL = '/assets/' # CRITICAL: Change to '/assets/' to match Vite's output
+STATIC_URL = '/static/' # This is the conventional URL path for static files
 
 # STATIC_ROOT is where collectstatic will gather all static files.
-# For WhiteNoise to directly serve frontend/dist, STATIC_ROOT should point to it.
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
- # CRITICAL: Point STATIC_ROOT directly to frontend/dist
+# This should be an empty directory that Django will fill.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Keep this as 'staticfiles' or similar
 
 # STATICFILES_DIRS is for additional locations for Django to find static files
-# before collecting them to STATIC_ROOT. If STATIC_ROOT is dist, you typically
-# don't need STATICFILES_DIRS for the frontend assets themselves.
+# for collectstatic to copy.
 STATICFILES_DIRS = [
-    # If you have other Django static files (e.g., from admin that aren't collected
-    # directly by apps), you might list them here. Otherwise, leave empty.
-    # We are explicitly pointing STATIC_ROOT to the dist folder, so we don't
-    # need to list it again here.
+    os.path.join(BASE_DIR, 'frontend', 'dist'), # Tell collectstatic to find frontend build output here
 ]
 
 # Configure WhiteNoise storage for compressed and versioned static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # ADD THIS LINE
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 
 # Default primary key field type
