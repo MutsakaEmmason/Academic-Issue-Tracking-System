@@ -140,7 +140,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # STATICFILES_DIRS is a list of additional directories where Django will look for
 # static files, beyond the 'static' folder within each app.
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR.parent, 'frontend', 'dist', 'assets'),  # Updated path
+    os.path.join(BASE_DIR, 'staticfiles', 'assets'),
 ]
 
 # Configure WhiteNoise storage for compressed and versioned static files
