@@ -25,4 +25,4 @@ typing_extensions==4.13.2
 tzdata==2025.2
 wheel==0.45.1
 whitenoise==6.9.0
-
+requests==2.31.0
