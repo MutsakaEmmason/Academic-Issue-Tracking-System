@@ -32,3 +32,4 @@ whitenoise==6.9.0
 wrapt==1.17.2
 django-import-export==4.3.7
 django-filter==25.1
+requests==2.31.0
