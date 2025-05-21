@@ -4,7 +4,7 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     # Your existing URLs
-    path('api/', include('authentication.urls')),
+    
     path('api/', include('issues.urls')),
     
     # Add these redirects for direct access to endpoints
