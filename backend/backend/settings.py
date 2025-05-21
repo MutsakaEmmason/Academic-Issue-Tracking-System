@@ -16,7 +16,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY','627c6fc400fe01c955f42aed260f4805430002
 DEBUG = os.environ.get('DEBUG','False')=='True'
 
 ALLOWED_HOSTS = [
-    'academic-issue-tracking-system-ba1p.onrender.com',
+    'https://academic-issue-tracking-system-ba1p.onrender.com',
+    'https://academic-issue-tracking-system-1-8cyq.onrender.com',
     'localhost',
     '127.0.0.1',
 ]
@@ -57,7 +58,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "academic-issue-tracking-system-ba1p.onrender.com",  # ✅ Correct format
+    "https://academic-issue-tracking-system-ba1p.onrender.com",  # ✅ Correct format
+    "https://academic-issue-tracking-system-1-8cyq.onrender.com",
 
 ]
 ROOT_URLCONF = 'backend.urls'
