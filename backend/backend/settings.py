@@ -130,7 +130,6 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
 }
-
 # Static files (CSS, JavaScript, Images)
 
 # Vite outputs assets with paths like /assets/index.js.
@@ -176,6 +175,8 @@ STATICFILES_DIRS = [
 # Configure WhiteNoise storage for compressed and versioned static files
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # ADD THIS LINE
+
+
 
 
 
