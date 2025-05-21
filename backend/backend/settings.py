@@ -58,6 +58,17 @@ CORS_ALLOWED_ORIGINS = [
     "https://academic-issue-tracking-system-ba1p.onrender.com",
     "https://academic-issue-tracking-system-1-8cyq.onrender.com",
 ]
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://academic-issue-tracking-system-ba1p.onrender.com",
+    "https://academic-issue-tracking-system-1-8cyq.onrender.com",
+    "http://localhost:5173",
+    "http://localhost:5174",
+]
+
+# Add CORS credentials support
+CORS_ALLOW_CREDENTIALS = True
+
 
 ROOT_URLCONF = 'backend.urls'
 
