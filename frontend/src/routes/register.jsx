@@ -185,13 +185,15 @@ const Register = () => {
 
         console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
 
-       fetch('/api/register/', {
+       fetch('https://academic-issue-tracking-system-1-8cyq.onrender.com/api/register/', {
 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(registrationData),
+           credentials: 'include',
+           
         })
             .then(response => {
                 console.log("Response status:", response.status); // Log response status
