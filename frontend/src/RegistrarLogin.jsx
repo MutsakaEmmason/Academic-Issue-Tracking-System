@@ -27,7 +27,7 @@ const RegistrarLogin = () => {
     try {
       console.log('Sending credentials:', credentials); // Debug log
       
-      const response = await axios.post('http://127.0.0.1:8000/api/token/', credentials);
+      const response = await axios.post('/api/token/', credentials);
       
       console.log('Login response:', response.data); // Debug log
       
