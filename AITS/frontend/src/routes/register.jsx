@@ -171,6 +171,15 @@ const Register = () => {
         setPasswordsMatch(true);
         setErrors({});
 
+        // Get CSRF token  EMMASON2025
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    
+    const csrftoken = getCookie('csrftoken');
+
         const registrationData = {
             username: studentRegNumber,
             password,
@@ -185,11 +194,18 @@ const Register = () => {
 
         console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
 
-        fetch('https://academic-issue-tracking-system-1-8cyq.onrender.com/api/register/', {
+         // Use absolute URL for deployed environment
+       const apiUrl = process.env.NODE_ENV === 'production' 
+         ? 'https://academic-issue-tracking-system-1-8cyq.onrender.com/api/register/'
+         : '/api/register/';
+
+        fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
             },
+            credentials: 'include', // Important for cookies
             body: JSON.stringify(registrationData),
         })
             .then(response => {
