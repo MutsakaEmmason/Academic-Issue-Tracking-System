@@ -157,7 +157,7 @@ const LecturerRegister = () => {
     console.log("Sending registration data:", JSON.stringify(payload)); // Log the request data
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/lecturer/register/", {
+      const response = await fetch("/api/lecturer/register/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
