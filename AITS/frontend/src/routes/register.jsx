@@ -185,7 +185,7 @@ const Register = () => {
 
         console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
 
-        fetch('http://127.0.0.1:8000/api/register/', {
+        fetch('/api/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
