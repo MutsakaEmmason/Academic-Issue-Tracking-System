@@ -40,7 +40,7 @@ const StudentLogin = () => {
         setErrors({});
 
         // Updated login URL to match the backend URL for obtaining JWT tokens
-        fetch('http://127.0.0.1:8000/api/token/', {
+        fetch('/api/token/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
