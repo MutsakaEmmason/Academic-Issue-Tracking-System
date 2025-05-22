@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
+import { useEffect } from 'react';
+import { fetchCSRFToken } from './utils/csrf';
  
 
 
@@ -31,6 +33,9 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
+  useEffect(() => {
+    fetchCSRFToken();
+  }, []);
     return (
         <ChakraProvider>
             <Router>
