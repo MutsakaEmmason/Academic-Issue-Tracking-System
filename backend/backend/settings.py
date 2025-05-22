@@ -14,7 +14,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # CRITICAL: No http:// or https:// here!
 ALLOWED_HOSTS = [
-    'academic-issue-tracking-system-ba1p.onrender.com',
+   # 'academic-issue-tracking-system-ba1p.onrender.com',
     'academic-issue-tracking-system-1-8cyq.onrender.com',
     'localhost',
     '127.0.0.1',
