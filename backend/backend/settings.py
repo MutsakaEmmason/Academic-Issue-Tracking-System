@@ -39,11 +39,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # WhiteNoiseMiddleware must be listed after Django's SecurityMiddleware
     # and before any other middleware that might need to serve static files.
     'whitenoise.middleware.WhiteNoiseMiddleware',  # ADD THIS LINE
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -66,8 +66,29 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5174",
 ]
 
-# Add CORS credentials support
+# core settings 
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 
 
 ROOT_URLCONF = 'backend.urls'
