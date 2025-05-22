@@ -41,7 +41,7 @@ const AcademicRegistrarDashboard = () => {
                     return null;
                 }
 
-                const profileResponse = await fetch("http://127.0.0.1:8000/api/registrar-profile/", {
+                const profileResponse = await fetch("/api/registrar-profile/", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
