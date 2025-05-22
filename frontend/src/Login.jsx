@@ -13,7 +13,7 @@ const LecturerLogin = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            fetch("http://127.0.0.1:8000/api/token/verify/", {
+            fetch("/api/token/verify/", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
