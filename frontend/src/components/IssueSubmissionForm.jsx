@@ -62,7 +62,7 @@ const IssueSubmissionForm = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('${BASE_URL}/api/issues/`, {
+            const response = await fetch(`${BASE_URL}/api/issues/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
