@@ -30,7 +30,7 @@ urlpatterns = [
     # Direct API endpoints (no 'api/' prefix here)
     path('register/', StudentRegistrationView.as_view(), name='student-registration'),
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # This is the correct way
-    path('student/profile/', StudentProfileView.as_view(), name='student-profile'),
+    path('student-profile/', StudentProfileView.as_view(), name='student-profile'),
 
     # Add other specific views like lecturer/registrar if they exist
     # path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
