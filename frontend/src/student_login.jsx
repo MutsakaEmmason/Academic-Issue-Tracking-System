@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     VStack,
     Button,
@@ -19,6 +19,8 @@ const StudentLogin = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [csrfToken, setCsrfToken] = useState(''); // EMPHASIZE: Add state for CSRF token
+
     const navigate = useNavigate();
     const toast = useToast();
 
@@ -103,7 +105,15 @@ const StudentLogin = () => {
             })
             .then(data => {
                 console.log('User profile data:', data);
+
+
+                // EMPHASIZE: Store user's role, ID, and username from profile
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userId', data.id); // Assuming 'id' is present
+                localStorage.setItem('username', data.username); // Assuming 'username' is present
+               
                 // Redirect or handle profile data if needed
+               
                 navigate("/student-dashboard");
             })
             .catch((error) => {
