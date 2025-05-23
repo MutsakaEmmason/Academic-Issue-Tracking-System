@@ -57,6 +57,8 @@ CORS_ALLOWED_ORIGINS = [
     "https://academic-issue-tracking-system-942o.onrender.com",
 ]
 # CSRF settings
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to access the CSRF token
+CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-site requests in modern browsers
 CSRF_TRUSTED_ORIGINS = [
     "https://academic-issue-tracking-system-942o.onrender.com",
     "http://localhost:5173",
@@ -186,7 +188,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None'
 
 
 # Email Configuration
