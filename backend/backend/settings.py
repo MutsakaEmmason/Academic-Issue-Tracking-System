@@ -61,10 +61,11 @@ CSRF_TRUSTED_ORIGINS = [
     "https://academic-issue-tracking-system-942o.onrender.com",
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://*.onrender.com",
 ]
 
 # core settings 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
     'DELETE',
@@ -86,7 +87,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
+CSRF_COOKIE_DOMAIN = '.onrender.com'
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -186,7 +187,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 
 # Email Configuration
