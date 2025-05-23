@@ -87,7 +87,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CSRF_COOKIE_DOMAIN = '.onrender.com'
 
 ROOT_URLCONF = 'backend.urls'
 
