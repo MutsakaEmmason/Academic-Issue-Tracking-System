@@ -87,7 +87,7 @@ const StudentLogin = () => {
 
     const fetchUserProfile = (token) => {
         // Fetch user profile using the token
-        fetch('http://127.0.0.1:8000/api/student-profile/', {
+        fetch('/api/student-profile/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Include JWT token in header
