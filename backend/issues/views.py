@@ -17,12 +17,22 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView  # Import the correct TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.middleware.csrf import get_token
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
 
 # Define a view for the root URL to render index.html
 def home(request):
     return render(request, 'index.html')
+
+
+# EMPHASIZE: Add the GetCSRFToken view here
+class GetCSRFToken(APIView):
+    permission_classes = [permissions.AllowAny] # Allow anyone to get the CSRF token
+    def get(self, request):
+        csrf_token = get_token(request)
+        return JsonResponse({'csrfToken': csrf_token})
+
 # CustomUser ViewSet
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -176,7 +186,7 @@ class IssueAttachmentViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 # User Registration View
-@method_decorator(csrf_exempt, name='dispatch')
+# @method_decorator(csrf_exempt, name='dispatch')
 class UserRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -218,7 +228,7 @@ class StudentRegistrationView(UserRegistrationView):
     pass
 
 # Registrar Signup View
-@method_decorator(csrf_exempt, name='dispatch')
+# @method_decorator(csrf_exempt, name='dispatch')
 class RegistrarSignupView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
