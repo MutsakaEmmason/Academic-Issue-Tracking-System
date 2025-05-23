@@ -24,6 +24,35 @@ const StudentLogin = () => {
     const navigate = useNavigate();
     const toast = useToast();
 
+    // MISSING: Add this useEffect hook
+    useEffect(() => {
+        const fetchCsrfToken = async () => {
+            try {
+                const response = await fetch('/api/csrf-token/', { credentials: 'include' });
+                if (!response.ok) {
+                    console.error("Failed to fetch CSRF token response:", response);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Failed to fetch CSRF token: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setCsrfToken(data.csrfToken);
+                console.log("CSRF Token fetched for Login:", data.csrfToken);
+            } catch (error) {
+                console.error("Error fetching CSRF token for Login:", error);
+                toast({
+                    title: 'Error.',
+                    description: "Failed to load security token for login. Please refresh the page.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        };
+
+        fetchCsrfToken();
+    }, []); // Empty dependency array means it runs once on mount
+
+
     const handleStudentLogin = () => {
         let formErrors = {};
 
