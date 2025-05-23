@@ -1,7 +1,7 @@
 # backend/backend/urls.py
 from django.urls import path, include
 from django.views.generic import RedirectView
-#from users.views import GetCSRFToken
+# from users.views import GetCSRFToken
 
 urlpatterns = [
     # Your existing URLs
@@ -25,6 +25,6 @@ urlpatterns = [
     path('attachments/', RedirectView.as_view(url='/api/attachments/', permanent=False)),
     
     # Redirect for the proxy
-    path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
-    #path('api/csrf-token/', GetCSRFToken.as_view(), name='csrf-token'),
+    # path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
+    # path('api/csrf-token/', GetCSRFToken.as_view(), name='csrf-token'),
 ]
