@@ -1,7 +1,13 @@
 # backend/backend/urls.py
 from django.urls import path, include
 from django.views.generic import RedirectView
-# from users.views import GetCSRFToken
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+
+
+@ensure_csrf_cookie
+def get_csrf_token(request):
+    return JsonResponse({'csrfToken': request.META.get('CSRF_COOKIE')})
 
 urlpatterns = [
     # Your existing URLs
@@ -26,5 +32,5 @@ urlpatterns = [
     
     # Redirect for the proxy
     # path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
-    # path('api/csrf-token/', GetCSRFToken.as_view(), name='csrf-token'),
+    path('csrf/', get_csrf_token, name='get_csrf'),
 ]
