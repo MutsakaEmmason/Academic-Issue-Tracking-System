@@ -13,7 +13,7 @@ const LecturerLogin = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            fetch("/api/token/verify/", {
+            fetch("https://academic-issue-tracking-system-942o.onrender.com/api/token/verify/", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -41,7 +41,7 @@ const LecturerLogin = () => {
         setError("");
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/lecturer/login/", {
+            const response = await fetch("https://academic-issue-tracking-system-942o.onrender.com/api/lecturer/login/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: email, password }),
