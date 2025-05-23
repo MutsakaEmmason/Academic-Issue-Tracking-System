@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
     VStack,
@@ -146,6 +146,35 @@ const Register = () => {
     const navigate = useNavigate();
     const toast = useToast();
 
+    // EMPHASIZE: Fetch CSRF token on component mount
+    useEffect(() => {
+        const fetchCsrfToken = async () => {
+            try {
+                // IMPORTANT: Use the relative path to the CSRF token endpoint
+                const response = await fetch('/api/csrf-token/', { credentials: 'include' });
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch CSRF token: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setCsrfToken(data.csrfToken);
+                console.log("CSRF Token fetched:", data.csrfToken); // For debugging
+            } catch (error) {
+                console.error("Error fetching CSRF token:", error);
+                toast({
+                    title: 'Error.',
+                    description: "Failed to load security token. Please refresh the page.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        };
+
+        fetchCsrfToken();
+    }, []); // Run only once on mount
+
+
+
     const handleStudentRegistration = () => {
         let formErrors = {};
 
@@ -160,6 +189,7 @@ const Register = () => {
 
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
+            
             return;
         }
 
@@ -170,6 +200,18 @@ const Register = () => {
 
         setPasswordsMatch(true);
         setErrors({});
+        
+        // EMPHASIZE: Check if csrfToken is available before proceeding
+        if (!csrfToken) {
+            toast({
+                title: 'Error.',
+                description: "Security token not available. Please try again or refresh.",
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
+        }
 
         const registrationData = {
             username: studentRegNumber,
