@@ -13,7 +13,7 @@ const LecturerLogin = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            fetch("https://academic-issue-tracking-system-942o.onrender.com/api/token/verify/", {
+            fetch("/api/token/verify/", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
