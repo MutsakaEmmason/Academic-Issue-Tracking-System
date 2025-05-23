@@ -12,6 +12,7 @@ import logging
 from .permissions import IsStudent, IsLecturer, IsRegistrar
 from django.shortcuts import get_object_or_404,render
 from django.http import HttpResponse
+from django.http import JsonResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
