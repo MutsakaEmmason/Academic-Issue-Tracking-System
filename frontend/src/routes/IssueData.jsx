@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Text, Button, Spinner, Heading, VStack, useToast, HStack } from '@chakra-ui/react';
 import Footer from '../components/Footer';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const IssueData = () => {
     const { issueId } = useParams();
@@ -15,7 +16,7 @@ const IssueData = () => {
             setLoading(true);
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://127.0.0.1:8000/api/issues/${issueId}/`, {
+                const response = await fetch(`${BASE_URL}/api/issues/${issueId}/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
