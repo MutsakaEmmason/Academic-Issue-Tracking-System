@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import Footer from '../components/Footer';
 import AboutUs from '../components/AboutUs';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const StudentDashboard = () => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const StudentDashboard = () => {
             setLoading(true);
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://127.0.0.1:8000/api/student-profile/', {
+                const response = await fetch(`${BASE_URL}/api/student-profile/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.ok) {
@@ -62,7 +63,7 @@ const StudentDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://127.0.0.1:8000/api/issues/?category=${searchTerm}`, {
+            const response = await fetch(`${BASE_URL}/api/issues/?category=${searchTerm}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.ok) {
