@@ -20,7 +20,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.middleware.csrf import get_token
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
-from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer
+from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer,CustomTokenObtainPairSerializer
 
 # Define a view for the root URL to render index.html
 def home(request):
