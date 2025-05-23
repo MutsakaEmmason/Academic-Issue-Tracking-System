@@ -420,7 +420,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view to handle JWT token generation with added functionality, if necessary.
     """
-    serializer_class = TokenObtainPairSerializer
+    
+    serializer_class = CustomTokenObtainPairSerializer
 
 # Utility functions
 def log_action(user, action):
