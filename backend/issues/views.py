@@ -332,23 +332,30 @@ class AssignIssueView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Student Profile View
+# backend/issues/views.py
 class StudentProfileView(generics.RetrieveAPIView):
-    """
-    Retrieves the profile of a student.
-    """
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        # Ensure the user is a student before returning the profile data
         if self.request.user.role == 'student':
             return self.request.user
         else:
             raise permissions.PermissionDenied("You do not have permission to view this profile.")
-    
+
     def retrieve(self, request, *args, **kwargs):
-        # Call the parent class's retrieve method
-        return super().retrieve(request, *args, **kwargs)
+        user = self.get_object()
+        serializer = self.get_serializer(user)
+        data = serializer.data
+
+        # Add issues to the response for student dashboard
+        issues = Issue.objects.filter(student=user).values(
+            'id', 'title', 'description', 'category', 'priority', 'status', 'created_at', 'updated_at',
+            'courseCode', 'studentId', 'lecturer', 'department', 'semester', 'academicYear', 'issueDate', 'studentName'
+        )
+        data['issues'] = list(issues)
+
+        return Response(data)
 
 # User Profile View
 class UserProfileView(generics.RetrieveAPIView):
