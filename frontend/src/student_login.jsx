@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Footer from './components/Footer';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com'; 
 
 const StudentLogin = () => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
@@ -28,7 +29,7 @@ const StudentLogin = () => {
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                const response = await fetch('/api/csrf-token/', { credentials: 'include' });
+                const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
                 if (!response.ok) {
                     console.error("Failed to fetch CSRF token response:", response);
                     const errorData = await response.json().catch(() => ({}));
