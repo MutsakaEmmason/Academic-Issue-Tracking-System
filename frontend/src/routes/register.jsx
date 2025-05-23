@@ -185,7 +185,7 @@ const Register = () => {
 
         console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
 
-       fetch('https://academic-issue-tracking-system-942o.onrender.com/api/register/', {
+       fetch('/api/register/', {
 
             method: 'POST',
             headers: {
