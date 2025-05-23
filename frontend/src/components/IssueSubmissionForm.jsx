@@ -12,6 +12,7 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 import Footer from '../components/Footer';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const IssueSubmissionForm = () => {
     const [title, setTitle] = useState('');
@@ -61,7 +62,7 @@ const IssueSubmissionForm = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://127.0.0.1:8000/api/issues/', {
+            const response = await fetch('`${BASE_URL}/api/issues/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
