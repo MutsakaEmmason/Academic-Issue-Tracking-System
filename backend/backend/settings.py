@@ -198,3 +198,52 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'emmasonmutsaka@gmail.com'
 EMAIL_HOST_PASSWORD = 'cewk tkgj bdcj rqgi'  # Use App Password in production
 EMAIL_USE_SSL = False
+
+
+
+
+
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO', # Set this to DEBUG for even more verbose Django logging
+            'propagate': False,
+        },
+        # For specific app errors (e.g., your authentication app)
+        'authentication': {
+            'handlers': ['console'],
+            'level': 'DEBUG', # Ensure your app's specific errors are logged
+            'propagate': False,
+        },
+        '': { # Root logger
+            'handlers': ['console'],
+            'level': 'INFO', # Could set to DEBUG if django logger is not enough
+            'propagate': False,
+        },
+    },
+}
+
+# If DEBUG is True, you might not always see everything unless explicitly set.
+# Ensure DEBUG = True when testing this.
