@@ -1,11 +1,11 @@
 # backend/backend/urls.py
 from django.urls import path, include
 from django.views.generic import RedirectView
-from users.views import GetCSRFToken
+#from users.views import GetCSRFToken
 
 urlpatterns = [
     # Your existing URLs
-    
+
     path('api/', include('issues.urls')),
     # Add these redirects for direct access to endpoints
     path('register/', RedirectView.as_view(url='/api/register/', permanent=False)),
@@ -26,5 +26,5 @@ urlpatterns = [
     
     # Redirect for the proxy
     path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
-    path('api/csrf-token/', GetCSRFToken.as_view(), name='csrf-token'),
+    #path('api/csrf-token/', GetCSRFToken.as_view(), name='csrf-token'),
 ]
