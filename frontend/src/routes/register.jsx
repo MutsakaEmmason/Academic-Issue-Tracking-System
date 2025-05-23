@@ -142,6 +142,7 @@ const Register = () => {
     const [yearOfStudy, setYearOfStudy] = useState("");
     const [passwordsMatch, setPasswordsMatch] = useState(true);
     const [errors, setErrors] = useState({});
+    const [csrfToken, setCsrfToken] = useState('');
 
     const navigate = useNavigate();
     const toast = useToast();
