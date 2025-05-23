@@ -233,6 +233,7 @@ const Register = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify(registrationData),
            credentials: 'include',
@@ -242,6 +243,23 @@ const Register = () => {
                 console.log("Response status:", response.status); // Log response status
 
                 if (!response.ok) {
+
+                    const contentType = response.headers.get("content-type");
+                    // Check if the response is actually JSON before trying to parse it as JSON
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        return response.json().then(data => {
+                            console.error("Backend error (JSON):", data); // Log backend error response
+                            // Use JSON.stringify(data) for more comprehensive error logging if 'detail' isn't present
+                            throw new Error(data.detail || JSON.stringify(data) || 'Registration failed');
+                        });
+                    } else {
+                        // If it's not JSON (e.g., HTML for CSRF Forbidden), read it as text
+                        return response.text().then(text => {
+                            console.error("Backend error (Text/HTML):", text); // Log the raw HTML/text error
+                            // Provide a more informative error message to the user
+                            throw new Error(`Registration failed: ${response.status} - ${response.statusText}. Please check the server response for details.`);
+                        });
+                    }
                     return response.json().then(data => {
                         console.error("Backend error:", data); // Log backend error response
                         throw new Error(data.detail || 'Registration failed');
