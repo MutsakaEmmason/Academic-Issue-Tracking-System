@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import StudentDashboard from "../routes/StudentDashboard";
 import IssueSubmissionForm from '../components/IssueSubmissionForm'; // Import the IssueSubmissionForm
 import { useNavigate, Routes, Route } from "react-router-dom"; // Import Routes and Route
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const DashboardContainer = () => {
     const [studentData, setStudentData] = useState(null);
@@ -17,7 +18,7 @@ const DashboardContainer = () => {
 
         const fetchStudentData = async () => {
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/student-profile/", {
+                const response = await fetch(`${BASE_URL}/api/student-profile/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
