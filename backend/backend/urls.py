@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 from django.conf import settings
 from django.conf.urls.static import static
-from backend.views import GetCSRFToken
+from issues.views import GetCSRFToken
 
 def home(request):
     return HttpResponse("Welcome to the Academic Issue Tracking System!")
