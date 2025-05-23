@@ -1,36 +1,45 @@
-# backend/backend/urls.py
+# backend/issues/urls.py
 from django.urls import path, include
-from django.views.generic import RedirectView
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.http import JsonResponse
+# Remove RedirectView import if no longer used
+# from django.views.decorators.csrf import ensure_csrf_cookie # Keep if get_csrf_token is here
+# from django.http import JsonResponse # Keep if get_csrf_token is here
+
+from rest_framework.routers import DefaultRouter
+from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
+from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView # Include if used
 
 
-@ensure_csrf_cookie
-def get_csrf_token(request):
-    return JsonResponse({'csrfToken': request.META.get('CSRF_COOKIE')})
+# Initialize the router
+router = DefaultRouter()
+router.register(r'users', CustomUserViewSet)
+router.register(r'issues', IssueViewSet)
+router.register(r'comments', CommentViewSet)
+router.register(r'notifications', NotificationViewSet)
+router.register(r'audit-logs', AuditLogViewSet)
+router.register(r'attachments', IssueAttachmentViewSet)
+
 
 urlpatterns = [
-    # Your existing URLs
+    # All paths defined here will automatically have the '/api/' prefix
+    # because of path('api/', include('issues.urls')) in backend/urls.py
 
-    path('api/', include('issues.urls')),
-    # Add these redirects for direct access to endpoints
-    path('register/', RedirectView.as_view(url='/api/register/', permanent=False)),
-    path('token/', RedirectView.as_view(url='/api/token/', permanent=False)),
-    path('lecturer/register/', RedirectView.as_view(url='/api/lecturer/register/', permanent=False)),
-    path('lecturer/login/', RedirectView.as_view(url='/api/lecturer/login/', permanent=False)),
-    path('student-profile/', RedirectView.as_view(url='/api/student-profile/', permanent=False)),
-    path('lecturer/details/', RedirectView.as_view(url='/api/lecturer/details/', permanent=False)),
-    path('registrar/signup/', RedirectView.as_view(url='/api/registrar/signup/', permanent=False)),
-    path('registrar-profile/', RedirectView.as_view(url='/api/registrar-profile/', permanent=False)),
-    
-    # Add a catch-all redirect for any other API paths
-    path('issues/', RedirectView.as_view(url='/api/issues/', permanent=False)),
-    path('comments/', RedirectView.as_view(url='/api/comments/', permanent=False)),
-    path('notifications/', RedirectView.as_view(url='/api/notifications/', permanent=False)),
-    path('audit-logs/', RedirectView.as_view(url='/api/audit-logs/', permanent=False)),
-    path('attachments/', RedirectView.as_view(url='/api/attachments/', permanent=False)),
-    
-    # Redirect for the proxy
-    # path('127.0.0.1:8000/api/<path:path>', RedirectView.as_view(url='/api/%(path)s', permanent=False)),
-    path('csrf/', get_csrf_token, name='get_csrf'),
+    # Include the router URLs
+    path('', include(router.urls)),
+
+    # Direct API endpoints (no 'api/' prefix here)
+    path('register/', StudentRegistrationView.as_view(), name='student-registration'),
+    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'), # This is the correct way
+    path('student/profile/', StudentProfileView.as_view(), name='student-profile'),
+
+    # Add other specific views like lecturer/registrar if they exist
+    # path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
+    # path('lecturer/login/', YourLecturerLoginView.as_view(), name='lecturer-login'),
+    # path('lecturer/details/', YourLecturerDetailsView.as_view(), name='lecturer-details'),
+    # path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
+    # path('registrar-profile/', YourRegistrarProfileView.as_view(), name='registrar-profile'),
+
+    # IMPORTANT: The csrf-token path should be in backend/urls.py, not here if it's already there.
+    # If GetCSRFToken is an issue-specific view and you need it within /api/, keep it:
+    # path('csrf-token/', GetCSRFToken.as_view(), name='csrf-token'), # Example if specific to issues app
 ]
