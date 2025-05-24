@@ -95,7 +95,7 @@ const RegistrarSignup = () => {
     setLoading(true);
     try {
       // Send POST request to the backend
-      const response = await fetch(`${BASE_URL}/api/registrar/signup/`,
+      const response = await fetch(`${BASE_URL}/api/registrar/signup/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
