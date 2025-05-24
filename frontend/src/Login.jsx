@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, FormControl, FormLabel, Input, VStack, Text } from "@chakra-ui/react";
 import Footer from './components/Footer.jsx';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const LecturerLogin = () => {
     const navigate = useNavigate();
@@ -41,7 +42,7 @@ const LecturerLogin = () => {
         setError("");
 
         try {
-            const response = await fetch("https://academic-issue-tracking-system-942o.onrender.com/api/lecturer/login/", {
+            const response = await fetch(`${BASE_URL}/api/lecturer/login/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: email, password }),
