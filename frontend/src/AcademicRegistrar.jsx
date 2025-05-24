@@ -16,6 +16,9 @@ import {
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import "./index.css";
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+
+
 
 const AcademicRegistrarDashboard = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -41,7 +44,7 @@ const AcademicRegistrarDashboard = () => {
                     return null;
                 }
 
-                const profileResponse = await fetch("/api/registrar-profile/", {
+                const profileResponse = await fetch(`${BASE_URL}/api/registrar-profile/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -70,7 +73,7 @@ const AcademicRegistrarDashboard = () => {
                 // Fetch lecturers from the same college
                 try {
                     const token = localStorage.getItem("accessToken");
-                    const lecturersResponse = await fetch(`http://127.0.0.1:8000/api/users/?role=lecturer&college=${college}`, {
+                    const lecturersResponse = await fetch(`${BASE_URL}/api/users/?role=lecturer&college=${college}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -89,7 +92,7 @@ const AcademicRegistrarDashboard = () => {
                 // Fetch issues from the same college
                 try {
                     const token = localStorage.getItem("accessToken");
-                    const issuesResponse = await fetch(`http://127.0.0.1:8000/api/issues/?college=${college}`, {
+                    const issuesResponse = await fetch(`${BASE_URL}/api/issues/?college=${college}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
@@ -124,7 +127,7 @@ const AcademicRegistrarDashboard = () => {
         setIsAssigning(true);
         try {
             const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/issues/${selectedIssue.id}/assign/`, {
+            const response = await fetch(`${BASE_URL}/api/issues/${selectedIssue.id}/assign/`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -178,7 +181,7 @@ const AcademicRegistrarDashboard = () => {
 
         try {
             const token = localStorage.getItem("accessToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/resolve-issue/${selectedIssue.id}/`, {
+            const response = await fetch(`${BASE_URL}/api/resolve-issue/${selectedIssue.id}/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
