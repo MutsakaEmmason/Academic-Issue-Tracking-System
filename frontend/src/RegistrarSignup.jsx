@@ -33,6 +33,7 @@ import {
   FiArrowLeft,
   FiCheckCircle
 } from 'react-icons/fi';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const RegistrarSignup = () => {
   const [formData, setFormData] = useState({
@@ -94,7 +95,7 @@ const RegistrarSignup = () => {
     setLoading(true);
     try {
       // Send POST request to the backend
-      const response = await fetch("/api/registrar/signup/", {
+      const response = await fetch(`${BASE_URL}/api/registrar/signup/`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
