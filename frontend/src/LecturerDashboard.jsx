@@ -26,7 +26,7 @@ const LecturerDashboard = () => {
 
         const fetchLecturerDetails = async () => {
             try {
-                cconst response = await fetch(`${BASE_URL}/api/lecturer/details/`, {
+                const response = await fetch(`${BASE_URL}/api/lecturer/details/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
