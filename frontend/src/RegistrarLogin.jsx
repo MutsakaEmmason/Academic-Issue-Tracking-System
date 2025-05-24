@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const RegistrarLogin = () => {
   const [credentials, setCredentials] = useState({
@@ -27,7 +28,7 @@ const RegistrarLogin = () => {
     try {
       console.log('Sending credentials:', credentials); // Debug log
       
-      const response = await axios.post('/api/token/', credentials);
+      onst response = await axios.post(`${BASE_URL}/api/token/`, credentials);
       
       console.log('Login response:', response.data); // Debug log
       
