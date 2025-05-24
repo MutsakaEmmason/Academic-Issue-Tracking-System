@@ -6,6 +6,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import Footer from './components/Footer.jsx';
+const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const LecturerDashboard = () => {
     const [lecturer, setLecturer] = useState(null);
@@ -25,7 +26,7 @@ const LecturerDashboard = () => {
 
         const fetchLecturerDetails = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/lecturer/details/', {
+                cconst response = await fetch(`${BASE_URL}/api/lecturer/details/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -56,7 +57,7 @@ const LecturerDashboard = () => {
 
         const fetchAssignedIssues = async (lecturerId) => {
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/issues?assigned_to=${lecturerId}`, {
+                const response = await fetch(`${BASE_URL}/api/issues?assigned_to=${lecturerId}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -80,7 +81,7 @@ const LecturerDashboard = () => {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/api/issues/${issueId}/resolve`, {
+            const response = await fetch(`${BASE_URL}/api/issues/${issueId}/resolve`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
