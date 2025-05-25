@@ -111,6 +111,10 @@ class Issue(Timestamp):
     studentName = models.CharField(max_length=255)
     college = models.CharField(max_length=255, blank=True, null=True)  # College field to associate with the issue
 
+    resolution_note = models.TextField(blank=True, null=True)
+    resolved_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, related_name='resolved_issues', null=True, blank=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
     def save(self, *args, **kwargs):
         # Automatically set the college from the student if it's not set
         if not self.college and self.student:
