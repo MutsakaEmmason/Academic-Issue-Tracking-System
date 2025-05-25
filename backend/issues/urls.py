@@ -20,7 +20,7 @@ from .views import (
     RegistrarSignupView,       # Correct name
     RegistrarProfileView,      # Correct name
     AssignIssueView,           # Correct name
-    ResolveIssueView, 
+    ResolveIssueView)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView # Include if used
 
 
@@ -47,11 +47,11 @@ urlpatterns = [
     path('student-profile/', StudentProfileView.as_view(), name='student-profile'),
 
     # Add other specific views like lecturer/registrar if they exist
-    path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
-    path('lecturer/login/', YourLecturerLoginView.as_view(), name='lecturer-login'),
-    path('lecturer/details/', YourLecturerDetailsView.as_view(), name='lecturer-details'),
-    path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
-    path('registrar-profile/', YourRegistrarProfileView.as_view(), name='registrar-profile'),
+    path('lecturer/register/', LecturerRegistrationView.as_view(), name='lecturer-registration'),
+    # path('lecturer/login/', LecturerLoginView.as_view(), name='lecturer-login'),
+    path('lecturer/details/', LecturerDetailsView.as_view(), name='lecturer-details'),
+    path('registrar/signup/', RegistrarSignupView.as_view(), name='registrar-signup'),
+    path('registrar-profile/', RegistrarProfileView.as_view(), name='registrar-profile'),
     path('issues/<int:issue_id>/assign/', AssignIssueView.as_view(), name='issue-assign'),
     path('resolve-issue/<int:issue_id>/', ResolveIssueView.as_view(), name='issue-resolve'), # This matches your frontend call
 
