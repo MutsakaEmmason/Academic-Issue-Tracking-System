@@ -130,7 +130,7 @@ const LecturerDashboard = () => {
         }
 
         try {
-            const response = await fetch(`${BASE_URL}/api/issues/${issueId}/resolve/`, { // Added trailing slash for consistency
+            const response = await fetch(`${BASE_URL}/api/resolve-issue/${issueId}/`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
