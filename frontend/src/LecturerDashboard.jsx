@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, Button, Text, VStack, HStack, Heading, 
-  Table, Thead, Tbody, Tr, Th, Td, Spinner, 
-  Flex, useToast
+import {
+  Box, Button, Text, VStack, HStack, Heading,
+  Table, Thead, Tbody, Tr, Th, Td, Spinner,
+  Flex, useToast, Alert, AlertIcon // Import Alert and AlertIcon for better error display
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import Footer from './components/Footer.jsx';
+
 const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
 
 const LecturerDashboard = () => {
@@ -20,7 +21,7 @@ const LecturerDashboard = () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            navigate('/lecturer-login'); // Updated to lecturer-login as per your preference
+            navigate('/lecturer-login');
             return;
         }
 
@@ -37,6 +38,13 @@ const LecturerDashboard = () => {
                 if (response.status === 401 || response.status === 403) {
                     localStorage.removeItem('token');
                     navigate('/lecturer-login');
+                    toast({
+                        title: 'Session expired or unauthorized.',
+                        description: 'Please log in again.',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                     return;
                 }
 
@@ -46,18 +54,31 @@ const LecturerDashboard = () => {
 
                 const data = await response.json();
                 setLecturer(data);
-                fetchAssignedIssues(data.id);
+                // Call fetchAssignedIssues with the lecturer's ID and filter by status
+                fetchAssignedIssues(data.id, 'assigned'); // Fetch only 'assigned' issues initially
             } catch (error) {
                 setError('Failed to load lecturer details.');
-                console.error('Error:', error);
+                console.error('Error fetching lecturer details:', error);
+                toast({
+                    title: 'Error',
+                    description: 'Failed to load lecturer details. Please try again.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
             } finally {
                 setLoading(false);
             }
         };
 
-        const fetchAssignedIssues = async (lecturerId) => {
+        const fetchAssignedIssues = async (lecturerId, statusFilter = '') => {
+            let url = `${BASE_URL}/api/issues/?assigned_to=${lecturerId}`;
+            if (statusFilter) {
+                url += `&status=${statusFilter}`; // Add status filter
+            }
+
             try {
-                const response = await fetch(`${BASE_URL}/api/issues?assigned_to=${lecturerId}`, {
+                const response = await fetch(url, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -68,46 +89,108 @@ const LecturerDashboard = () => {
                 if (response.ok) {
                     const data = await response.json();
                     setIssues(data);
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error fetching issues:', errorData);
+                    toast({
+                        title: 'Error fetching issues',
+                        description: errorData.detail || 'Failed to load assigned issues.',
+                        status: 'error',
+                        duration: 5000,
+                        isClosable: true,
+                    });
                 }
             } catch (error) {
-                console.error('Error fetching issues:', error);
+                console.error('Network error fetching issues:', error);
+                toast({
+                    title: 'Network Error',
+                    description: 'Could not connect to the server to fetch issues.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
             }
         };
 
         fetchLecturerDetails();
-    }, [navigate]);
+    }, [navigate, toast]); // Add toast to dependency array
 
     const markIssueResolved = async (issueId) => {
         const token = localStorage.getItem('token');
+        if (!token) {
+            toast({
+                title: 'Authentication Error',
+                description: 'Please log in to resolve issues.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+            navigate('/lecturer-login');
+            return;
+        }
 
         try {
-            const response = await fetch(`${BASE_URL}/api/issues/${issueId}/resolve`, {
+            const response = await fetch(`${BASE_URL}/api/issues/${issueId}/resolve/`, { // Added trailing slash for consistency
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
+                // Optionally send a resolution note if you want to capture it
+                // body: JSON.stringify({ resolution_note: "Resolved by lecturer dashboard." }),
             });
 
             if (response.ok) {
-                setIssues(issues.map(issue => 
-                    issue.id === issueId ? { ...issue, status: 'Resolved' } : issue
-                ));
+                // Update the issue status to 'resolved' (lowercase 'r')
+                setIssues(prevIssues =>
+                    prevIssues.map(issue =>
+                        issue.id === issueId ? { ...issue, status: 'resolved' } : issue
+                    ).filter(issue => issue.status === 'assigned') // Optionally, filter out resolved issues immediately
+                );
                 toast({
                     title: 'Issue resolved',
                     status: 'success',
                     duration: 3000,
                     isClosable: true,
                 });
+            } else {
+                const errorData = await response.json();
+                console.error('Error resolving issue:', errorData);
+                toast({
+                    title: 'Error resolving issue',
+                    description: errorData.detail || 'Failed to resolve issue. Please check permissions.',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+                if (response.status === 403) {
+                     // If 403, means not assigned or not lecturer. Could refresh data to be safe.
+                     // Re-fetch assigned issues to ensure the list is accurate.
+                     fetchAssignedIssues(lecturer?.id, 'assigned');
+                }
             }
         } catch (error) {
-            console.error('Error resolving issue:', error);
+            console.error('Network error resolving issue:', error);
+            toast({
+                title: 'Network Error',
+                description: 'Could not connect to the server to resolve the issue.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
         }
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-        navigate('/lecturer-login'); // Updated to lecturer-login
+        navigate('/lecturer-login');
+        toast({
+            title: 'Logged out',
+            description: 'You have been successfully logged out.',
+            status: 'info',
+            duration: 3000,
+            isClosable: true,
+        });
     };
 
     if (loading) {
@@ -121,7 +204,10 @@ const LecturerDashboard = () => {
     if (error) {
         return (
             <Box minH="100vh" display="flex" justifyContent="center" alignItems="center">
-                <Text color="red.500">{error}</Text>
+                <Alert status="error" width="fit-content">
+                    <AlertIcon />
+                    {error}
+                </Alert>
             </Box>
         );
     }
@@ -138,14 +224,14 @@ const LecturerDashboard = () => {
                         </Text>
                     </VStack>
                     <HStack spacing={4}>
-                        <Button 
+                        <Button
                             colorScheme="purple"
                             variant="solid"
                             onClick={() => navigate('/about')}
                         >
                             About Us
                         </Button>
-                        <Button 
+                        <Button
                             colorScheme="purple"
                             variant="solid"
                             onClick={handleLogout}
@@ -190,11 +276,11 @@ const LecturerDashboard = () => {
                                         {issues.map(issue => (
                                             <Tr key={issue.id}>
                                                 <Td>{issue.id}</Td>
-                                                <Td>{issue.type}</Td>
+                                                <Td>{issue.issue_type || issue.type}</Td> {/* Use issue_type from serializer or type */}
                                                 <Td>{issue.description}</Td>
                                                 <Td>{issue.status}</Td>
                                                 <Td>
-                                                    {issue.status !== 'Resolved' && (
+                                                    {issue.status !== 'resolved' ? ( // Check for lowercase 'resolved'
                                                         <Button
                                                             size="sm"
                                                             colorScheme="green"
@@ -202,6 +288,8 @@ const LecturerDashboard = () => {
                                                         >
                                                             Resolve
                                                         </Button>
+                                                    ) : (
+                                                        <Text color="gray.500">Resolved</Text> // Display "Resolved" if already resolved
                                                     )}
                                                 </Td>
                                             </Tr>
@@ -210,7 +298,7 @@ const LecturerDashboard = () => {
                                 </Table>
                             </Box>
                         ) : (
-                            <Text>No issues assigned </Text>
+                            <Text>No issues assigned</Text>
                         )}
                     </Box>
                 </VStack>
