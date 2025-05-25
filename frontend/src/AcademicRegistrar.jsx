@@ -182,7 +182,7 @@ const AcademicRegistrarDashboard = () => {
         try {
             const token = localStorage.getItem("accessToken");
             const response = await fetch(`${BASE_URL}/api/resolve-issue/${selectedIssue.id}/`, {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
