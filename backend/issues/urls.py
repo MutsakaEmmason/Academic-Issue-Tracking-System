@@ -36,7 +36,7 @@ urlpatterns = [
     # path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
     # path('lecturer/login/', YourLecturerLoginView.as_view(), name='lecturer-login'),
     # path('lecturer/details/', YourLecturerDetailsView.as_view(), name='lecturer-details'),
-    # path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
+    path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
     path('registrar-profile/', YourRegistrarProfileView.as_view(), name='registrar-profile'),
 
     # IMPORTANT: The csrf-token path should be in backend/urls.py, not here if it's already there.
