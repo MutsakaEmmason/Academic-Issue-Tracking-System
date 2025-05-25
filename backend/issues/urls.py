@@ -5,8 +5,22 @@ from django.urls import path, include
 # from django.http import JsonResponse # Keep if get_csrf_token is here
 
 from rest_framework.routers import DefaultRouter
-from .views import CustomUserViewSet, IssueViewSet, CommentViewSet, NotificationViewSet, AuditLogViewSet
-from .views import IssueAttachmentViewSet, StudentRegistrationView, StudentProfileView
+from .views import (
+    CustomUserViewSet,
+    IssueViewSet,
+    CommentViewSet,
+    NotificationViewSet,
+    AuditLogViewSet,
+    IssueAttachmentViewSet,
+    StudentRegistrationView,
+    StudentProfileView,
+    # Corrected imports for views you have defined:
+    LecturerRegistrationView,  # Correct name
+    LecturerDetailsView,       # Correct name
+    RegistrarSignupView,       # Correct name
+    RegistrarProfileView,      # Correct name
+    AssignIssueView,           # Correct name
+    ResolveIssueView, 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView # Include if used
 
 
