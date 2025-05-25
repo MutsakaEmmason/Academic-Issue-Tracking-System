@@ -143,7 +143,7 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
         if not user.check_password(password):
             raise serializers.ValidationError("Incorrect password.")
         
-        if user.role not in ['student', 'lecturer']:
+        if user.role not in ['student', 'lecturer', 'registrar', 'hod', 'admin']:
             raise serializers.ValidationError("Invalid user role.")
         
         refresh = RefreshToken.for_user(user)
