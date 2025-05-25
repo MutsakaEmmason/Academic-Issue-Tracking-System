@@ -56,7 +56,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "https://academic-issue-tracking-system-942o.onrender.com",
-    'academic-issue-tracking-system-ba1p.onrender.com',
+    "https://academic-issue-tracking-system-ba1p.onrender.com",
 ]
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to access the CSRF token
