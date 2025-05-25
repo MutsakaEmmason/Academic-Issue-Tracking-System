@@ -38,6 +38,10 @@ urlpatterns = [
     path('lecturer/details/', YourLecturerDetailsView.as_view(), name='lecturer-details'),
     path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
     path('registrar-profile/', YourRegistrarProfileView.as_view(), name='registrar-profile'),
+    path('issues/<int:issue_id>/assign/', AssignIssueView.as_view(), name='issue-assign'),
+    path('resolve-issue/<int:issue_id>/', ResolveIssueView.as_view(), name='issue-resolve'), # This matches your frontend call
+
+
 
     # IMPORTANT: The csrf-token path should be in backend/urls.py, not here if it's already there.
     # If GetCSRFToken is an issue-specific view and you need it within /api/, keep it:
