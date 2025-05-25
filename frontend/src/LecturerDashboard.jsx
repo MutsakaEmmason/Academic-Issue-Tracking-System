@@ -137,7 +137,7 @@ const LecturerDashboard = () => {
                     'Content-Type': 'application/json',
                 },
                 // Optionally send a resolution note if you want to capture it
-                // body: JSON.stringify({ resolution_note: "Resolved by lecturer dashboard." }),
+                 body: JSON.stringify({ resolution_note: "Resolved by lecturer dashboard." }),
             });
 
             if (response.ok) {
