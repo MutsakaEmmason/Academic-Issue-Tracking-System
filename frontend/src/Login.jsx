@@ -14,7 +14,7 @@ const LecturerLogin = () => {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
-            fetch("/api/token/verify/", {
+            fetch("${BASE_URL}/api/token/verify/", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,
@@ -42,7 +42,7 @@ const LecturerLogin = () => {
         setError("");
 
         try {
-            const response = await fetch(`${BASE_URL}/api/lecturer/login/`, {
+            const response = await fetch(`${BASE_URL}/api/token/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username: email, password }),
