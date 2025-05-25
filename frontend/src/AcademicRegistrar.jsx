@@ -133,7 +133,7 @@ const AcademicRegistrarDashboard = () => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ assigned_to: selectedLecturer }),
+                body: JSON.stringify({ assigned_to_id: selectedLecturer }),
             });
 
             if (response.ok) {
