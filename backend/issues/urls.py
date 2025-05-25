@@ -33,7 +33,7 @@ urlpatterns = [
     path('student-profile/', StudentProfileView.as_view(), name='student-profile'),
 
     # Add other specific views like lecturer/registrar if they exist
-    # path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
+    path('lecturer/register/', YourLecturerRegistrationView.as_view(), name='lecturer-registration'),
     path('lecturer/login/', YourLecturerLoginView.as_view(), name='lecturer-login'),
     path('lecturer/details/', YourLecturerDetailsView.as_view(), name='lecturer-details'),
     path('registrar/signup/', YourRegistrarSignupView.as_view(), name='registrar-signup'),
