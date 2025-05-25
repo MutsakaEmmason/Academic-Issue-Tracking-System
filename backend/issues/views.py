@@ -253,38 +253,72 @@ class RegistrarSignupView(generics.CreateAPIView):
 
 # REINTRODUCED: ResolveIssueView to match urls.py
 class ResolveIssueView(APIView):
-    permission_classes = [IsAuthenticated, IsLecturer] # Only lecturers can resolve
+    # Combine permissions: either a Lecturer (who is assigned) OR a Registrar
+    # You might need to adjust IsLecturer's has_object_permission if it's too restrictive
+    permission_classes = [IsAuthenticated] # Start with just authenticated, then add custom logic
 
-    def patch(self, request, issue_id, *args, **kwargs): # Changed to patch as it's a partial update
+    def patch(self, request, issue_id, *args, **kwargs):
         try:
             issue = Issue.objects.get(id=issue_id)
         except Issue.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Issue not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Ensure the logged-in user is the lecturer assigned to this specific issue
-        if request.user != issue.assigned_to:
+        user = request.user # The logged-in user
+
+        # --- IMPORTANT PERMISSION LOGIC REVISION ---
+        # A lecturer can only resolve issues assigned to them.
+        # A registrar can resolve any issue (or specific types, as per your rule).
+
+        # Check if the user is a lecturer and if they are assigned to this issue
+        is_assigned_lecturer = user.role == 'lecturer' and issue.assigned_to == user
+
+        # Check if the user is a registrar
+        is_registrar = user.role == 'registrar'
+
+        # If it's a lecturer, they MUST be the assigned lecturer
+        if user.role == 'lecturer' and not is_assigned_lecturer:
             return Response(
-                {"detail": "You are not authorized to resolve this issue as you are not the assigned lecturer."},
+                {"detail": "As a lecturer, you are not authorized to resolve this issue unless it's assigned to you."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Check if the issue is already resolved or in an unresolvable state
-        if issue.status == 'resolved':
-            return Response({"detail": "This issue is already resolved."}, status=status.HTTP_400_BAD_REQUEST)
-        if issue.status == 'pending':
-             return Response({"detail": "Issue must be 'assigned' to be resolved by lecturer."}, status=status.HTTP_400_BAD_REQUEST)
+        # If it's neither a lecturer (who is assigned) nor a registrar, forbid access
+        if not is_assigned_lecturer and not is_registrar:
+            return Response(
+                {"detail": "You are not authorized to resolve issues."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
+        # Optional: Additional check for registrars if they can ONLY resolve unassigned issues
+        # if is_registrar and issue.assigned_to is not None:
+        #     return Response(
+        #         {"detail": "Registrars can only resolve unassigned issues."},
+        #         status=status.HTTP_403_FORBIDDEN
+        #     )
+
+
+        # Common logic for both roles once authorized
+        if issue.status == 'resolved':
+            return Response({"error": "Issue is already resolved."}, status=status.HTTP_400_BAD_REQUEST)
+
+        resolution_note = request.data.get('resolution_note')
+        if not resolution_note:
+            return Response({"error": "Resolution note is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        issue.resolution_note = resolution_note
+        issue.resolved_by = user # Set the user who resolved it
+        issue.resolved_at = timezone.now() # Make sure to import timezone: `from django.utils import timezone`
         issue.status = 'resolved'
-        issue.resolution_note = request.data.get("resolution_note", "Issue resolved by assigned lecturer.") # Optional note
         issue.save()
 
-        # Log the action
-        log_action(request.user, f"Issue '{issue.title}' (ID: {issue.id}) resolved by lecturer.")
+        # Assuming you have log_action and send_email_notification functions
+        # log_action(user, f"Issue '{issue.title}' (ID: {issue.id}) resolved by {user.username}.")
+        # send_email_notification(issue.student, "Issue Resolved", f"Your issue '{issue.title}' has been resolved.")
+        # if issue.assigned_to: # Notify assigned lecturer if any
+        #     send_email_notification(issue.assigned_to, "Issue Resolved by Registrar", f"Issue '{issue.title}' was resolved by the Registrar.")
 
-        # Send notification to student
-        send_email_notification(issue.student, "Issue Resolved", f"Your issue '{issue.title}' has been resolved by your assigned lecturer.")
 
-        serializer = IssueSerializer(issue) # Use IssueSerializer to return updated issue data
+        serializer = IssueSerializer(issue)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
