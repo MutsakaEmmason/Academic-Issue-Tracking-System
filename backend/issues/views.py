@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework import generics, status, filters
+from rest_framework import  viewsets, permissions, generics, status, filters
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django_filters.rest_framework import DjangoFilterBackend
@@ -155,6 +155,17 @@ class IssueViewSet(viewsets.ModelViewSet):
 logger = logging.getLogger(__name__)
 
 # RegistrarProfileView (Keep as is, it's fine for registrar profiles)
+class LecturerListView(generics.ListAPIView):
+    queryset = CustomUser.objects.filter(role='lecturer')
+    serializer_class = CustomUserSerializer # Use CustomUserSerializer for full details, or a simpler one if needed
+    permission_classes = [permissions.IsAuthenticated, IsRegistrar] # Only registrars can see this list
+
+    def get_queryset(self):
+        # Further restrict to lecturers within the registrar's college if desired
+        user = self.request.user
+        if user.role == 'registrar':
+            return self.queryset.filter(college=user.college)
+        return self.queryset.none()
 class RegistrarProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
