@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import StudentDashboard from "../routes/StudentDashboard";
 import IssueSubmissionForm from '../components/IssueSubmissionForm'; // Import the IssueSubmissionForm
 import { useNavigate, Routes, Route } from "react-router-dom"; // Import Routes and Route
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const DashboardContainer = () => {
     const [studentData, setStudentData] = useState(null);
