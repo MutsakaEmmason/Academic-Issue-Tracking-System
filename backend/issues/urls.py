@@ -19,7 +19,8 @@ from .views import (
     LecturerDetailsView,        # Correct name
     RegistrarSignupView,        # Correct name
     RegistrarProfileView,      # Correct name
-    AssignIssueView,            # Correct name
+    AssignIssueView,
+    LecturerListView,# Correct name
     ResolveIssueView)
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView # Include if used
 
@@ -50,6 +51,7 @@ urlpatterns = [
     path('lecturer/register/', LecturerRegistrationView.as_view(), name='lecturer-registration'),
     # path('lecturer/login/', LecturerLoginView.as_view(), name='lecturer-login'),
     path('lecturer/details/', LecturerDetailsView.as_view(), name='lecturer-details'),
+    path('lecturers/', LecturerListView.as_view(), name='lecturer-list'),
     path('registrar/signup/', RegistrarSignupView.as_view(), name='registrar-signup'),
     path('registrar-profile/', RegistrarProfileView.as_view(), name='registrar-profile'),
     path('issues/<int:issue_id>/assign/', AssignIssueView.as_view(), name='issue-assign'),
