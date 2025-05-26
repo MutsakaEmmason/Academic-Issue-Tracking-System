@@ -33,7 +33,7 @@ import {
   FiArrowLeft,
   FiCheckCircle
 } from 'react-icons/fi';
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const RegistrarSignup = () => {
   const [formData, setFormData] = useState({
