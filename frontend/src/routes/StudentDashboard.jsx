@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import Footer from '../components/Footer';
 import AboutUs from '../components/AboutUs';
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const StudentDashboard = () => {
     const navigate = useNavigate();
