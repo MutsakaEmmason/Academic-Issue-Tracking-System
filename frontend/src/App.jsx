@@ -12,7 +12,7 @@ import AboutUs from './components/AboutUs';
 import Home from "./home";
 import Register from "./routes/register";
 import LecturerLogin from "./Login"; // Assuming this is your Lecturer Login component
-import ProtectedRoute from './components/ProtectedRoute';
+
 
 
 import IssueSubmissionForm from './components/IssueSubmissionForm';
@@ -23,7 +23,15 @@ import AcademicRegistrar from './AcademicRegistrar'; // Registrar Dashboard
 import RegistrarLogin from './RegistrarLogin';
 import RegistrarSignup from './RegistrarSignup';
 
+const ProtectedRoute = ({ children }) => {
+    const accessToken = localStorage.getItem('accessToken');
 
+    if (!accessToken) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
 const App = () => {
     // This useEffect is likely for CSRF token fetching.
     // Ensure `WorkspaceCSRFToken` uses the BASE_URL.
