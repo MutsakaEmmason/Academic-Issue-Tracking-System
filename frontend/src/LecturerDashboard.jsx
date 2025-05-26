@@ -7,7 +7,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Footer from './components/Footer.jsx';
 
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const LecturerDashboard = () => {
     const [lecturer, setLecturer] = useState(null);
