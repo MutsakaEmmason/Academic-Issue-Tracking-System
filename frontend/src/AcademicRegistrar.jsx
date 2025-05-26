@@ -16,7 +16,7 @@ import {
 import { FaBars } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import "./index.css";
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 
 
