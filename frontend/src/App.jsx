@@ -22,29 +22,6 @@ import AcademicRegistrar from './AcademicRegistrar'; // Registrar Dashboard
 import RegistrarLogin from './RegistrarLogin';
 import RegistrarSignup from './RegistrarSignup';
 
-// Protected Route Component - NOW DEFINED DIRECTLY IN App.jsx
-const ProtectedRoute = ({ children }) => {
-    const accessToken = localStorage.getItem('accessToken');
-    const userRole = localStorage.getItem('userRole'); // Assuming you store this consistently
-
-    const location = useLocation(); // Get current URL path
-
-    if (!accessToken) {
-        // If no access token, prevent rendering the children (protected content).
-        // Instead, show an "Access Denied" message with login links.
-        // The user remains on the URL they tried to access, but sees this message.
-        return (
-            <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
-                <h2>Access Denied</h2>
-                <p>You need to be logged in to view this page.</p>
-                <p>Please <a href="/registrar-login">log in as Registrar</a> or <a href="/lecturer/login">log in as Lecturer</a> or <a href="/student/login">log in as Student</a>.</p>
-            </div>
-        );
-    }
-
-    // If there is an accessToken, render the children (the protected content)
-    return children;
-};
 
 const App = () => {
     // This useEffect is likely for CSRF token fetching.
