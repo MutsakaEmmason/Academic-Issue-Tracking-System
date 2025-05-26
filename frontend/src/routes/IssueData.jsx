@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Text, Button, Spinner, Heading, VStack, useToast, HStack } from '@chakra-ui/react';
 import Footer from '../components/Footer';
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const IssueData = () => {
     const { issueId } = useParams();
