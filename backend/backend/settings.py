@@ -15,7 +15,7 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # CRITICAL: No http:// or https:// here!
 ALLOWED_HOSTS = [
-'academic-issue-tracking-system-942o.onrender.com',
+    "academic-issue-tracking-system-gbch.onrender.com"
     'academic-issue-tracking-system-ba1p.onrender.com',
     'localhost',
     '127.0.0.1',
@@ -56,14 +56,14 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://academic-issue-tracking-system-942o.onrender.com",
+    "https://academic-issue-tracking-system-gbch.onrender.com",
     "https://academic-issue-tracking-system-ba1p.onrender.com",
 ]
 # CSRF settings
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to access the CSRF token
 CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-site requests in modern browsers
 CSRF_TRUSTED_ORIGINS = [
-    "https://academic-issue-tracking-system-942o.onrender.com",
+    "https://academic-issue-tracking-system-gbch.onrender.com",
     "https://academic-issue-tracking-system-ba1p.onrender.com",
     "http://localhost:5173",
     "http://localhost:5174",
