@@ -73,7 +73,7 @@ const AcademicRegistrarDashboard = () => {
                 // Fetch lecturers from the same college
                 try {
                     const token = localStorage.getItem("accessToken");
-                    const lecturersResponse = await fetch(`${BASE_URL}/api/users/?role=lecturer&college=${college}`, {
+                     const lecturersResponse = await fetch(`${BASE_URL}/api/lecturers/`,{
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
