@@ -12,6 +12,7 @@ import AboutUs from './components/AboutUs';
 import Home from "./home";
 import Register from "./routes/register";
 import LecturerLogin from "./Login"; // Assuming this is your Lecturer Login component
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 import IssueSubmissionForm from './components/IssueSubmissionForm';
