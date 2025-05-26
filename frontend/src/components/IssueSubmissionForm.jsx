@@ -12,7 +12,7 @@ import {
     Textarea,
 } from "@chakra-ui/react";
 import Footer from '../components/Footer';
-const BASE_URL = 'https://academic-issue-tracking-system-ba1p.onrender.com';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const IssueSubmissionForm = () => {
     const [title, setTitle] = useState('');
