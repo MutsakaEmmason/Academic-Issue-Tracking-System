@@ -238,6 +238,23 @@ const AcademicRegistrarDashboard = () => {
             default: return 'gray';
         }
     };
+     const getLecturerDisplayName = (lecturer) => {
+        let name = "";
+        if (lecturer.fullName && lecturer.fullName.trim() !== "") {
+            name = lecturer.fullName;
+        } else if (lecturer.first_name && lecturer.first_name.trim() !== "" && lecturer.last_name && lecturer.last_name.trim() !== "") {
+            name = `${lecturer.first_name} ${lecturer.last_name}`;
+        } else if (lecturer.first_name && lecturer.first_name.trim() !== "") {
+            name = lecturer.first_name;
+        } else if (lecturer.last_name && lecturer.last_name.trim() !== "") {
+            name = lecturer.last_name;
+        } else {
+            name = lecturer.username || "Unknown Lecturer"; // Fallback to username
+        }
+
+        const departmentText = lecturer.department ? ` (${lecturer.department})` : " (No department)";
+        return `${name}${departmentText}`;
+    };
 
     return (
         <Flex direction="column" minHeight="100vh" bg="gray.100">
@@ -326,7 +343,7 @@ const AcademicRegistrarDashboard = () => {
                             </Box>
                             <Select 
                                 placeholder="Select Lecturer" 
-                                 onChange={(e) => setSelectedLecturer(e.target.value)}
+                                onChange={(e) => setSelectedLecturer(e.target.value)}
                                 value={selectedLecturer}
                                 bg="gray.700"
                                 color="white"
@@ -336,7 +353,7 @@ const AcademicRegistrarDashboard = () => {
                             >
                                 {lecturers.map((lecturer) => (
                                     <option key={lecturer.id} value={lecturer.id} style={{backgroundColor: "#2D3748", color: "white"}}>
-                                        {lecturer.first_name} {lecturer.last_name} ({lecturer.department || "No department"})
+                                        {getLecturerDisplayName(lecturer)} {/* THIS LINE IS MODIFIED */}
                                     </option>
                                 ))}
                             </Select>
