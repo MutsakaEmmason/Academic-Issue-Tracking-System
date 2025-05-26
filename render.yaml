@@ -3,6 +3,7 @@ services:
     name: academic-issue-tracker
     env: python
     buildCommand: cd frontend && npm install && npm run build && cd .. && mkdir -p backend/templates && cp frontend/dist/index.html backend/templates/index.html && cp -r frontend/dist/assets backend/templates/assets/ && cd backend && pip install -r ../requirements.txt && python manage.py collectstatic --noinput
+    preDeployCommand: "python manage.py migrate"
     startCommand: gunicorn backend.wsgi --bind 0.0.0.0:$PORT
     envVars:
       - key: DATABASE_URL
