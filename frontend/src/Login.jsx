@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, FormControl, FormLabel, Input, VStack, Text } from "@chakra-ui/react";
 import Footer from './components/Footer.jsx';
-const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const LecturerLogin = () => {
     const navigate = useNavigate();
