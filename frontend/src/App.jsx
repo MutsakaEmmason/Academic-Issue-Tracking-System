@@ -11,7 +11,7 @@ import Home from "./home";
 import Register from "./routes/register";
 import LecturerLogin from "./Login";
 import IssueSubmissionForm from './components/IssueSubmissionForm';
-import DashboardContainer from './containers/DashboardContainer'; // Fix: Correct import path
+import DashboardContainer from './components/DashboardContainer'; // Fix: Correct import path
 import IssueData from './routes/IssueData';
 import LecturerDashboard from "./LecturerDashboard";
 import AcademicRegistrar from './AcademicRegistrar';
