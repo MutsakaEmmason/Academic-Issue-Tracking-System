@@ -98,11 +98,12 @@ const handleLogin = async (e) => {
 
         // Call the onLoginSuccess prop with the extracted data
        if (onLoginSuccess) {
-            onLoginSuccess(data.access, data.refresh, data.role);
+            onLoginSuccess(data.access, data.refresh, data.role); // Only pass these three
             console.log('LecturerLogin: onLoginSuccess called with:', {
                 access: data.access ? 'exists' : 'null',
                 refresh: data.refresh ? 'exists' : 'null',
-                role: data.role
+                role: data.role,
+                // Removed id and name from this log because they are not being passed
             });
         } else {
             console.warn('LecturerLogin: onLoginSuccess prop is undefined. Cannot update App state.');
