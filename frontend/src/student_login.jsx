@@ -1,31 +1,20 @@
-import { useState, useEffect } from "react";
-import {
-    VStack,
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    Text,
-    Image,
-    Heading,
-    Box,
-    useToast,
-    FormHelperText,
-} from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from './components/Footer';
-const BASE_URL = 'https://aits-i31l.onrender.com'; 
+import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
+import Footer from './components/Footer.jsx';
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
-const StudentLogin = () => {
-    const [studentRegNumber, setStudentRegNumber] = useState("");
-    const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState({});
-    const [csrfToken, setCsrfToken] = useState(''); // EMPHASIZE: Add state for CSRF token
-
+// Add props: onLoginSuccess, currentAccessToken, currentUserRole
+const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
     const navigate = useNavigate();
     const toast = useToast();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [csrfToken, setCsrfToken] = useState('');
 
-    // MISSING: Add this useEffect hook
+    // Fetch CSRF Token
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
@@ -37,9 +26,9 @@ const StudentLogin = () => {
                 }
                 const data = await response.json();
                 setCsrfToken(data.csrfToken);
-                console.log("CSRF Token fetched for Login:", data.csrfToken);
+                console.log("CSRF Token fetched for Student Login:", data.csrfToken);
             } catch (error) {
-                console.error("Error fetching CSRF token for Login:", error);
+                console.error("Error fetching CSRF token for Student Login:", error);
                 toast({
                     title: 'Error.',
                     description: "Failed to load security token for login. Please refresh the page.",
@@ -51,194 +40,134 @@ const StudentLogin = () => {
         };
 
         fetchCsrfToken();
-    }, []); // Empty dependency array means it runs once on mount
+    }, [toast]);
 
-
-    const handleStudentLogin = () => {
-        let formErrors = {};
-
-        if (!studentRegNumber) {
-            formErrors.studentRegNumber = "Student Registration Number is required";
+    // Navigate if authentication state is already set and correct
+    useEffect(() => {
+        if (currentAccessToken && currentUserRole === 'student' && window.location.pathname !== '/student-dashboard') {
+            console.log("StudentLogin: Navigating to student dashboard because state is set correctly.");
+            navigate("/student-dashboard");
         }
-        if (!password) {
-            formErrors.password = "Password is required";
-        }
+    }, [currentAccessToken, currentUserRole, navigate]);
 
-        if (Object.keys(formErrors).length > 0) {
-            setErrors(formErrors);
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        if (!csrfToken) {
+            setError("CSRF token not available. Please refresh the page.");
+            setLoading(false);
             return;
         }
 
-        setErrors({});
-
-        // Updated login URL to match the backend URL for obtaining JWT tokens
-        fetch('/api/token/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: studentRegNumber,
-                password,
-            }),
-        })
-            .then(response => {
-                console.log('Response:', response);
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.detail || 'Login failed');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-                localStorage.setItem('token', data.access); // Store the JWT token
-                toast({
-                    title: 'Login successful.',
-                    description: "You've successfully logged in.",
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                });
-
-                // After successful login, fetch user profile (optional)
-                fetchUserProfile(data.access);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                toast({
-                    title: 'Login failed.',
-                    description: error.message,
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                });
+        try {
+            const response = await fetch(`${BASE_URL}/api/token/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({ username: email, password }),
+                credentials: 'include',
             });
-    };
 
-    const fetchUserProfile = (token) => {
-        // Fetch user profile using the token
-        fetch('/api/student-profile/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`, // Include JWT token in header
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.detail || 'Failed to fetch user profile');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('User profile data:', data);
-
-
-                // EMPHASIZE: Store user's role, ID, and username from profile
-                localStorage.setItem('userRole', data.role);
-                localStorage.setItem('userId', data.id); // Assuming 'id' is present
-                localStorage.setItem('username', data.username); // Assuming 'username' is present
-               
-                // Redirect or handle profile data if needed
-               
-                navigate("/student-dashboard");
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Server error" }));
+                setError(errorData.detail || errorData.message || "Login failed");
                 toast({
-                    title: 'Profile fetch failed.',
-                    description: error.message,
+                    title: 'Login Failed.',
+                    description: errorData.detail || errorData.message || "Please check your credentials.",
                     status: 'error',
-                    duration: 3000,
+                    duration: 5000,
                     isClosable: true,
                 });
-            });
-    };
+                return;
+            }
 
-    const handleNav = () => {
-        navigate("/register");
+            const data = await response.json();
+            console.log('Login successful data:', data);
+
+            // Call the onLoginSuccess prop
+            if (onLoginSuccess) {
+                // Assuming data contains access, refresh, role, user_id, username
+                onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
+            }
+
+            toast({
+                title: 'Login successful.',
+                description: "You've successfully logged in. Redirecting...",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+
+        } catch (err) {
+            setError("Network error, please try again.");
+            console.error("Login request failed:", err);
+            toast({
+                title: 'Login Failed.',
+                description: err.message || "Network error, please try again.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <Box
-            minHeight="100vh"
-            bg="green.500"
-            display="flex"
-            flexDirection="column"
-            alignItems="stretch"
-        >
-            <Box flex="1" display="flex" justifyContent="center" alignItems="center">
-                <VStack
-                    spacing={6}
-                    p={8}
-                    align="center"
-                    bg="rgba(255, 255, 255, 0.8)"
-                    borderRadius="lg"
-                    boxShadow="lg"
-                    maxWidth="400px"
-                >
-                    <Image
-                        src="https://i.pinimg.com/736x/7f/30/aa/7f30aaf443ebbf9059c21d6c7f745433.jpg"
-                        alt="Makerere University Logo"
-                        boxSize="100px"
-                    />
-
-                    <Heading size="lg">Academic Issue Tracking System (AITS)</Heading>
-
-                    <Text textAlign="center" color="gray.600">
-                        Welcome to the Makerere University Academic Issue Tracking System. Log in
-                        to report, track, and manage your academic issues efficiently.
+        <Box minH="100vh" bg="green.500" p={0} m={0} overflow="auto" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+            <Box maxW="md" mx="auto" p={6} borderRadius="md" boxShadow="md" bg="white" my={10}>
+                <VStack spacing={4} align="stretch">
+                    <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+                        Student Login
                     </Text>
 
-                    <Box w="100%" maxW="400px">
-                        <FormControl isInvalid={errors.studentRegNumber}>
-                            <FormLabel>Student Number</FormLabel>
-                            <Input
-                                onChange={(e) => setStudentRegNumber(e.target.value)}
-                                value={studentRegNumber}
-                                type="text"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
-                            />
-                            {errors.studentRegNumber && (
-                                <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>
-                            )}
-                        </FormControl>
-                        <FormControl mt={4} isInvalid={errors.password}>
-                            <FormLabel>Password</FormLabel>
-                            <Input
-                                onChange={(e) => setPassword(e.target.value)}
-                                value={password}
-                                type="password"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
-                            />
-                            {errors.password && (
-                                <FormHelperText color="red">{errors.password}</FormHelperText>
-                            )}
-                        </FormControl>
+                    {error && <Text color="red.500" textAlign="center">{error}</Text>}
+
+                    <form onSubmit={handleLogin}>
+                        <VStack spacing={4} align="stretch">
+                            <FormControl isRequired>
+                                <FormLabel>Email</FormLabel>
+                                <Input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="Enter your email here"
+                                />
+                            </FormControl>
+
+                            <FormControl isRequired>
+                                <FormLabel>Password</FormLabel>
+                                <Input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Enter your password"
+                                />
+                            </FormControl>
+
+                            <Button colorScheme="blue" type="submit" width="full" mt={4} isLoading={loading}>
+                                Login
+                            </Button>
+                        </VStack>
+                    </form>
+
+                    <Text textAlign="center">
+                        Don't have an account?{" "}
                         <Button
-                            onClick={handleStudentLogin}
-                            colorScheme="blue"
-                            mt={6}
-                            w="100%"
+                            variant="link"
+                            color="red.500"
+                            onClick={() => navigate("/student-register")}
                         >
-                            Login
+                            Register here
                         </Button>
-                        <Text onClick={handleNav} cursor="pointer" mt={2} color="blue.500">
-                            Don't have an account? Sign up
-                        </Text>
-                    </Box>
+                    </Text>
                 </VStack>
             </Box>
-            <Box width="100%">
-                <Footer userRole="student" />
-            </Box>
+            <Footer userRole="student" />
         </Box>
     );
 };
