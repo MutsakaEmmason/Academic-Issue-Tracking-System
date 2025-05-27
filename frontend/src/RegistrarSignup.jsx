@@ -7,7 +7,7 @@ import {
 import Footer from './components/Footer.jsx';
 const BASE_URL = 'https://aits-i31l.onrender.com'; // Ensure BASE_URL is defined
 
-const RegistrarSignUp = () => {
+const RegistrarSignup = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
