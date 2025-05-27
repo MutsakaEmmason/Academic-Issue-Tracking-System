@@ -20,44 +20,17 @@ import Footer from '../components/Footer';
 import AboutUs from '../components/AboutUs';
 const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
-const StudentDashboard = () => {
+const StudentDashboard = ({ studentData, loading }) => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredIssues, setFilteredIssues] = useState([]);
-    const [studentData, setStudentData] = useState(null);
-    const [loading, setLoading] = useState(true);
     const toast = useToast();
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            setLoading(true);
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`${BASE_URL}/api/student-profile/`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setStudentData(data);
-                    setFilteredIssues(data.issues);
-                } else {
-                    toast({ title: 'Failed to fetch profile.', status: 'error', duration: 5000, isClosable: true });
-                    navigate('/student/login');
-                }
-            } catch (error) {
-                toast({ title: 'An error occurred.', description: error.message, status: 'error', duration: 5000, isClosable: true });
-                navigate('/student/login');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, [navigate, toast]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/student/login');
-    };
+        if (studentData?.issues) {
+            setFilteredIssues(studentData.issues);
+        }
+    }, [studentData]);
 
     const handleSearch = async () => {
         setLoading(true);
