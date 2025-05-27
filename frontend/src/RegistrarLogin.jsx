@@ -108,9 +108,13 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
             console.log('Registrar Login successful data:', data);
 
             if (onLoginSuccess) {
-                onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
+                onLoginSuccess(data.access, data.refresh, data.role); // <-- ONLY these three fields
+                console.log('RegistrarLogin: onLoginSuccess called with:', {
+                    access: data.access ? 'exists' : 'null',
+                    refresh: data.refresh ? 'exists' : 'null',
+                    role: data.role,
+                });
             }
-
             toast({
                 title: 'Login successful.',
                 description: "You've successfully logged in. Redirecting...",
