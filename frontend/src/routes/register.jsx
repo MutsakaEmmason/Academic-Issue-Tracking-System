@@ -15,6 +15,7 @@ import {
     useToast,
 } from "@chakra-ui/react";
 import Footer from '../components/Footer';
+const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const collegeDepartments = {
     CAES: [
@@ -152,7 +153,7 @@ const Register = () => {
         const fetchCsrfToken = async () => {
             try {
                 // IMPORTANT: Use the relative path to the CSRF token endpoint
-                const response = await fetch('/api/csrf-token/', { credentials: 'include' });
+                const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
                 if (!response.ok) {
                     throw new Error(`Failed to fetch CSRF token: ${response.statusText}`);
                 }
@@ -228,7 +229,7 @@ const Register = () => {
 
         console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
 
-       fetch('/api/register/', {
+       fetch(`${BASE_URL}/api/register/`, {
 
             method: 'POST',
             headers: {
@@ -243,40 +244,41 @@ const Register = () => {
                 console.log("Response status:", response.status); // Log response status
 
                 if (!response.ok) {
-
                     const contentType = response.headers.get("content-type");
-                    // Check if the response is actually JSON before trying to parse it as JSON
                     if (contentType && contentType.indexOf("application/json") !== -1) {
                         return response.json().then(data => {
-                            console.error("Backend error (JSON):", data); // Log backend error response
-                            // Use JSON.stringify(data) for more comprehensive error logging if 'detail' isn't present
+                            console.error("Backend error (JSON):", data);
                             throw new Error(data.detail || JSON.stringify(data) || 'Registration failed');
                         });
                     } else {
-                        // If it's not JSON (e.g., HTML for CSRF Forbidden), read it as text
                         return response.text().then(text => {
-                            console.error("Backend error (Text/HTML):", text); // Log the raw HTML/text error
-                            // Provide a more informative error message to the user
-                            throw new Error(`Registration failed: ${response.status} - ${response.statusText}. Please check the server response for details.`);
+                            console.error("Backend error (Text/HTML):", text);
+                            throw new Error(`Registration failed: ${response.status} - ${response.statusText}. Please check the server response for details. Raw: ${text.substring(0, 100)}...`); // Added substring to avoid logging huge HTML bodies
                         });
                     }
-                    return response.json().then(data => {
-                        console.error("Backend error:", data); // Log backend error response
-                        throw new Error(data.detail || 'Registration failed');
-                    });
                 }
                 return response.json();
             })
             .then(data => {
-                console.log("Registration successful:", data); // Log successful response
-                localStorage.setItem('token', data.access);
-                toast({
-                    title: 'Registration successful.',
-                    description: "You've successfully registered.",
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                });
+                console.log("Registration successful:", data);
+
+                // --- FIXES HERE ---
+                // 1. Use the correct key 'access_token' for consistency
+                localStorage.setItem('access_token', data.access);
+                // 2. Store the refresh token (good practice for token refreshing)
+                if (data.refresh) {
+                    localStorage.setItem('refresh_token', data.refresh);
+                }
+                // 3. Store the user role from the response
+                localStorage.setItem('user_role', data.role); // Assuming data.role contains 'student'
+
+                // Optional: Store other useful user data
+                if (data.user_id) { // Adjust key based on your backend response if it's not 'user_id'
+                    localStorage.setItem('user_id', data.user_id);
+                }
+                if (data.username) { // Adjust key based on your backend response
+                    localStorage.setItem('username', data.username);
+                }
                 navigate("/student-dashboard");
             })
             .catch(error => {
