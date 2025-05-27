@@ -97,16 +97,14 @@ const handleLogin = async (e) => {
         console.log('LecturerLogin: Role from backend response:', data.role); // Verify 'data.role' exists and is correct
 
         // Call the onLoginSuccess prop with the extracted data
-        if (onLoginSuccess) {
-            // Ensure data.role, data.user_id, data.username exist in your backend response
-            onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
+       if (onLoginSuccess) {
+            onLoginSuccess(data.access, data.refresh, data.role); // Removed user_id and username
             console.log('LecturerLogin: onLoginSuccess called with:', {
                 access: data.access ? 'exists' : 'null',
                 refresh: data.refresh ? 'exists' : 'null',
-                role: data.role, // Log the actual role value
-                userId: data.user_id,
-                username: data.username
+                role: data.role
             });
+        }
         } else {
              console.warn('LecturerLogin: onLoginSuccess prop is undefined. Cannot update App state.');
         }
