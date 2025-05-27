@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
