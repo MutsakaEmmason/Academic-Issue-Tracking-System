@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Box, Spinner, Text  } from "@chakra-ui/react";
 import { fetchCSRFToken } from './utils/csrf'; // Assuming this correctly fetches and sets cookie/global var
 
 // Import your components
