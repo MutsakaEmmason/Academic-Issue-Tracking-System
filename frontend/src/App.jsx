@@ -24,9 +24,9 @@ import RegistrarLogin from './RegistrarLogin';
 import RegistrarSignup from './RegistrarSignup';
 
 const ProtectedRoute = ({ children }) => {
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('token');
 
-    if (!accessToken) {
+    if (!token) {
         return <Navigate to="/" replace />;
     }
 
