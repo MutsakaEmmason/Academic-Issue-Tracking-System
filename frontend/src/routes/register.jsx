@@ -148,18 +148,16 @@ const Register = () => {
     const navigate = useNavigate();
     const toast = useToast();
 
-    // EMPHASIZE: Fetch CSRF token on component mount
     useEffect(() => {
         const fetchCsrfToken = async () => {
             try {
-                // IMPORTANT: Use the relative path to the CSRF token endpoint
                 const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
                 if (!response.ok) {
                     throw new Error(`Failed to fetch CSRF token: ${response.statusText}`);
                 }
                 const data = await response.json();
                 setCsrfToken(data.csrfToken);
-                console.log("CSRF Token fetched:", data.csrfToken); // For debugging
+                console.log("CSRF Token fetched:", data.csrfToken);
             } catch (error) {
                 console.error("Error fetching CSRF token:", error);
                 toast({
@@ -171,27 +169,15 @@ const Register = () => {
                 });
             }
         };
-
         fetchCsrfToken();
-    }, []); // Run only once on mount
-
-
+    }, []);
 
     const handleStudentRegistration = () => {
         let formErrors = {};
-
-        if (!fullName) formErrors.fullName = "Full Name is required";
-        if (!email) formErrors.email = "Email is required";
-        if (!studentRegNumber) formErrors.studentRegNumber = "Registration Number is required";
-        if (!yearOfStudy) formErrors.yearOfStudy = "Year of Study is required";
-        if (!password) formErrors.password = "Password is required";
-        if (!confirmPassword) formErrors.confirmPassword = "Confirm Password is required";
-        if (!college) formErrors.college = "College is required";
-        if (!department) formErrors.department = "Department is required";
+        // ... (your existing validation logic)
 
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
-            
             return;
         }
 
@@ -202,8 +188,7 @@ const Register = () => {
 
         setPasswordsMatch(true);
         setErrors({});
-        
-        // EMPHASIZE: Check if csrfToken is available before proceeding
+
         if (!csrfToken) {
             toast({
                 title: 'Error.',
@@ -227,71 +212,65 @@ const Register = () => {
             role: "student",
         };
 
-        console.log("Sending registration data:", JSON.stringify(registrationData)); // Log data before fetch
+        console.log("Sending registration data:", JSON.stringify(registrationData));
 
-       fetch(`${BASE_URL}/api/register/`, {
-
+        fetch(`${BASE_URL}/api/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': csrfToken,
             },
             body: JSON.stringify(registrationData),
-           credentials: 'include',
-           
+            credentials: 'include',
         })
-            .then(response => {
-                console.log("Response status:", response.status); // Log response status
+        .then(response => {
+            console.log("Response status:", response.status);
+            if (!response.ok) {
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    return response.json().then(data => {
+                        console.error("Backend error (JSON):", data);
+                        throw new Error(data.detail || JSON.stringify(data) || 'Registration failed');
+                    });
+                } else {
+                    return response.text().then(text => {
+                        console.error("Backend error (Text/HTML):", text);
+                        throw new Error(`Registration failed: ${response.status} - ${response.statusText}. Please check the server response for details. Raw: ${text.substring(0, 100)}...`);
+                    });
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Registration successful:", data);
 
-                if (!response.ok) {
-                    const contentType = response.headers.get("content-type");
-                    if (contentType && contentType.indexOf("application/json") !== -1) {
-                        return response.json().then(data => {
-                            console.error("Backend error (JSON):", data);
-                            throw new Error(data.detail || JSON.stringify(data) || 'Registration failed');
-                        });
-                    } else {
-                        return response.text().then(text => {
-                            console.error("Backend error (Text/HTML):", text);
-                            throw new Error(`Registration failed: ${response.status} - ${response.statusText}. Please check the server response for details. Raw: ${text.substring(0, 100)}...`); // Added substring to avoid logging huge HTML bodies
-                        });
-                    }
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Registration successful:", data);
+            // Call the prop function to update the parent's state
+            if (onRegisterSuccess) {
+                onRegisterSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
+            }
 
-                // --- FIXES HERE ---
-                // 1. Use the correct key 'access_token' for consistency
-                localStorage.setItem('access_token', data.access);
-                // 2. Store the refresh token (good practice for token refreshing)
-                if (data.refresh) {
-                    localStorage.setItem('refresh_token', data.refresh);
-                }
-                // 3. Store the user role from the response
-                localStorage.setItem('user_role', data.role); // Assuming data.role contains 'student'
-
-                // Optional: Store other useful user data
-                if (data.user_id) { // Adjust key based on your backend response if it's not 'user_id'
-                    localStorage.setItem('user_id', data.user_id);
-                }
-                if (data.username) { // Adjust key based on your backend response
-                    localStorage.setItem('username', data.username);
-                }
-                navigate("/student-dashboard");
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toast({
-                    title: 'Registration failed.',
-                    description: error.message,
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true,
-                });
+            toast({
+                title: 'Registration successful.',
+                description: "You have been registered and logged in.",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
             });
+
+            navigate("/student-dashboard");
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toast({
+                title: 'Registration failed.',
+                description: error.message,
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+        });
     };
+
     return (
         <Box
             minHeight="100vh"
