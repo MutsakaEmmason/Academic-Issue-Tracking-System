@@ -17,13 +17,14 @@ import {
     Spinner,
 } from '@chakra-ui/react';
 import Footer from '../components/Footer';
-import AboutUs from '../components/AboutUs';
+
 const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
-const StudentDashboard = ({ studentData, loading }) => {
+const StudentDashboard = ({ studentData, loading, setLoading, handleLogout }) => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredIssues, setFilteredIssues] = useState([]);
+    const [isSearching, setIsSearching] = useState(false); // Local loading state for search
     const toast = useToast();
 
     useEffect(() => {
@@ -33,17 +34,20 @@ const StudentDashboard = ({ studentData, loading }) => {
     }, [studentData]);
 
     const handleSearch = async () => {
-        setLoading(true);
-       try {
-            // --- FIX HERE: Use 'access_token' consistently ---
-            const token = localStorage.getItem('access_token');
-            const userRole = localStorage.getItem('user_role'); // Also get the role
+        setIsSearching(true); // Use local loading state
+        try {
+            const token = localStorage.getItem('access_token'); // Fix: use access_token
+            const userRole = localStorage.getItem('user_role');
 
-            // --- IMPORTANT: Validate token and role before making the API call ---
             if (!token || userRole !== 'student') {
-                toast({ title: 'Session expired or unauthorized. Please log in again.', status: 'error', duration: 5000, isClosable: true });
-                handleLogout(); // Use the passed handleLogout to clear storage and redirect
-                return; // Stop execution
+                toast({ 
+                    title: 'Session expired or unauthorized. Please log in again.', 
+                    status: 'error', 
+                    duration: 5000, 
+                    isClosable: true 
+                });
+                handleLogout();
+                return;
             }
 
             const response = await fetch(`${BASE_URL}/api/issues/?category=${searchTerm}`, {
@@ -53,23 +57,45 @@ const StudentDashboard = ({ studentData, loading }) => {
             if (response.ok) {
                 const data = await response.json();
                 setFilteredIssues(data);
+                toast({
+                    title: 'Search completed successfully',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true
+                });
             } else {
-                // --- Handle specific authentication errors during search ---
                 if (response.status === 401 || response.status === 403) {
-                    toast({ title: 'Session expired or unauthorized. Please log in again.', status: 'error', duration: 5000, isClosable: true });
-                    handleLogout(); // Force logout on auth errors
+                    toast({ 
+                        title: 'Session expired or unauthorized. Please log in again.', 
+                        status: 'error', 
+                        duration: 5000, 
+                        isClosable: true 
+                    });
+                    handleLogout();
                 } else {
-                    toast({ title: 'Search failed.', description: `Status: ${response.status} ${response.statusText}`, status: 'error', duration: 5000, isClosable: true });
+                    toast({ 
+                        title: 'Search failed.', 
+                        description: `Status: ${response.status} ${response.statusText}`, 
+                        status: 'error', 
+                        duration: 5000, 
+                        isClosable: true 
+                    });
                 }
             }
         } catch (error) {
-            toast({ title: 'An error occurred during search.', description: error.message, status: 'error', duration: 5000, isClosable: true });
+            console.error('Search error:', error);
+            toast({ 
+                title: 'An error occurred during search.', 
+                description: error.message, 
+                status: 'error', 
+                duration: 5000, 
+                isClosable: true 
+            });
         } finally {
-            // If you had a local `isSearching` state, you'd set it to false here.
-            // Since `loading` is a prop, we don't set it here unless DashboardContainer manages it.
-            // For now, removing `setLoading(false)` here, assuming `loading` is for initial data.
+            setIsSearching(false);
         }
     };
+
     const handleViewDetails = (issueId) => {
         navigate(`/issue/${issueId}`);
     };
@@ -83,7 +109,11 @@ const StudentDashboard = ({ studentData, loading }) => {
     }
 
     if (!studentData) {
-        return <p>No student data available.</p>;
+        return (
+            <Flex justify="center" align="center" height="100vh" bg="gray.50">
+                <Box>No student data available.</Box>
+            </Flex>
+        );
     }
 
     return (
@@ -105,10 +135,14 @@ const StudentDashboard = ({ studentData, loading }) => {
                     <h1 style={{ fontSize: '2.2em', fontWeight: 'bold' }}>Student Dashboard</h1>
                 </Box>
                 <Flex align="center" gap={3}>
-                    <Box fontWeight="medium">Welcome, {studentData.fullName}</Box>
+                    <Box fontWeight="medium">
+                        Welcome, {studentData.fullName || studentData.username || 'Student'}
+                    </Box>
                     <Button
                         onClick={() =>
-                            navigate('/issue-submission', { state: { studentName: studentData.fullName } })
+                            navigate('/issue-submission', { 
+                                state: { studentName: studentData.fullName || studentData.username } 
+                            })
                         }
                         colorScheme="whiteAlpha"
                         variant="outline"
@@ -147,7 +181,12 @@ const StudentDashboard = ({ studentData, loading }) => {
                                 borderColor="green.400"
                                 focusBorderColor="green.600"
                             />
-                            <Button onClick={handleSearch} colorScheme="green" isLoading={loading}>
+                            <Button 
+                                onClick={handleSearch} 
+                                colorScheme="green" 
+                                isLoading={isSearching}
+                                loadingText="Searching..."
+                            >
                                 Search
                             </Button>
                         </Flex>
@@ -197,7 +236,11 @@ const StudentDashboard = ({ studentData, loading }) => {
                                         <Td>{issue.academicYear}</Td>
                                         <Td>{issue.issueDate}</Td>
                                         <Td>
-                                            <Button size="xs" colorScheme="blue" onClick={() => handleViewDetails(issue.id)}>
+                                            <Button 
+                                                size="xs" 
+                                                colorScheme="blue" 
+                                                onClick={() => handleViewDetails(issue.id)}
+                                            >
                                                 View
                                             </Button>
                                         </Td>
@@ -207,12 +250,11 @@ const StudentDashboard = ({ studentData, loading }) => {
                         </Table>
                     ) : (
                         <Box textAlign="center" py={4} color="gray.600">
-                            No issue submitted. Please submit an issue.
+                            No issues found. Please submit an issue or try a different search.
                         </Box>
                     )}
                 </Box>
             </Box>
-
             <Footer userRole="student" />
         </Flex>
     );
