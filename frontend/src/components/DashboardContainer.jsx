@@ -12,7 +12,7 @@ const DashboardContainer = () => {
 
     // Function to handle logout - make it reusable
     const handleLogout = () => {
-        localStorage.removeItem('access_token'); // Clear the access token
+        localStorage.removeItem('token'); // Clear the access token
         localStorage.removeItem('refresh_token'); // Clear the refresh token
         localStorage.removeItem('user_role');    // Clear the user role
         localStorage.removeItem('user_id');      // Clear user ID if stored
@@ -24,7 +24,7 @@ const DashboardContainer = () => {
 
     useEffect(() => {
         // --- CRUCIAL CHANGE 1: Use specific keys for tokens and roles ---
-        const token = localStorage.getItem("access_token"); // Should be 'access_token'
+        const token = localStorage.getItem("token"); // Should be 'access_token'
         const userRole = localStorage.getItem("user_role"); // Get the stored role
 
         // --- CRUCIAL CHANGE 2: Check both token and role ---
