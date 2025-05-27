@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import StudentDashboard from "../routes/StudentDashboard";
 import IssueSubmissionForm from '../components/IssueSubmissionForm';
-import { useNavigate, Routes, Route } from "react-router-router-dom"; // Ensure Routes and Route are imported
+import { useNavigate, Routes, Route } from "react-router-dom"; // Ensure Routes and Route are imported
 const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
 
 const DashboardContainer = () => {
