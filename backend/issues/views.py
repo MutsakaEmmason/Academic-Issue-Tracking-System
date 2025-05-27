@@ -20,6 +20,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.middleware.csrf import get_token
 from django.utils import timezone
+from rest_framework.exceptions import PermissionDenied
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from .serializers import CustomUserSerializer, IssueSerializer, CommentSerializer, NotificationSerializer, AuditLogSerializer, IssueAttachmentSerializer,CustomTokenObtainPairSerializer
 # Removed: from rest_framework.decorators import action # No longer needed for IssueViewSet actions
@@ -383,7 +384,7 @@ class StudentProfileView(generics.RetrieveAPIView):
         if self.request.user.role == 'student':
             return self.request.user
         else:
-            raise permissions.PermissionDenied("You do not have permission to view this profile.")
+            raise PermissionDenied("You do not have permission to view this profile.")
 
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
