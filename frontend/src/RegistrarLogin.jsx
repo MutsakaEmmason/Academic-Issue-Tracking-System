@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from "react";
-// axios is imported but not used, you can remove it if you're using fetch
-// import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import {
-    Box, // Use Box for div elements
-    Button,
-    FormControl,
-    FormLabel,
-    Input,
-    VStack, // Use VStack for vertical stacking of elements
-    Text, // Use Text for h2, p, label, span elements
-    useToast
-} from "@chakra-ui/react";
-import Footer from './components/Footer.jsx'; // Assuming this exists and works
+import { useNavigate } from "react-router-dom";
+import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
+import Footer from './components/Footer.jsx';
 
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
-const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
+const RegistrarLogin = ({ setAccessToken, setUserRole }) => {
     const navigate = useNavigate();
     const toast = useToast();
     const [email, setEmail] = useState("");
@@ -24,14 +13,6 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [csrfToken, setCsrfToken] = useState('');
-
-    // **Important: You're using 'credentials.username' and 'handleChange' in your JSX,
-    // but your state is 'email' and 'password' and your function is 'setEmail'/'setPassword'.
-    // We need to fix this mismatch as well.**
-
-    // Let's assume you want to use the 'email' and 'password' state directly.
-    // If you intend to use a 'credentials' object state, you'll need to define it and a 'handleChange' function.
-    // For now, I'll adjust the JSX to use 'email' and 'password' states directly.
 
     // Fetch CSRF Token
     useEffect(() => {
@@ -45,9 +26,9 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                 }
                 const data = await response.json();
                 setCsrfToken(data.csrfToken);
-                console.log("CSRF Token fetched for Registrar Sign In:", data.csrfToken);
+                console.log("CSRF Token fetched for Registrar Login:", data.csrfToken);
             } catch (error) {
-                console.error("Error fetching CSRF token for Registrar Sign In:", error);
+                console.error("Error fetching CSRF token for Registrar Login:", error);
                 toast({
                     title: 'Error.',
                     description: "Failed to load security token for login. Please refresh the page.",
@@ -60,16 +41,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
         fetchCsrfToken();
     }, [toast]);
 
-    // Navigate if authentication state is already set and correct
-    useEffect(() => {
-        if (currentAccessToken && currentUserRole === 'registrar' && window.location.pathname !== '/academic-registrar') {
-            console.log("RegistrarSignIn: Navigating to registrar dashboard because state is set correctly.");
-            navigate("/academic-registrar"); // Changed from /registrar-dashboard to /academic-registrar as per App.jsx
-        }
-    }, [currentAccessToken, currentUserRole, navigate]);
-
-
-    const handleLogin = async (e) => { // Renamed from handleSubmit to handleLogin for consistency
+    const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
@@ -77,6 +49,13 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
         if (!csrfToken) {
             setError("CSRF token not available. Please refresh the page.");
             setLoading(false);
+            toast({
+                title: 'Error.',
+                description: "CSRF token not available. Please refresh the page.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
             return;
         }
 
@@ -87,7 +66,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken,
                 },
-                body: JSON.stringify({ username: email, password }), // Use 'email' state directly
+                body: JSON.stringify({ username: email, password }),
                 credentials: 'include',
             });
 
@@ -105,16 +84,20 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
             }
 
             const data = await response.json();
-            console.log('Registrar Login successful data:', data);
+            console.log('RegistrarLogin: Backend response:', data);
 
-            if (onLoginSuccess) {
-                onLoginSuccess(data.access, data.refresh, data.role); // <-- ONLY these three fields
-                console.log('RegistrarLogin: onLoginSuccess called with:', {
-                    access: data.access ? 'exists' : 'null',
-                    refresh: data.refresh ? 'exists' : 'null',
-                    role: data.role,
-                });
-            }
+            // Store in localStorage
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('user_role', data.role);
+            if (data.user_id !== undefined) localStorage.setItem('user_id', data.user_id ?? '');
+            if (data.username !== undefined) localStorage.setItem('username', data.username ?? '');
+
+            // Update parent state
+            setAccessToken(data.access);
+            setUserRole(data.role);
+
+            // Show success toast
             toast({
                 title: 'Login successful.',
                 description: "You've successfully logged in. Redirecting...",
@@ -123,9 +106,13 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                 isClosable: true,
             });
 
+            // Navigate to dashboard
+            console.log('Navigating to /academic-registrar');
+            navigate('/academic-registrar', { replace: true });
+
         } catch (err) {
             setError("Network error, please try again.");
-            console.error("Login request failed:", err);
+            console.error("Registrar login request failed:", err);
             toast({
                 title: 'Login Failed.',
                 description: err.message || "Network error, please try again.",
@@ -139,10 +126,9 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
     };
 
     return (
-        // Replaced <div> with Chakra's Box component and applied styles directly
         <Box
             minH="100vh"
-            bg="green.500" // Example background color
+            bg="green.500"
             p={0}
             m={0}
             overflow="auto"
@@ -158,7 +144,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                 borderRadius="md"
                 boxShadow="md"
                 bg="white"
-                my={10} // Margin top/bottom
+                my={10}
             >
                 <VStack spacing={4} align="stretch">
                     <Text fontSize="2xl" fontWeight="bold" textAlign="center">
@@ -167,15 +153,14 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
 
                     {error && <Text color="red.500" textAlign="center">{error}</Text>}
 
-                    {/* Use handleLogin for form submission */}
                     <form onSubmit={handleLogin}>
                         <VStack spacing={4} align="stretch">
                             <FormControl isRequired>
                                 <FormLabel>Email</FormLabel>
                                 <Input
-                                    type="email" // Use type="email" for email input
-                                    value={email} // Use 'email' state
-                                    onChange={(e) => setEmail(e.target.value)} // Update 'email' state
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Enter your email"
                                 />
                                 <Text fontSize="sm" color="gray.500" mt={1}>
@@ -187,8 +172,8 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                                 <FormLabel>Password</FormLabel>
                                 <Input
                                     type="password"
-                                    value={password} // Use 'password' state
-                                    onChange={(e) => setPassword(e.target.value)} // Update 'password' state
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Enter your password"
                                 />
                             </FormControl>
@@ -200,7 +185,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                                 mt={4}
                                 isLoading={loading}
                             >
-                                {loading ? 'Logging in...' : 'Sign In'}
+                                Sign In
                             </Button>
                         </VStack>
                     </form>
@@ -217,8 +202,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                     </Text>
                 </VStack>
             </Box>
-            {/* Assuming Footer component needs no styles prop or userRole. If it does, keep it. */}
-            {/* <Footer userRole="registrar" /> */}
+            <Footer userRole="registrar" />
         </Box>
     );
 };
