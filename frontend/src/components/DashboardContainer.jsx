@@ -10,7 +10,7 @@ const DashboardContainer = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("accessToken");
+        const token = localStorage.getItem("token");
         if (!token) {
             navigate("/student/login");
             return;
