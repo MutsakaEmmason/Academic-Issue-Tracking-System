@@ -5,7 +5,7 @@ import {
   VStack, Text, Select, FormHelperText 
 } from "@chakra-ui/react";
 import Footer from './components/Footer.jsx';
-const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
 
 const collegeDepartments = {
