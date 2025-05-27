@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const RegistrarLogin = () => {
   const [credentials, setCredentials] = useState({
