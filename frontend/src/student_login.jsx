@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
 import Footer from './components/Footer.jsx';
+
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
-const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
+const StudentLogin = ({ setAccessToken, setUserRole }) => {
     const navigate = useNavigate();
     const toast = useToast();
-    const [studentNumber, setStudentNumber] = useState(""); // Changed from email to studentNumber
+    const [studentNumber, setStudentNumber] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -41,14 +42,6 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
         fetchCsrfToken();
     }, [toast]);
 
-    // Navigate if authentication state is already set and correct
-    useEffect(() => {
-        if (currentAccessToken && currentUserRole === 'student' && window.location.pathname !== '/student-dashboard') {
-            console.log("StudentLogin: Navigating to student dashboard because state is set correctly.");
-            navigate("/student-dashboard");
-        }
-    }, [currentAccessToken, currentUserRole, navigate]);
-
     const handleLogin = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -57,6 +50,13 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
         if (!csrfToken) {
             setError("CSRF token not available. Please refresh the page.");
             setLoading(false);
+            toast({
+                title: 'Error.',
+                description: "CSRF token not available. Please refresh the page.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
             return;
         }
 
@@ -67,10 +67,7 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken,
                 },
-                // IMPORTANT: Changed 'username' to 'studentNumber' (or whatever your backend expects)
-                // If your Django backend's token endpoint still expects 'username', you need to map studentNumber to username here.
-                // Assuming your backend expects 'username' and student number is the username for students.
-                body: JSON.stringify({ username: studentNumber, password }), // Use studentNumber here
+                body: JSON.stringify({ username: studentNumber, password }),
                 credentials: 'include',
             });
 
@@ -88,14 +85,20 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
             }
 
             const data = await response.json();
-            console.log('Login successful data:', data);
+            console.log('StudentLogin: Backend response:', data);
 
-            // Call the onLoginSuccess prop
-            if (onLoginSuccess) {
-                // Assuming data contains access, refresh, role, user_id, username (which would be studentNumber)
-                onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
-            }
+            // Store in localStorage
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            localStorage.setItem('user_role', data.role);
+            if (data.user_id !== undefined) localStorage.setItem('user_id', data.user_id ?? '');
+            if (data.username !== undefined) localStorage.setItem('username', data.username ?? '');
 
+            // Update parent state
+            setAccessToken(data.access);
+            setUserRole(data.role);
+
+            // Show success toast
             toast({
                 title: 'Login successful.',
                 description: "You've successfully logged in. Redirecting...",
@@ -104,9 +107,13 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                 isClosable: true,
             });
 
+            // Navigate to dashboard
+            console.log('Navigating to /student-dashboard');
+            navigate('/student-dashboard', { replace: true });
+
         } catch (err) {
             setError("Network error, please try again.");
-            console.error("Login request failed:", err);
+            console.error("Student login request failed:", err);
             toast({
                 title: 'Login Failed.',
                 description: err.message || "Network error, please try again.",
@@ -132,12 +139,12 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                     <form onSubmit={handleLogin}>
                         <VStack spacing={4} align="stretch">
                             <FormControl isRequired>
-                                <FormLabel>Student Number</FormLabel> {/* Changed label */}
+                                <FormLabel>Student Number</FormLabel>
                                 <Input
-                                    type="text" // Changed type to text as student numbers can be alphanumeric
+                                    type="text"
                                     value={studentNumber}
                                     onChange={(e) => setStudentNumber(e.target.value)}
-                                    placeholder="Enter your student number here" // Changed placeholder
+                                    placeholder="Enter your student number here"
                                 />
                             </FormControl>
 
@@ -159,7 +166,6 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
 
                     <Text textAlign="center">
                         Don't have an account?{" "}
-                        {/* Assuming /register is student registration */}
                         <Button
                             variant="link"
                             color="red.500"
@@ -168,7 +174,6 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                             Register here
                         </Button>
                     </Text>
-
                 </VStack>
             </Box>
             <Footer userRole="student" />
