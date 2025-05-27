@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ChakraProvider, Box, Spinner, Text } from "@chakra-ui/react";
 
 // Component Imports
@@ -46,6 +46,8 @@ const App = () => {
     const [userRole, setUserRole] = useState(null);
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         const loadAuthState = () => {
             const storedAccessToken = localStorage.getItem('access_token');
@@ -60,6 +62,35 @@ const App = () => {
         };
         loadAuthState();
     }, []);
+    useEffect(() => {
+        // Only attempt to navigate if authentication state has finished loading AND we have a token and a role
+        if (!isLoadingAuth && accessToken && userRole) {
+            console.log(`App.jsx: Post-login navigation triggered for role: ${userRole}. Current path: ${window.location.pathname}`);
+            switch (userRole) {
+                case 'student':
+                    if (window.location.pathname !== '/student-dashboard') {
+                        navigate('/student-dashboard');
+                    }
+                    break;
+                case 'lecturer':
+                    if (window.location.pathname !== '/lecturer-dashboard') {
+                        navigate('/lecturer-dashboard');
+                    }
+                    break;
+                case 'registrar':
+                    if (window.location.pathname !== '/academic-registrar') {
+                        navigate('/academic-registrar');
+                    }
+                    break;
+                default:
+                    // If an unknown role or no specific dashboard, redirect to home
+                    if (window.location.pathname !== '/') {
+                        navigate('/');
+                    }
+                    break;
+            }
+        }
+    }, [isLoadingAuth, accessToken, userRole, navigate]); 
 
     if (isLoadingAuth) {
         return (
