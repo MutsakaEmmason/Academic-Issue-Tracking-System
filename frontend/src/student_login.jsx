@@ -4,11 +4,10 @@ import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } fr
 import Footer from './components/Footer.jsx';
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
-// Add props: onLoginSuccess, currentAccessToken, currentUserRole
 const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
     const navigate = useNavigate();
     const toast = useToast();
-    const [email, setEmail] = useState("");
+    const [studentNumber, setStudentNumber] = useState(""); // Changed from email to studentNumber
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -68,7 +67,10 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken,
                 },
-                body: JSON.stringify({ username: email, password }),
+                // IMPORTANT: Changed 'username' to 'studentNumber' (or whatever your backend expects)
+                // If your Django backend's token endpoint still expects 'username', you need to map studentNumber to username here.
+                // Assuming your backend expects 'username' and student number is the username for students.
+                body: JSON.stringify({ username: studentNumber, password }), // Use studentNumber here
                 credentials: 'include',
             });
 
@@ -90,7 +92,7 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
 
             // Call the onLoginSuccess prop
             if (onLoginSuccess) {
-                // Assuming data contains access, refresh, role, user_id, username
+                // Assuming data contains access, refresh, role, user_id, username (which would be studentNumber)
                 onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
             }
 
@@ -130,12 +132,12 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                     <form onSubmit={handleLogin}>
                         <VStack spacing={4} align="stretch">
                             <FormControl isRequired>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>Student Number</FormLabel> {/* Changed label */}
                                 <Input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Enter your email here"
+                                    type="text" // Changed type to text as student numbers can be alphanumeric
+                                    value={studentNumber}
+                                    onChange={(e) => setStudentNumber(e.target.value)}
+                                    placeholder="Enter your student number here" // Changed placeholder
                                 />
                             </FormControl>
 
@@ -160,7 +162,7 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
                         <Button
                             variant="link"
                             color="red.500"
-                            onClick={() => navigate("/student-register")}
+                            onClick={() => navigate("/register")} {/* Assuming /register is student registration */}
                         >
                             Register here
                         </Button>
