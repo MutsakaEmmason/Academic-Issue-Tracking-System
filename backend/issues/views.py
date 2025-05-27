@@ -381,9 +381,15 @@ class StudentProfileView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
+        print(f"DEBUG: User object in StudentProfileView: {self.request.user}")
+        print(f"DEBUG: User role in StudentProfileView: {self.request.user.role}")
+        print(f"DEBUG: Is user authenticated? {self.request.user.is_authenticated}")
+
         if self.request.user.role == 'student':
+            print("DEBUG: User role IS 'student'. Returning user.")
             return self.request.user
         else:
+            print(f"DEBUG: User role is NOT 'student'. It's '{self.request.user.role}'. Raising PermissionDenied.")
             raise PermissionDenied("You do not have permission to view this profile.")
 
     def retrieve(self, request, *args, **kwargs):
