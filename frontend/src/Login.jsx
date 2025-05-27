@@ -98,17 +98,15 @@ const handleLogin = async (e) => {
 
         // Call the onLoginSuccess prop with the extracted data
        if (onLoginSuccess) {
-            onLoginSuccess(data.access, data.refresh, data.role); // Removed user_id and username
+            onLoginSuccess(data.access, data.refresh, data.role);
             console.log('LecturerLogin: onLoginSuccess called with:', {
                 access: data.access ? 'exists' : 'null',
                 refresh: data.refresh ? 'exists' : 'null',
                 role: data.role
             });
-        }
         } else {
-             console.warn('LecturerLogin: onLoginSuccess prop is undefined. Cannot update App state.');
+            console.warn('LecturerLogin: onLoginSuccess prop is undefined. Cannot update App state.');
         }
-
         toast({
             title: 'Login successful.',
             description: "You've successfully logged in. Redirecting...",
