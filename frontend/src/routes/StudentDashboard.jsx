@@ -32,7 +32,7 @@ const StudentDashboard = () => {
         const fetchProfile = async () => {
             setLoading(true);
             try {
-                const token = localStorage.getItem('accessToken');
+                const token = localStorage.getItem('token');
                 const response = await fetch(`${BASE_URL}/api/student-profile/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
@@ -55,14 +55,14 @@ const StudentDashboard = () => {
     }, [navigate, toast]);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
+        localStorage.removeItem('token');
         navigate('/student/login');
     };
 
     const handleSearch = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('accessToken');
+            const token = localStorage.getItem('token');
             const response = await fetch(`${BASE_URL}/api/issues/?category=${searchTerm}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
