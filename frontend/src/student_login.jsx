@@ -159,14 +159,16 @@ const StudentLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) =
 
                     <Text textAlign="center">
                         Don't have an account?{" "}
+                        {/* Assuming /register is student registration */}
                         <Button
                             variant="link"
                             color="red.500"
-                            onClick={() => navigate("/register")} {/* Assuming /register is student registration */}
+                            onClick={() => navigate("/register")}
                         >
                             Register here
                         </Button>
                     </Text>
+
                 </VStack>
             </Box>
             <Footer userRole="student" />
