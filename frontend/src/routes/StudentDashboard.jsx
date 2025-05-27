@@ -34,24 +34,42 @@ const StudentDashboard = ({ studentData, loading }) => {
 
     const handleSearch = async () => {
         setLoading(true);
-        try {
-            const token = localStorage.getItem('token');
+       try {
+            // --- FIX HERE: Use 'access_token' consistently ---
+            const token = localStorage.getItem('access_token');
+            const userRole = localStorage.getItem('user_role'); // Also get the role
+
+            // --- IMPORTANT: Validate token and role before making the API call ---
+            if (!token || userRole !== 'student') {
+                toast({ title: 'Session expired or unauthorized. Please log in again.', status: 'error', duration: 5000, isClosable: true });
+                handleLogout(); // Use the passed handleLogout to clear storage and redirect
+                return; // Stop execution
+            }
+
             const response = await fetch(`${BASE_URL}/api/issues/?category=${searchTerm}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
             if (response.ok) {
                 const data = await response.json();
                 setFilteredIssues(data);
             } else {
-                toast({ title: 'Search failed.', status: 'error', duration: 5000, isClosable: true });
+                // --- Handle specific authentication errors during search ---
+                if (response.status === 401 || response.status === 403) {
+                    toast({ title: 'Session expired or unauthorized. Please log in again.', status: 'error', duration: 5000, isClosable: true });
+                    handleLogout(); // Force logout on auth errors
+                } else {
+                    toast({ title: 'Search failed.', description: `Status: ${response.status} ${response.statusText}`, status: 'error', duration: 5000, isClosable: true });
+                }
             }
         } catch (error) {
             toast({ title: 'An error occurred during search.', description: error.message, status: 'error', duration: 5000, isClosable: true });
         } finally {
-            setLoading(false);
+            // If you had a local `isSearching` state, you'd set it to false here.
+            // Since `loading` is a prop, we don't set it here unless DashboardContainer manages it.
+            // For now, removing `setLoading(false)` here, assuming `loading` is for initial data.
         }
     };
-
     const handleViewDetails = (issueId) => {
         navigate(`/issue/${issueId}`);
     };
