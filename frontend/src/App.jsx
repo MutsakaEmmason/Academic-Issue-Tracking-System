@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider, Box, Spinner, Text } from "@chakra-ui/react";
 
@@ -19,8 +19,15 @@ import RegistrarSignup from './RegistrarSignup';
 
 // Protected Routes
 const ProtectedRoute = ({ children, allowedRoles = [], accessToken, userRole }) => {
-    if (!accessToken) return <Navigate to="/" replace />;
-    if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) return <Navigate to="/" replace />;
+    console.log('ProtectedRoute evaluating:', { accessToken, userRole, allowedRoles });
+    if (!accessToken) {
+        console.log('Redirecting to / due to missing accessToken');
+        return <Navigate to="/" replace />;
+    }
+    if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
+        console.log(`Redirecting to / due to invalid role. Expected: ${allowedRoles}, Got: ${userRole}`);
+        return <Navigate to="/" replace />;
+    }
     return children;
 };
 
@@ -39,25 +46,12 @@ const App = () => {
     const [userRole, setUserRole] = useState(null);
     const [isLoadingAuth, setIsLoadingAuth] = useState(true);
 
-    const handleLoginSuccess = useCallback((access, refresh, role, id = null, name = null) => {
-        console.log("handleLoginSuccess called:", { access, refresh, role, id, name });
-
-        localStorage.setItem('access_token', access);
-        localStorage.setItem('refresh_token', refresh);
-        localStorage.setItem('user_role', role);
-
-        // Optional, non-blocking (no longer required for login logic)
-        if (id !== undefined) localStorage.setItem('user_id', id ?? '');
-        if (name !== undefined) localStorage.setItem('username', name ?? '');
-
-        setAccessToken(access);
-        setUserRole(role);
-    }, []);
-
     useEffect(() => {
         const loadAuthState = () => {
             const storedAccessToken = localStorage.getItem('access_token');
             const storedUserRole = localStorage.getItem('user_role');
+            console.log('loadAuthState:', { storedAccessToken, storedUserRole });
+
             if (storedAccessToken && storedUserRole) {
                 setAccessToken(storedAccessToken);
                 setUserRole(storedUserRole);
@@ -86,12 +80,8 @@ const App = () => {
 
                     {/* Student Routes */}
                     <Route path="/student/login" element={
-                        <StudentLogin
-                            onLoginSuccess={handleLoginSuccess}
-                            currentAccessToken={accessToken}
-                            currentUserRole={userRole}
-                        />}
-                    />
+                        <StudentLogin setAccessToken={setAccessToken} setUserRole={setUserRole} />
+                    } />
                     <Route path="/register" element={<Register />} />
                     <Route path="/student-dashboard/*" element={
                         <StudentProtectedRoute accessToken={accessToken} userRole={userRole}>
@@ -106,12 +96,8 @@ const App = () => {
 
                     {/* Lecturer Routes */}
                     <Route path="/lecturer/login" element={
-                        <LecturerLogin
-                            onLoginSuccess={handleLoginSuccess}
-                            currentAccessToken={accessToken}
-                            currentUserRole={userRole}
-                        />}
-                    />
+                        <LecturerLogin setAccessToken={setAccessToken} setUserRole={setUserRole} />
+                    } />
                     <Route path="/lecturer-register" element={<LecturerRegister />} />
                     <Route path="/lecturer-dashboard" element={
                         <LecturerProtectedRoute accessToken={accessToken} userRole={userRole}>
@@ -121,12 +107,8 @@ const App = () => {
 
                     {/* Registrar Routes */}
                     <Route path="/registrar-login" element={
-                        <RegistrarLogin
-                            onLoginSuccess={handleLoginSuccess}
-                            currentAccessToken={accessToken}
-                            currentUserRole={userRole}
-                        />}
-                    />
+                        <RegistrarLogin setAccessToken={setAccessToken} setUserRole={setUserRole} />
+                    } />
                     <Route path="/registrar-signup" element={<RegistrarSignup />} />
                     <Route path="/academic-registrar" element={
                         <RegistrarProtectedRoute accessToken={accessToken} userRole={userRole}>
