@@ -70,69 +70,34 @@ const App = () => {
     const [isLoadingAuth, setIsLoadingAuth] = useState(true); // New loading state for auth
 
     // Function to update auth state (and localStorage)
-    const handleLoginSuccess = useCallback((access, refresh, role, id, name) => {
-        console.log("handleLoginSuccess called:", { access, refresh, role, id, name });
-        localStorage.setItem('access_token', access);
-        localStorage.setItem('refresh_token', refresh);
-        localStorage.setItem('user_role', role);
+   const handleLoginSuccess = useCallback((access, refresh, role, id = null, name = null) => { // Add default values
+    console.log("handleLoginSuccess called:", { access, refresh, role, id, name });
+
+    localStorage.setItem('access_token', access);
+    localStorage.setItem('refresh_token', refresh);
+    localStorage.setItem('user_role', role);
+
+    // Only set user_id and username if they are provided (not null/undefined)
+    if (id !== null && id !== undefined) {
         localStorage.setItem('user_id', id);
+        setUserId(id);
+    } else {
+        localStorage.removeItem('user_id'); // Clear if not provided
+        setUserId(null); // Set state to null
+    }
+
+    if (name !== null && name !== undefined) {
         localStorage.setItem('username', name);
-
-        setAccessToken(access);
-        setUserRole(role);
-        setUserId(id);
         setUsername(name);
-    }, []); // useCallback to prevent unnecessary re-renders
+    } else {
+        localStorage.removeItem('username'); // Clear if not provided
+        setUsername(null); // Set state to null
+    }
 
-    const handleLogout = useCallback(() => {
-        console.log("handleLogout called. Clearing local storage.");
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('user_role');
-        localStorage.removeItem('user_id');
-        localStorage.removeItem('username');
-
-        setAccessToken(null);
-        setUserRole(null);
-        setUserId(null);
-        setUsername(null);
-        // history.push('/'); // If you want to force redirect on logout, use navigate
-    }, []);
-
-
-    useEffect(() => {
-        // This effect runs once on mount to synchronize state with localStorage
-        const access = localStorage.getItem('access_token');
-        const role = localStorage.getItem('user_role');
-        const id = localStorage.getItem('user_id');
-        const name = localStorage.getItem('username');
-
-        setAccessToken(access);
-        setUserRole(role);
-        setUserId(id);
-        setUsername(name);
-        setIsLoadingAuth(false); // Auth state loaded
-
-        // Initial fetch for CSRF token (only if not already handled globally)
-        // Ensure fetchCSRFToken correctly fetches and sets the token, perhaps storing it
-        // in a global context or an Axios interceptor if you're using Axios.
-        // For simple fetch, it might set a global variable or cookie.
-        fetchCSRFToken();
-
-        // Optional: Add an event listener for localStorage changes
-        const handleStorageChange = (event) => {
-            if (event.key === 'access_token' || event.key === 'user_role') {
-                setAccessToken(localStorage.getItem('access_token'));
-                setUserRole(localStorage.getItem('user_role'));
-                setUserId(localStorage.getItem('user_id'));
-                setUsername(localStorage.getItem('username'));
-            }
-        };
-        window.addEventListener('storage', handleStorageChange);
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
+    setAccessToken(access);
+    setUserRole(role);
+    // setUserId and setUsername are handled within the if blocks above
+}, []);
 
 
     // Render a loading spinner or null while authentication state is being loaded
