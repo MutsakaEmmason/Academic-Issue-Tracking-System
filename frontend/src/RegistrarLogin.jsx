@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
+// axios is imported but not used, you can remove it if you're using fetch
+// import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, FormControl, FormLabel, Input, VStack, Text, useToast } from "@chakra-ui/react";
+import {
+    Box, // Use Box for div elements
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    VStack, // Use VStack for vertical stacking of elements
+    Text, // Use Text for h2, p, label, span elements
+    useToast
+} from "@chakra-ui/react";
+import Footer from './components/Footer.jsx'; // Assuming this exists and works
+
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
@@ -12,6 +24,14 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [csrfToken, setCsrfToken] = useState('');
+
+    // **Important: You're using 'credentials.username' and 'handleChange' in your JSX,
+    // but your state is 'email' and 'password' and your function is 'setEmail'/'setPassword'.
+    // We need to fix this mismatch as well.**
+
+    // Let's assume you want to use the 'email' and 'password' state directly.
+    // If you intend to use a 'credentials' object state, you'll need to define it and a 'handleChange' function.
+    // For now, I'll adjust the JSX to use 'email' and 'password' states directly.
 
     // Fetch CSRF Token
     useEffect(() => {
@@ -37,19 +57,19 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                 });
             }
         };
-
         fetchCsrfToken();
     }, [toast]);
 
     // Navigate if authentication state is already set and correct
     useEffect(() => {
-        if (currentAccessToken && currentUserRole === 'registrar' && window.location.pathname !== '/registrar-dashboard') {
+        if (currentAccessToken && currentUserRole === 'registrar' && window.location.pathname !== '/academic-registrar') {
             console.log("RegistrarSignIn: Navigating to registrar dashboard because state is set correctly.");
-            navigate("/registrar-dashboard");
+            navigate("/academic-registrar"); // Changed from /registrar-dashboard to /academic-registrar as per App.jsx
         }
     }, [currentAccessToken, currentUserRole, navigate]);
 
-    const handleLogin = async (e) => {
+
+    const handleLogin = async (e) => { // Renamed from handleSubmit to handleLogin for consistency
         e.preventDefault();
         setLoading(true);
         setError("");
@@ -67,7 +87,7 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken,
                 },
-                body: JSON.stringify({ username: email, password }),
+                body: JSON.stringify({ username: email, password }), // Use 'email' state directly
                 credentials: 'include',
             });
 
@@ -85,11 +105,9 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
             }
 
             const data = await response.json();
-            console.log('Login successful data:', data);
+            console.log('Registrar Login successful data:', data);
 
-            // Call the onLoginSuccess prop
             if (onLoginSuccess) {
-                // Assuming data contains access, refresh, role, user_id, username
                 onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
             }
 
@@ -115,64 +133,90 @@ const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole })
             setLoading(false);
         }
     };
-  return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Registrar Login</h2>
-      
-      {error && <div style={styles.error}>{error}</div>}
-      
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <div style={styles.formGroup}>
-          <label htmlFor="username" style={styles.label}>Username or Email</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={credentials.username}
-            onChange={handleChange}
-            required
-            style={styles.input}
-            placeholder="Enter your username or email"
-          />
-          <p style={styles.helpText}>
-            This should be the username you created during registration
-          </p>
-        </div>
-        
-        <div style={styles.formGroup}>
-          <label htmlFor="password" style={styles.label}>Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={credentials.password}
-            onChange={handleChange}
-            required
-            style={styles.input}
-            placeholder="Enter your password"
-          />
-        </div>
-        
-        <button 
-          type="submit" 
-          style={styles.button}
-          disabled={loading}
+
+    return (
+        // Replaced <div> with Chakra's Box component and applied styles directly
+        <Box
+            minH="100vh"
+            bg="green.500" // Example background color
+            p={0}
+            m={0}
+            overflow="auto"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
+            alignItems="center"
         >
-          {loading ? 'Logging in...' : 'Sign In'}
-        </button>
-      </form>
-      
-      <div style={styles.signupLink}>
-        Don't have an account?{' '}
-        <span 
-          style={styles.link}
-          onClick={() => navigate('/registrar-signup')}
-        >
-          Sign Up
-        </span>
-      </div>
-    </div>
-  );
+            <Box
+                maxW="md"
+                mx="auto"
+                p={6}
+                borderRadius="md"
+                boxShadow="md"
+                bg="white"
+                my={10} // Margin top/bottom
+            >
+                <VStack spacing={4} align="stretch">
+                    <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+                        Registrar Login
+                    </Text>
+
+                    {error && <Text color="red.500" textAlign="center">{error}</Text>}
+
+                    {/* Use handleLogin for form submission */}
+                    <form onSubmit={handleLogin}>
+                        <VStack spacing={4} align="stretch">
+                            <FormControl isRequired>
+                                <FormLabel>Email</FormLabel>
+                                <Input
+                                    type="email" // Use type="email" for email input
+                                    value={email} // Use 'email' state
+                                    onChange={(e) => setEmail(e.target.value)} // Update 'email' state
+                                    placeholder="Enter your email"
+                                />
+                                <Text fontSize="sm" color="gray.500" mt={1}>
+                                    This should be the email you created during registration
+                                </Text>
+                            </FormControl>
+
+                            <FormControl isRequired>
+                                <FormLabel>Password</FormLabel>
+                                <Input
+                                    type="password"
+                                    value={password} // Use 'password' state
+                                    onChange={(e) => setPassword(e.target.value)} // Update 'password' state
+                                    placeholder="Enter your password"
+                                />
+                            </FormControl>
+
+                            <Button
+                                colorScheme="blue"
+                                type="submit"
+                                width="full"
+                                mt={4}
+                                isLoading={loading}
+                            >
+                                {loading ? 'Logging in...' : 'Sign In'}
+                            </Button>
+                        </VStack>
+                    </form>
+
+                    <Text textAlign="center">
+                        Don't have an account?{' '}
+                        <Button
+                            variant="link"
+                            color="red.500"
+                            onClick={() => navigate('/registrar-signup')}
+                        >
+                            Sign Up
+                        </Button>
+                    </Text>
+                </VStack>
+            </Box>
+            {/* Assuming Footer component needs no styles prop or userRole. If it does, keep it. */}
+            {/* <Footer userRole="registrar" /> */}
+        </Box>
+    );
 };
 
 export default RegistrarLogin;
