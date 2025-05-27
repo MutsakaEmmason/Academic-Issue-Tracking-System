@@ -1,150 +1,139 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Box,
-  Button,
-  Container,
-  Divider,
-  Flex,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Heading,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  Select,
-  Stack,
-  Text,
-  useToast,
-  VStack,
-  HStack,
-  Icon,
-  useColorModeValue,
-  Image,
+    Box, Button, FormControl, FormLabel, Input,
+    VStack, Text, useToast // Added useToast
 } from "@chakra-ui/react";
-import {
-  FiUser,
-  FiMail,
-  FiLock,
-  FiBriefcase,
-  FiBookOpen,
-  FiUserPlus,
-  FiArrowLeft,
-  FiCheckCircle
-} from 'react-icons/fi';
-const BASE_URL = 'https://aits-i31l.onrender.com';
+import Footer from './components/Footer.jsx';
+const BASE_URL = 'https://aits-i31l.onrender.com'; // Ensure BASE_URL is defined
 
-const RegistrarSignup = () => {
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    college: "",
-    role: "registrar",
-    username: ""
-  });
+const RegistrarSignUp = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [staffId, setStaffId] = useState(""); // Assuming staff ID for registrar
+    const [message, setMessage] = useState("");
+    const [csrfToken, setCsrfToken] = useState(''); // Add state for CSRF token
+    const navigate = useNavigate();
+    const toast = useToast();
 
-  const [error, setError] = useState("");
-  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const toast = useToast();
+    // Fetch CSRF Token
+    useEffect(() => {
+        const fetchCsrfToken = async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
+                if (!response.ok) {
+                    console.error("Failed to fetch CSRF token response:", response);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Failed to fetch CSRF token: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setCsrfToken(data.csrfToken);
+                console.log("CSRF Token fetched for Registrar SignUp:", data.csrfToken);
+            } catch (error) {
+                console.error("Error fetching CSRF token for Registrar SignUp:", error);
+                toast({
+                    title: 'Error.',
+                    description: "Failed to load security token for registration. Please refresh the page.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        };
 
-  // Updated color scheme with light green
-  const bgColor = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('green.100', 'green.700');
-  const textColor = useColorModeValue('gray.800', 'white');
-  const secondaryTextColor = useColorModeValue('gray.600', 'gray.400');
-  const accentColor = useColorModeValue('green.500', 'green.300');
-  const lightGreenBg = useColorModeValue('green.50', 'green.900');
-  const buttonBgColor = useColorModeValue('green.500', 'green.400');
-  const buttonHoverColor = useColorModeValue('green.600', 'green.500');
+        fetchCsrfToken();
+    }, [toast]);
 
-  const handleSubmit = async () => {
-    // Reset error state
-    setError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage(""); // Clear previous messages
 
-    // Check if password and confirm password match
-    if (formData.password !== formData.confirmPassword) {
-      setIsPasswordMismatch(true);
-      return;
-    }
-    setIsPasswordMismatch(false);
-
-    // Validate required fields
-    const requiredFields = ['first_name', 'last_name', 'email', 'password', 'college'];
-    for (const field of requiredFields) {
-      if (!formData[field]) {
-        setError(`Please fill in the ${field.replace('_', ' ')}`);
-        return;
-      }
-    }
-
-    // Generate username from email if not provided
-    const dataToSend = { ...formData };
-    if (!dataToSend.username) {
-      dataToSend.username = dataToSend.email.split('@')[0];
-    }
-
-    // Remove confirmPassword as it's not needed by the backend
-    delete dataToSend.confirmPassword;
-
-    setLoading(true);
-    try {
-      // Send POST request to the backend
-      const response = await fetch(`${BASE_URL}/api/registrar/signup/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      // Parse the response
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Handle specific error messages from the backend
-        if (data.username) {
-          throw new Error(`Username error: ${data.username}`);
-        } else if (data.email) {
-          throw new Error(`Email error: ${data.email}`);
-        } else if (data.password) {
-          throw new Error(`Password error: ${data.password}`);
-        } else if (data.error) {
-          throw new Error(data.error);
-        } else {
-          throw new Error("Failed to sign up. Please try again.");
+        if (!email || !password || !fullName || !staffId) {
+            setMessage("Please fill in all fields.");
+            toast({
+                title: 'Validation Error.',
+                description: "Please fill in all required fields.",
+                status: 'error',
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
         }
-      }
 
-      // Handle successful signup
-      toast({
-        title: "Signup Successful!",
-        description: "You can now log in with your credentials.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+        if (!csrfToken) {
+            setMessage("CSRF token not available. Please refresh the page.");
+            toast({
+                title: 'Error.',
+                description: "CSRF token not available. Please refresh the page.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+            return;
+        }
 
-      // Redirect to login page
-      navigate("/academic-registrar");
-    } catch (error) {
-      setError(error.message);
-      toast({
-        title: "Signup Failed",
-        description: error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+        const username = email;
+
+        const payload = {
+            email,
+            username,
+            password,
+            fullName,
+            staffId, // Assuming this field name
+            role: "registrar"
+        };
+
+        console.log("Sending registration data:", JSON.stringify(payload));
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/registrar/register/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify(payload),
+                credentials: 'include',
+            });
+
+            console.log("Response status:", response.status);
+
+            if (response.ok) {
+                // No token storage here. Just confirm success and redirect to login.
+                toast({
+                    title: "Registration successful!",
+                    description: "You can now log in with your credentials.",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                });
+                setMessage("Registration successful! Please log in.");
+                navigate("/registrar-login"); // Redirect to registrar login page
+            } else {
+                const errorData = await response.json();
+                console.error("Registration error:", errorData);
+                setMessage(errorData.error || errorData.detail || "Registration failed, please try again.");
+                toast({
+                    title: 'Registration Failed.',
+                    description: errorData.error || errorData.detail || "Please try again.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        } catch (error) {
+            setMessage("Error connecting to the server.");
+            console.error("Fetch error:", error);
+            toast({
+                title: 'Network Error.',
+                description: "Failed to connect to the server. Please check your internet connection.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    };
 
   return (
     <Flex
