@@ -3,127 +3,117 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const BASE_URL = 'https://aits-i31l.onrender.com';
 
-const RegistrarLogin = () => {
-  const [credentials, setCredentials] = useState({
-    username: '',
-    password: ''
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+const RegistrarLogin = ({ onLoginSuccess, currentAccessToken, currentUserRole }) => {
+    const navigate = useNavigate();
+    const toast = useToast();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [csrfToken, setCsrfToken] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({
-      ...credentials,
-      [name]: value
-    });
-  };
+    // Fetch CSRF Token
+    useEffect(() => {
+        const fetchCsrfToken = async () => {
+            try {
+                const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
+                if (!response.ok) {
+                    console.error("Failed to fetch CSRF token response:", response);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.detail || `Failed to fetch CSRF token: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setCsrfToken(data.csrfToken);
+                console.log("CSRF Token fetched for Registrar Sign In:", data.csrfToken);
+            } catch (error) {
+                console.error("Error fetching CSRF token for Registrar Sign In:", error);
+                toast({
+                    title: 'Error.',
+                    description: "Failed to load security token for login. Please refresh the page.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+        fetchCsrfToken();
+    }, [toast]);
 
-    try {
-      console.log('Sending credentials:', credentials); // Debug log
-      
-      const response = await axios.post(`${BASE_URL}/api/token/`, credentials);
-      
-      console.log('Login response:', response.data); // Debug log
-      
-      // Store tokens in localStorage
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('refreshToken', response.data.refresh);
-      
-      // Store user role if available
-      if (response.data.role) {
-        localStorage.setItem('userRole', response.data.role);
-      }
-      
-      // Redirect to dashboard
-      navigate('/academic-registrar');
-    } catch (error) {
-      console.error('Login error:', error.response || error);
-      
-      if (error.response && error.response.status === 401) {
-        setError('Invalid username or password. Please try again.');
-      } else {
-        setError(
-          error.response?.data?.detail || 
-          'Failed to login. Please check your credentials.'
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Navigate if authentication state is already set and correct
+    useEffect(() => {
+        if (currentAccessToken && currentUserRole === 'registrar' && window.location.pathname !== '/registrar-dashboard') {
+            console.log("RegistrarSignIn: Navigating to registrar dashboard because state is set correctly.");
+            navigate("/registrar-dashboard");
+        }
+    }, [currentAccessToken, currentUserRole, navigate]);
 
-  // Simple CSS styles
-  const styles = {
-    container: {
-      maxWidth: '400px',
-      margin: '100px auto',
-      padding: '20px',
-      boxShadow: '0 0 10px rgba(199, 32, 32, 0.1)',
-      borderRadius: '8px',
-      backgroundColor: 'white'
-    },
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
 
-    title: {
-      textAlign: 'center',
-      color: '#2C7A7B',
-      marginBottom: '20px'
-    },
-    form: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '15px'
-    },
-    formGroup: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '5px'
-    },
-    label: {
-      fontWeight: 'bold'
-    },
-    input: {
-      padding: '10px',
-      borderRadius: '4px',
-      border: '1px solid #ddd'
-    },
-    button: {
-      padding: '12px',
-      backgroundColor: '#2C7A7B',
-      color: 'white',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      marginTop: '10px'
-    },
-    error: {
-      color: 'red',
-      textAlign: 'center',
-      marginBottom: '15px'
-    },
-    signupLink: {
-      textAlign: 'center',
-      marginTop: '20px'
-    },
-    link: {
-      color: '#2C7A7B',
-      textDecoration: 'underline',
-      cursor: 'pointer'
-    },
-    helpText: {
-      fontSize: '0.8rem',
-      color: '#666',
-      marginTop: '5px'
-    }
-  };
+        if (!csrfToken) {
+            setError("CSRF token not available. Please refresh the page.");
+            setLoading(false);
+            return;
+        }
 
+        try {
+            const response = await fetch(`${BASE_URL}/api/token/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify({ username: email, password }),
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: "Server error" }));
+                setError(errorData.detail || errorData.message || "Login failed");
+                toast({
+                    title: 'Login Failed.',
+                    description: errorData.detail || errorData.message || "Please check your credentials.",
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+                return;
+            }
+
+            const data = await response.json();
+            console.log('Login successful data:', data);
+
+            // Call the onLoginSuccess prop
+            if (onLoginSuccess) {
+                // Assuming data contains access, refresh, role, user_id, username
+                onLoginSuccess(data.access, data.refresh, data.role, data.user_id, data.username);
+            }
+
+            toast({
+                title: 'Login successful.',
+                description: "You've successfully logged in. Redirecting...",
+                status: 'success',
+                duration: 3000,
+                isClosable: true,
+            });
+
+        } catch (err) {
+            setError("Network error, please try again.");
+            console.error("Login request failed:", err);
+            toast({
+                title: 'Login Failed.',
+                description: err.message || "Network error, please try again.",
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Registrar Login</h2>
