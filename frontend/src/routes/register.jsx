@@ -132,7 +132,9 @@ const collegeDepartments = {
     ],
 };
 
-const Register = () => {
+// >>>>>>> IMPORTANT CHANGE HERE <<<<<<<
+// Add onRegisterSuccess, currentAccessToken, currentUserRole to destructured props
+const Register = ({ onRegisterSuccess, currentAccessToken, currentUserRole }) => {
     const [studentRegNumber, setStudentRegNumber] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -171,6 +173,18 @@ const Register = () => {
         };
         fetchCsrfToken();
     }, []);
+
+    // >>>>>>> IMPORTANT NEW useEffect for Navigation <<<<<<<
+    useEffect(() => {
+        // Only navigate if an access token and a role are available
+        // AND if the current path is NOT already the dashboard (to prevent infinite loops)
+        // Ensure it's for 'student' role, as this is the student registration component
+        if (currentAccessToken && currentUserRole === 'student' && window.location.pathname !== '/student-dashboard') {
+            console.log("Register: Navigating to student dashboard because state is set and matches role:", currentUserRole);
+            navigate("/student-dashboard");
+        }
+    }, [currentAccessToken, currentUserRole, navigate]); // Depend on these auth state variables
+
 
     const handleStudentRegistration = () => {
         let formErrors = {};
@@ -257,7 +271,8 @@ const Register = () => {
                 isClosable: true,
             });
 
-            navigate("/student-dashboard");
+            // >>>>>>> REMOVE THIS LINE <<<<<<<
+            // navigate("/student-dashboard"); // This is now handled by the useEffect above
         })
         .catch(error => {
             console.error('Error:', error);
@@ -307,9 +322,9 @@ const Register = () => {
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 placeholder="Enter Full Name"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             />
                             {errors.fullName && <FormHelperText color="red">{errors.fullName}</FormHelperText>}
                         </FormControl>
@@ -322,9 +337,9 @@ const Register = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter Email (e.g., example@gmail.com)"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             />
                             {errors.email && <FormHelperText color="red">{errors.email}</FormHelperText>}
                         </FormControl>
@@ -337,9 +352,9 @@ const Register = () => {
                                 value={studentRegNumber}
                                 onChange={(e) => setStudentRegNumber(e.target.value)}
                                 placeholder="Enter StudentNumber"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             />
                             {errors.studentRegNumber && <FormHelperText color="red">{errors.studentRegNumber}</FormHelperText>}
                         </FormControl>
@@ -351,9 +366,9 @@ const Register = () => {
                                 value={yearOfStudy}
                                 onChange={(e) => setYearOfStudy(e.target.value)}
                                 placeholder="Select Year of Study"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             >
                                 <option value="1">Year 1</option>
                                 <option value="2">Year 2</option>
@@ -373,9 +388,9 @@ const Register = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Enter Password"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             />
                             {errors.password && <FormHelperText color="red">{errors.password}</FormHelperText>}
                         </FormControl>
@@ -388,9 +403,9 @@ const Register = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="Confirm Password"
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             />
                             {!passwordsMatch && <FormHelperText color="red">Passwords do not match</FormHelperText>}
                         </FormControl>
@@ -404,9 +419,9 @@ const Register = () => {
                                     setDepartment("");
                                 }}
                                 value={college}
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             >
                                 <option value="">Select College</option>
                                 {Object.keys(collegeDepartments).map((key) => (
@@ -423,9 +438,9 @@ const Register = () => {
                                 onChange={(e) => setDepartment(e.target.value)}
                                 value={department}
                                 disabled={!college}
-                                bg="white" // Added white background
-                                border="1px solid #ccc" // Added border
-                                color="black" // Added text color
+                                bg="white"
+                                border="1px solid #ccc"
+                                color="black"
                             >
                                 <option value="">Select Department</option>
                                 {college && collegeDepartments[college]?.map((dept) => (
@@ -453,7 +468,5 @@ const Register = () => {
         </Box>
     );
 };
-    
-  
 
 export default Register;
