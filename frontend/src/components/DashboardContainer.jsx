@@ -4,7 +4,7 @@ import { Flex, Spinner } from '@chakra-ui/react'; // Add missing imports
 import StudentDashboard from "../routes/StudentDashboard";
 import IssueSubmissionForm from '../components/IssueSubmissionForm';
 
-const BASE_URL = 'https://academic-issue-tracking-system-gbch.onrender.com';
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const DashboardContainer = () => {
     const [studentData, setStudentData] = useState(null);
