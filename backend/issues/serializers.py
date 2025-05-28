@@ -1,3 +1,4 @@
+# your_app_name/serializers.py (Corrected Indentation and minor syntax)
 from rest_framework import serializers
 from .models import CustomUser, Issue, Comment, Notification, AuditLog, IssueAttachment
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -6,52 +7,52 @@ from django.contrib.auth.hashers import make_password
 # Serializer for CustomUser
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
-    role = serializers.CharField(write_only=True, default='registrar')  # Default role set to 'registrar'
-    courses_taught = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=False)  # Accept array from frontend
-   
+    role = serializers.CharField(default='registrar') # Removed write_only=True based on previous discussion for general use
+    courses_taught = serializers.ListField(child=serializers.CharField(), allow_empty=True, required=False)
 
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy','courses_taught')
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = (
+            'id', 'username', 'password', 'email', 'first_name', 'last_name', 'role',
+            'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy', 'courses_taught'
+        )
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False},
+        }
 
-  def create(self, validated_data):
+    # --- CORRECTED INDENTATION FOR create METHOD ---
+    def create(self, validated_data):
         password = validated_data.pop('password')
         courses_taught_list = validated_data.pop('courses_taught', [])
-        full_name = validated_data.pop('fullName', '') # Explicitly pop fullName
+        full_name = validated_data.pop('fullName', '')
 
-        # Convert list to comma-separated string for TextField
         validated_data['courses_taught'] = ', '.join(courses_taught_list) if courses_taught_list else ''
 
-        # Pop first_name and last_name if they were passed, to avoid conflicts
-        # We will derive them from fullName
         first_name = validated_data.pop('first_name', '')
         last_name = validated_data.pop('last_name', '')
 
-        # Create the user instance using create_user for proper password hashing
         user = CustomUser.objects.create_user(
             username=validated_data.get('username'),
             email=validated_data.get('email'),
             password=password,
-            fullName=full_name, # Assign fullName directly to the user object
-            **validated_data # Pass remaining validated data to the user creation
+            fullName=full_name,
+            **validated_data
         )
 
-        # --- MODIFIED HERE: Populate first_name and last_name from fullName ---
-        # This ensures AbstractUser's first_name/last_name fields are also populated
-        # for compatibility with other parts of Django (like Registrar's view).
         if full_name:
-            name_parts = full_name.split(' ', 1) # Split into at most 2 parts (first and rest)
+            name_parts = full_name.split(' ', 1)
             user.first_name = name_parts[0]
             if len(name_parts) > 1:
                 user.last_name = name_parts[1]
-            user.save() # Save the user again after updating name fields
-        # --- END MODIFIED ---
+            user.save()
 
-        print("Saved user:", user.__dict__) # Debug
+        print("Saved user:", user.__dict__)
 
         return user
 
+    # --- CORRECTED INDENTATION FOR update METHOD ---
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
         if password:
@@ -63,15 +64,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
         full_name = validated_data.pop('fullName', None)
         if full_name is not None:
-            instance.fullName = full_name # Assign fullName on update
-            # --- MODIFIED HERE: Update first_name and last_name on update as well ---
+            instance.fullName = full_name
             name_parts = full_name.split(' ', 1)
             instance.first_name = name_parts[0]
             if len(name_parts) > 1:
                 instance.last_name = name_parts[1]
-            # --- END MODIFIED ---
 
-        # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
 
@@ -83,7 +81,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class SimpleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'role'', 'fullName')
+        # --- SYNTAX FIX: Removed stray comma after 'role' ---
+        fields = ('id', 'username', 'role', 'fullName')
 
 
 # Serializer for Issue Attachments
@@ -118,28 +117,26 @@ class IssueSerializer(serializers.ModelSerializer):
         assigned_to = validated_data.pop('assigned_to_id', None)
         student_name = validated_data.pop('studentName', None)
 
-        if student is None:  # If no student is provided, use the authenticated user
+        if student is None:
             request = self.context.get('request')
             if request and hasattr(request, 'user'):
-                student = request.user  # The logged-in user is the student
+                student = request.user
 
-        # Fetch registrar based on student's college (same logic for registrar assignment)
         if not assigned_to:
             registrar = CustomUser.objects.filter(college=student.college, role='registrar').first()
             if registrar:
                 assigned_to = registrar
 
-        validated_data.pop('student', None)  # Remove student field from validated data
-        validated_data.pop('assigned_to', None)  # Remove assigned_to field from validated data
+        validated_data.pop('student', None)
+        validated_data.pop('assigned_to', None)
 
         issue = Issue.objects.create(
-            student=student, 
-            assigned_to=assigned_to, 
-            studentName=student_name, 
+            student=student,
+            assigned_to=assigned_to,
+            studentName=student_name,
             **validated_data
         )
 
-        # Handle attachments (if any)
         request = self.context.get('request')
         if request and hasattr(request, 'FILES'):
             attachments_data = request.FILES.getlist('attachments')
@@ -149,10 +146,9 @@ class IssueSerializer(serializers.ModelSerializer):
         return issue
 
 
-
 # Serializer for Comments on Issues
 class CommentSerializer(serializers.ModelSerializer):
-    user = SimpleUserSerializer(read_only=True)  # Display user info for comments
+    user = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = Comment
@@ -189,10 +185,10 @@ class CustomTokenObtainPairSerializer(serializers.Serializer):
 
         if not user.check_password(password):
             raise serializers.ValidationError("Incorrect password.")
-        
+
         if user.role not in ['student', 'lecturer', 'registrar', 'hod', 'admin']:
             raise serializers.ValidationError("Invalid user role.")
-        
+
         refresh = RefreshToken.for_user(user)
         data = {
             'refresh': str(refresh),
