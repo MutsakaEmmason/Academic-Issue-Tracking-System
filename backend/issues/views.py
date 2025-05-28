@@ -48,84 +48,63 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
     queryset = Issue.objects.all()
     serializer_class = IssueSerializer
-    permission_classes = [IsAuthenticated] # Base permission. Specific actions will refine this.
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['category', 'status', 'assigned_to', 'student'] # Added status, assigned_to, student for better filtering
-    search_fields = ['category', 'title', 'description'] # Refined search fields
+    filterset_fields = ['category', 'status', 'assigned_to', 'student']
+    search_fields = ['category', 'title', 'description']
 
     def get_queryset(self):
         user = self.request.user
         queryset = Issue.objects.all()
 
-        # Filter issues based on the user's role
         if user.role == 'student':
             queryset = queryset.filter(student=user)
         elif user.role == 'lecturer':
             queryset = queryset.filter(assigned_to=user)
         elif user.role == 'registrar':
-            # Ensure that the registrar can only view issues from their respective college
             queryset = queryset.filter(college=user.college)
 
-        # Allow filtering by status and assigned_to for specific dashboards, e.g., lecturer dashboard
-        status_param = self.request.query_params.get('status', None)
+        status_param = self.request.query_params.get('status')
         if status_param:
             queryset = queryset.filter(status=status_param)
 
-        assigned_to_param = self.request.query_params.get('assigned_to', None)
+        assigned_to_param = self.request.query_params.get('assigned_to')
         if assigned_to_param:
             queryset = queryset.filter(assigned_to=assigned_to_param)
 
-        # Additional search filter (keep this logic)
-        search_query = self.request.query_params.get('search', None)
+        search_query = self.request.query_params.get('search')
         if search_query:
-            queryset = queryset.filter(
-                Q(title__icontains=search_query) |
-                Q(description__icontains=search_query)
-            )
+            queryset = queryset.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
 
         return queryset
+
     def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
         if self.action == 'create':
-            # For the 'create' action (POST request), only allow authenticated students.
             return [IsAuthenticated(), IsStudent()]
         elif self.action in ['update', 'partial_update']:
-            # For updating issues, apply broader authentication but rely on
-            # the detailed logic within the `update` method itself for authorization.
             return [IsAuthenticated()]
         elif self.action == 'destroy':
-            # Example: Only registrars can delete issues. Adjust as needed.
             return [IsAuthenticated(), IsRegistrar()]
-        # For 'list' and 'retrieve' (GET requests), use the default IsAuthenticated.
         return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
-        
-            return Response({"error": "Only students can submit issues."}, status=403)
+        if request.user.role != 'student':
+            return Response({"error": "Only students can submit issues."}, status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            student_name = request.data.get('studentName')
             issue = serializer.save(
                 student=request.user,
-                studentName=student_name,
+                studentName=request.data.get('studentName'),
                 college=request.user.college
             )
 
-            # Automatically assign registrar of that college
-            registrar = CustomUser.objects.filter(
-                college=issue.college,
-                role='registrar'
-            ).first()
-
+            registrar = CustomUser.objects.filter(college=issue.college, role='registrar').first()
             if registrar:
-                issue.assigned_to = registrar # Initially assigned to registrar
-                issue.status = 'pending' # Or 'submitted', define your initial status
+                issue.assigned_to = registrar
+                issue.status = 'pending'
                 issue.save()
 
-            # Handle attachments
             files = request.FILES.getlist('attachments', [])
             for file in files:
                 IssueAttachment.objects.create(issue=issue, file=file)
@@ -134,28 +113,21 @@ class IssueViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # Simplified update method as resolve/assign are now separate views
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-
         user = request.user
+
         if user.role == 'student' and instance.student != user:
             return Response({"detail": "You cannot update an issue that is not yours."}, status=status.HTTP_403_FORBIDDEN)
-        elif user.role == 'lecturer' and instance.assigned_to != user:
-            # Lecturers should ideally only update specific fields or through specific actions.
-            # If a lecturer needs to update description or other fields, this is fine.
-            # If this is strictly for status changes, consider removing this path for lecturers.
-            pass
         elif user.role == 'registrar' and instance.college != user.college:
             return Response({"detail": "You cannot update issues outside your college."}, status=status.HTTP_403_FORBIDDEN)
-
 
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            log_action(request.user, f"Issue updated: {instance.title}")
-            send_issue_update_email(instance)
             return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
