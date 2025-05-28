@@ -33,25 +33,35 @@ const AcademicRegistrarDashboard = () => {
     const toast = useToast();
     const navigate = useNavigate();
 
-    useEffect(() => {
+     useEffect(() => {
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            // This case *should* be handled by ProtectedRoute already,
+            // but if it ever slips through (e.g., direct URL access without token),
+            // a toast is fine, but navigation should ideally be handled higher up.
+            // For now, let's remove the navigation to avoid conflicts.
+            toast({ title: "Authentication token missing.", status: "error", duration: 5000, isClosable: true });
+            setIsLoading(false); // Make sure loading state is cleared
+            return; // Stop execution if no token
+        }
+
         // First fetch the registrar profile to get the college
         const fetchRegistrarProfile = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
-                if (!token) {
-                    toast({ title: "Please log in.", status: "error", duration: 5000, isClosable: true });
-                    navigate('/login');
-                    return null;
-                }
-
                 const profileResponse = await fetch(`${BASE_URL}/api/registrar-profile/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
                 if (!profileResponse.ok) {
-                    toast({ title: "Failed to fetch profile.", status: "error", duration: 5000, isClosable: true });
-                    navigate('/login');
-                    return null;
+                    // This means the token might be invalid/expired, or profile doesn't exist.
+                    // In a real app, you might want to force a re-login here.
+                    // For debugging, we'll just show a toast and return null.
+                    toast({ title: "Failed to fetch registrar profile or token expired. Please re-login.", status: "error", duration: 5000, isClosable: true });
+                    // Optionally, you might want to clear token and redirect here if you want to be strict about expired tokens
+                    // localStorage.removeItem("accessToken");
+                    // localStorage.removeItem("userRole");
+                    // navigate('/login');
+                    return null; 
                 }
 
                 const registrarData = await profileResponse.json();
@@ -72,15 +82,17 @@ const AcademicRegistrarDashboard = () => {
             if (college) {
                 // Fetch lecturers from the same college
                 try {
-                    const token = localStorage.getItem("accessToken");
-                     const lecturersResponse = await fetch(`${BASE_URL}/api/lecturers/`,{
+                    // Token is already checked at the top of useEffect
+                    const lecturersResponse = await fetch(`${BASE_URL}/api/lecturers/?college=${college}`,{ // ADDED ?college=${college}
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
                     if (lecturersResponse.ok) {
                         const data = await lecturersResponse.json();
-                        setLecturers(data);
-                        console.log("Fetched lecturers:", data); // Debug log
+                        // Filter lecturers by college on the frontend if backend doesn't already
+                        const collegeLecturers = data.filter(lecturer => lecturer.college === college);
+                        setLecturers(collegeLecturers);
+                        console.log("Fetched lecturers:", collegeLecturers); // Debug log
                     } else {
                         toast({ title: "Error fetching lecturers.", status: "error", duration: 5000, isClosable: true });
                     }
@@ -91,14 +103,14 @@ const AcademicRegistrarDashboard = () => {
 
                 // Fetch issues from the same college
                 try {
-                    const token = localStorage.getItem("accessToken");
+                    // Token is already checked at the top of useEffect
                     const issuesResponse = await fetch(`${BASE_URL}/api/issues/?college=${college}`, {
                         headers: { Authorization: `Bearer ${token}` },
                     });
 
                     if (issuesResponse.ok) {
                         const data = await issuesResponse.json();
-                        // Only show unresolved issues
+                        // Only show unresolved issues (and filter by college if necessary, though backend should do this)
                         const unresolvedIssues = data.filter(issue => issue.status !== 'resolved');
                         setIssues(unresolvedIssues);
                     } else {
@@ -108,6 +120,9 @@ const AcademicRegistrarDashboard = () => {
                     console.error("Error fetching issues:", error);
                     toast({ title: "Error fetching issues.", status: "error", duration: 5000, isClosable: true });
                 }
+            } else {
+                // If college could not be fetched, stop loading and don't try to fetch other data
+                toast({ title: "Could not determine registrar's college. Data not loaded.", status: "warning", duration: 5000, isClosable: true });
             }
             
             setIsLoading(false);
