@@ -15,28 +15,75 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'role', 'studentRegNumber', 'fullName', 'college', 'department', 'yearOfStudy','courses_taught')
         extra_kwargs = {'password': {'write_only': True}}
 
-    def create(self, validated_data):
-        role = validated_data.get('role', 'registrar')  # Default to 'registrar' if not provided
-        validated_data['role'] = role
+  def create(self, validated_data):
         password = validated_data.pop('password')
-        courses_taught = validated_data.pop('courses_taught', [])  # Get array, default to empty
-        
+        courses_taught_list = validated_data.pop('courses_taught', [])
+        full_name = validated_data.pop('fullName', '') # Explicitly pop fullName
+
         # Convert list to comma-separated string for TextField
-        validated_data['courses_taught'] = ', '.join(courses_taught) if courses_taught else ''
-        
-        user = CustomUser(**validated_data)
-        user.set_password(password)  # Hash the password before saving
-        user.save()
-        print("Saved user:", user.__dict__)  # Debug
-        
+        validated_data['courses_taught'] = ', '.join(courses_taught_list) if courses_taught_list else ''
+
+        # Pop first_name and last_name if they were passed, to avoid conflicts
+        # We will derive them from fullName
+        first_name = validated_data.pop('first_name', '')
+        last_name = validated_data.pop('last_name', '')
+
+        # Create the user instance using create_user for proper password hashing
+        user = CustomUser.objects.create_user(
+            username=validated_data.get('username'),
+            email=validated_data.get('email'),
+            password=password,
+            fullName=full_name, # Assign fullName directly to the user object
+            **validated_data # Pass remaining validated data to the user creation
+        )
+
+        # --- MODIFIED HERE: Populate first_name and last_name from fullName ---
+        # This ensures AbstractUser's first_name/last_name fields are also populated
+        # for compatibility with other parts of Django (like Registrar's view).
+        if full_name:
+            name_parts = full_name.split(' ', 1) # Split into at most 2 parts (first and rest)
+            user.first_name = name_parts[0]
+            if len(name_parts) > 1:
+                user.last_name = name_parts[1]
+            user.save() # Save the user again after updating name fields
+        # --- END MODIFIED ---
+
+        print("Saved user:", user.__dict__) # Debug
+
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+
+        courses_taught_list = validated_data.pop('courses_taught', None)
+        if courses_taught_list is not None:
+            instance.courses_taught = ', '.join(courses_taught_list) if courses_taught_list else ''
+
+        full_name = validated_data.pop('fullName', None)
+        if full_name is not None:
+            instance.fullName = full_name # Assign fullName on update
+            # --- MODIFIED HERE: Update first_name and last_name on update as well ---
+            name_parts = full_name.split(' ', 1)
+            instance.first_name = name_parts[0]
+            if len(name_parts) > 1:
+                instance.last_name = name_parts[1]
+            # --- END MODIFIED ---
+
+        # Update other fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 # SimpleUserSerializer to retrieve only basic user info (for related user fields)
 class SimpleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('id', 'username', 'role')
+        fields = ('id', 'username', 'role'', 'fullName')
 
 
 # Serializer for Issue Attachments
