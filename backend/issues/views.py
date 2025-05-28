@@ -449,7 +449,7 @@ class LecturerDetailsView(APIView):
 
             response_data = {
                 'id': user.id, # Add id, useful for frontend
-                'fullName': f"{user.first_name} {user.last_name}".strip(), # Derive fullName
+                'fullName': user.fullName,
                 'email': user.email,
                 'role': user.role,
                 'courses_taught': courses_taught,
