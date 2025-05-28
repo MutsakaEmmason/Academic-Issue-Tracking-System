@@ -1,8 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Box, Button, FormControl, FormLabel, Input,
-    VStack, Text, useToast // Added useToast
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Text,
+  useToast,
+  Flex, // ✅ Add this
+  Container, // ✅ Add this
+  Stack,
+  Heading,
+  Icon,
+  InputGroup,
+  InputLeftElement,
+  HStack,
+  Divider,
+  FormErrorMessage,
+  Select
 } from "@chakra-ui/react";
 import Footer from './components/Footer.jsx';
 const BASE_URL = 'https://aits-i31l.onrender.com'; // Ensure BASE_URL is defined
