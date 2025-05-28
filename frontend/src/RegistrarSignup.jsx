@@ -100,7 +100,7 @@ const RegistrarSignup = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/api/registrar/register/`, {
+      const response = await fetch(`${BASE_URL}/api/registrar/signup/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
