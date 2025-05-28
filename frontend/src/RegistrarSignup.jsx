@@ -109,7 +109,7 @@ const RegistrarSignup = () => {
                     isClosable: true,
                 });
                 setMessage("Registration successful! Please log in.");
-                navigate("/registrar-login"); // Redirect to registrar login page
+                navigate("/academic-registrar"); // Redirect to registrar login page
             } else {
                 const errorData = await response.json();
                 console.error("Registration error:", errorData);
