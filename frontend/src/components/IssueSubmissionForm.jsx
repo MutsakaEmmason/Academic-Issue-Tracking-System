@@ -61,7 +61,8 @@ const IssueSubmissionForm = () => {
         console.log("Form Data Submitted:", formData);
 
         try {
-            const token = localStorage.getItem('token');
+            const token = localStorage.getItem('access_token');
+
             const response = await fetch(`${BASE_URL}/api/issues/`, {
                 method: 'POST',
                 headers: {
