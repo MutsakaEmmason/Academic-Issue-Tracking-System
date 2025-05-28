@@ -1,183 +1,145 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-  Text,
-  useToast,
-  Flex, // ✅ Add this
-  Container, // ✅ Add this
-  Stack,
-  Heading,
-  Icon,
-  InputGroup,
-  InputLeftElement,
-  HStack,
-  Divider,
-  FormErrorMessage,
-  Select
+  Box, Button, FormControl, FormLabel, Input, VStack, Text,
+  useToast, Flex, Container, Stack, HStack, InputGroup, InputLeftElement,
+  Icon, Divider, Heading, Select, FormErrorMessage
 } from "@chakra-ui/react";
+import {
+  FiUser, FiUserPlus, FiMail, FiLock, FiBookOpen, FiArrowLeft, FiCheckCircle
+} from "react-icons/fi";
 import Footer from './components/Footer.jsx';
-const BASE_URL = 'https://aits-i31l.onrender.com'; // Ensure BASE_URL is defined
+
+const BASE_URL = 'https://aits-i31l.onrender.com';
 
 const RegistrarSignup = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [fullName, setFullName] = useState("");
-    const [staffId, setStaffId] = useState(""); // Assuming staff ID for registrar
-    const [message, setMessage] = useState("");
-    const [csrfToken, setCsrfToken] = useState(''); // Add state for CSRF token
-    const navigate = useNavigate();
-    const toast = useToast();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+    college: "",
+  });
+  const [csrfToken, setCsrfToken] = useState('');
+  const [error, setError] = useState(null);
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-    // Fetch CSRF Token
-    useEffect(() => {
-        const fetchCsrfToken = async () => {
-            try {
-                const response = await fetch(`${BASE_URL}/api/csrf-token/`, { credentials: 'include' });
-                if (!response.ok) {
-                    console.error("Failed to fetch CSRF token response:", response);
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.detail || `Failed to fetch CSRF token: ${response.statusText}`);
-                }
-                const data = await response.json();
-                setCsrfToken(data.csrfToken);
-                console.log("CSRF Token fetched for Registrar SignUp:", data.csrfToken);
-            } catch (error) {
-                console.error("Error fetching CSRF token for Registrar SignUp:", error);
-                toast({
-                    title: 'Error.',
-                    description: "Failed to load security token for registration. Please refresh the page.",
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
-        };
+  const toast = useToast();
+  const navigate = useNavigate();
 
-        fetchCsrfToken();
-    }, [toast]);
+  const lightGreenBg = "green.50";
+  const accentColor = "green.600";
+  const secondaryTextColor = "gray.600";
+  const bgColor = "white";
+  const borderColor = "gray.200";
+  const buttonBgColor = "green.400";
+  const buttonHoverColor = "green.500";
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setMessage(""); // Clear previous messages
+  useEffect(() => {
+    setIsPasswordMismatch(
+      formData.password &&
+      formData.confirmPassword &&
+      formData.password !== formData.confirmPassword
+    );
+  }, [formData.password, formData.confirmPassword]);
 
-        if (!email || !password || !fullName || !staffId) {
-            setMessage("Please fill in all fields.");
-            toast({
-                title: 'Validation Error.',
-                description: "Please fill in all required fields.",
-                status: 'error',
-                duration: 3000,
-                isClosable: true,
-            });
-            return;
-        }
-
-        if (!csrfToken) {
-            setMessage("CSRF token not available. Please refresh the page.");
-            toast({
-                title: 'Error.',
-                description: "CSRF token not available. Please refresh the page.",
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-            return;
-        }
-
-        const username = email;
-
-        const payload = {
-            email,
-            username,
-            password,
-            fullName,
-            staffId, // Assuming this field name
-            role: "registrar"
-        };
-
-        console.log("Sending registration data:", JSON.stringify(payload));
-
-        try {
-            const response = await fetch(`${BASE_URL}/api/registrar/register/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": csrfToken,
-                },
-                body: JSON.stringify(payload),
-                credentials: 'include',
-            });
-
-            console.log("Response status:", response.status);
-
-            if (response.ok) {
-                // No token storage here. Just confirm success and redirect to login.
-                toast({
-                    title: "Registration successful!",
-                    description: "You can now log in with your credentials.",
-                    status: "success",
-                    duration: 5000,
-                    isClosable: true,
-                });
-                setMessage("Registration successful! Please log in.");
-                navigate("/academic-registrar"); // Redirect to registrar login page
-            } else {
-                const errorData = await response.json();
-                console.error("Registration error:", errorData);
-                setMessage(errorData.error || errorData.detail || "Registration failed, please try again.");
-                toast({
-                    title: 'Registration Failed.',
-                    description: errorData.error || errorData.detail || "Please try again.",
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
-        } catch (error) {
-            setMessage("Error connecting to the server.");
-            console.error("Fetch error:", error);
-            toast({
-                title: 'Network Error.',
-                description: "Failed to connect to the server. Please check your internet connection.",
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-        }
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/csrf-token/`, {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error("Failed to fetch CSRF token");
+        const data = await response.json();
+        setCsrfToken(data.csrfToken);
+      } catch (err) {
+        toast({
+          title: 'CSRF Error',
+          description: 'Could not load CSRF token. Try refreshing the page.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
     };
 
+    fetchCsrfToken();
+  }, [toast]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    const {
+      email, password, confirmPassword, first_name, last_name, college
+    } = formData;
+
+    if (!email || !password || !confirmPassword || !first_name || !last_name || !college) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    if (isPasswordMismatch) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const payload = {
+      email,
+      username: formData.username || email.split('@')[0],
+      password,
+      fullName: `${first_name} ${last_name}`,
+      staffId: email, // Using email as staff ID if no separate field
+      role: "registrar",
+      college
+    };
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/registrar/register/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Registration successful!",
+          description: "You can now log in.",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        navigate("/academic-registrar");
+      } else {
+        setError(data.error || data.detail || "Registration failed.");
+      }
+    } catch (err) {
+      setError("Network error. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={lightGreenBg}
-      p={4}
-    >
+    <Flex minH="100vh" align="center" justify="center" bg={lightGreenBg} p={4}>
       <Container maxW="lg" py={12} px={{ base: 5, md: 8 }}>
         <Stack spacing={8}>
           <VStack spacing={2} align="center">
-            <Box
-              p={2}
-              bg="green.100"
-              borderRadius="full"
-              boxShadow="md"
-              mb={2}
-            >
+            <Box p={2} bg="green.100" borderRadius="full" boxShadow="md" mb={2}>
               <Icon as={FiUserPlus} w={10} h={10} color="green.600" />
             </Box>
-            <Heading
-              fontSize="2xl"
-              fontWeight="bold"
-              color={accentColor}
-              textAlign="center"
-            >
+            <Heading fontSize="2xl" fontWeight="bold" color={accentColor} textAlign="center">
               Academic Registrar Registration
             </Heading>
             <Text fontSize="md" color={secondaryTextColor} textAlign="center">
@@ -195,26 +157,14 @@ const RegistrarSignup = () => {
             position="relative"
             overflow="hidden"
           >
-            {/* Decorative green accent */}
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              height="8px"
-              bg="green.400"
-              borderTopLeftRadius="xl"
-              borderTopRightRadius="xl"
-            />
+            <Box position="absolute" top={0} left={0} right={0} height="8px" bg="green.400" borderTopLeftRadius="xl" borderTopRightRadius="xl" />
 
             <Stack spacing={6} mt={2}>
               <HStack spacing={4}>
                 <FormControl id="firstName" isRequired>
-                  <FormLabel fontWeight="medium">First Name</FormLabel>
+                  <FormLabel>First Name</FormLabel>
                   <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                      <Icon as={FiUser} color="green.400" />
-                    </InputLeftElement>
+                    <InputLeftElement pointerEvents="none"><Icon as={FiUser} color="green.400" /></InputLeftElement>
                     <Input
                       type="text"
                       placeholder="First name"
@@ -224,13 +174,10 @@ const RegistrarSignup = () => {
                     />
                   </InputGroup>
                 </FormControl>
-
                 <FormControl id="lastName" isRequired>
-                  <FormLabel fontWeight="medium">Last Name</FormLabel>
+                  <FormLabel>Last Name</FormLabel>
                   <InputGroup>
-                    <InputLeftElement pointerEvents="none">
-                      <Icon as={FiUser} color="green.400" />
-                    </InputLeftElement>
+                    <InputLeftElement pointerEvents="none"><Icon as={FiUser} color="green.400" /></InputLeftElement>
                     <Input
                       type="text"
                       placeholder="Last name"
@@ -243,11 +190,9 @@ const RegistrarSignup = () => {
               </HStack>
 
               <FormControl id="email" isRequired>
-                <FormLabel fontWeight="medium">Email Address</FormLabel>
+                <FormLabel>Email Address</FormLabel>
                 <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <Icon as={FiMail} color="green.400" />
-                  </InputLeftElement>
+                  <InputLeftElement pointerEvents="none"><Icon as={FiMail} color="green.400" /></InputLeftElement>
                   <Input
                     type="email"
                     placeholder="your.email@example.com"
@@ -259,11 +204,9 @@ const RegistrarSignup = () => {
               </FormControl>
 
               <FormControl id="username">
-                <FormLabel fontWeight="medium">Username (Optional)</FormLabel>
+                <FormLabel>Username (Optional)</FormLabel>
                 <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <Icon as={FiUserPlus} color="green.400" />
-                  </InputLeftElement>
+                  <InputLeftElement pointerEvents="none"><Icon as={FiUserPlus} color="green.400" /></InputLeftElement>
                   <Input
                     type="text"
                     placeholder="Choose a username"
@@ -272,17 +215,12 @@ const RegistrarSignup = () => {
                     focusBorderColor="green.400"
                   />
                 </InputGroup>
-                <Text fontSize="xs" color={secondaryTextColor} mt={1}>
-                  If left blank, username will be generated from your email
-                </Text>
               </FormControl>
 
               <FormControl id="password" isRequired isInvalid={isPasswordMismatch}>
-                <FormLabel fontWeight="medium">Password</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <Icon as={FiLock} color="green.400" />
-                  </InputLeftElement>
+                  <InputLeftElement pointerEvents="none"><Icon as={FiLock} color="green.400" /></InputLeftElement>
                   <Input
                     type="password"
                     placeholder="Create a strong password"
@@ -294,11 +232,9 @@ const RegistrarSignup = () => {
               </FormControl>
 
               <FormControl id="confirmPassword" isRequired isInvalid={isPasswordMismatch}>
-                <FormLabel fontWeight="medium">Confirm Password</FormLabel>
+                <FormLabel>Confirm Password</FormLabel>
                 <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <Icon as={FiLock} color="green.400" />
-                  </InputLeftElement>
+                  <InputLeftElement pointerEvents="none"><Icon as={FiLock} color="green.400" /></InputLeftElement>
                   <Input
                     type="password"
                     placeholder="Confirm your password"
@@ -307,25 +243,13 @@ const RegistrarSignup = () => {
                     focusBorderColor="green.400"
                   />
                 </InputGroup>
-                {isPasswordMismatch && (
-                  <FormErrorMessage>Passwords do not match.</FormErrorMessage>
-                )}
+                {isPasswordMismatch && <FormErrorMessage>Passwords do not match.</FormErrorMessage>}
               </FormControl>
 
-              <Divider borderColor="green.100" />
-
-              <Box p={3} bg="green.50" borderRadius="md" borderLeft="4px solid" borderLeftColor="green.400">
-                <Text fontSize="sm" fontWeight="medium" color="green.700">
-                  Institution Information
-                </Text>
-              </Box>
-
               <FormControl id="college" isRequired>
-                <FormLabel fontWeight="medium">College</FormLabel>
+                <FormLabel>College</FormLabel>
                 <InputGroup>
-                  <InputLeftElement pointerEvents="none">
-                    <Icon as={FiBookOpen} color="green.400" />
-                  </InputLeftElement>
+                  <InputLeftElement pointerEvents="none"><Icon as={FiBookOpen} color="green.400" /></InputLeftElement>
                   <Select
                     placeholder="Select your college"
                     value={formData.college}
@@ -348,23 +272,19 @@ const RegistrarSignup = () => {
 
               {error && (
                 <Box p={3} bg="red.50" borderRadius="md">
-                  <Text color="red.500" fontSize="sm" textAlign="center">
-                    {error}
-                  </Text>
+                  <Text color="red.500" fontSize="sm" textAlign="center">{error}</Text>
                 </Box>
               )}
 
               <Stack spacing={4} pt={2}>
                 <Button
+                  isLoading={loading}
                   loadingText="Submitting"
                   size="lg"
                   bg={buttonBgColor}
                   color="white"
-                  _hover={{
-                    bg: buttonHoverColor,
-                  }}
+                  _hover={{ bg: buttonHoverColor }}
                   onClick={handleSubmit}
-                  isLoading={loading}
                   leftIcon={<FiCheckCircle />}
                   boxShadow="md"
                   fontWeight="bold"
@@ -379,9 +299,7 @@ const RegistrarSignup = () => {
                   onClick={() => navigate("/registrar-login")}
                   borderColor="green.200"
                   color="green.600"
-                  _hover={{
-                    bg: "green.50",
-                  }}
+                  _hover={{ bg: "green.50" }}
                 >
                   Back to Login
                 </Button>
@@ -389,13 +307,8 @@ const RegistrarSignup = () => {
 
               <Text align="center" fontSize="sm" color={secondaryTextColor} mt={2}>
                 By signing up, you agree to our{" "}
-                <Text as="span" fontWeight="semibold" color={accentColor}>
-                  Terms of Service
-                </Text>{" "}
-                and{" "}
-                <Text as="span" fontWeight="semibold" color={accentColor}>
-                  Privacy Policy
-                </Text>
+                <Text as="span" fontWeight="semibold" color={accentColor}>Terms of Service</Text> and{" "}
+                <Text as="span" fontWeight="semibold" color={accentColor}>Privacy Policy</Text>
               </Text>
             </Stack>
           </Box>
