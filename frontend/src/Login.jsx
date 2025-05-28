@@ -90,13 +90,13 @@ const LecturerLogin = ({ setAccessToken, setUserRole }) => {
             // Store in localStorage
             localStorage.setItem('access_token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
-            localStorage.setItem('user_role', data.role);
+            ocalStorage.setItem('user_role', data.role.toLowerCase());
             if (data.user_id !== undefined) localStorage.setItem('user_id', data.user_id ?? '');
             if (data.username !== undefined) localStorage.setItem('username', data.username ?? '');
 
             // Update parent state
             setAccessToken(data.access);
-            setUserRole(data.role);
+            setUserRole(data.role.toLowerCase());
 
             // Show success toast
             toast({
