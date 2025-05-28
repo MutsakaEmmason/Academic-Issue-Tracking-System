@@ -20,10 +20,7 @@ const LecturerDashboard = () => {
     useEffect(() => {
         const token = localStorage.getItem('token');
 
-        if (!token) {
-            navigate('/lecturer-login');
-            return;
-        }
+        
 
         const fetchLecturerDetails = async () => {
             try {
@@ -125,7 +122,7 @@ const LecturerDashboard = () => {
                 duration: 5000,
                 isClosable: true,
             });
-            navigate('/lecturer-login');
+            
             return;
         }
 
