@@ -84,9 +84,25 @@ class IssueViewSet(viewsets.ModelViewSet):
             )
 
         return queryset
+    def get_permissions(self):
+        """
+        Instantiates and returns the list of permissions that this view requires.
+        """
+        if self.action == 'create':
+            # For the 'create' action (POST request), only allow authenticated students.
+            return [IsAuthenticated(), IsStudent()]
+        elif self.action in ['update', 'partial_update']:
+            # For updating issues, apply broader authentication but rely on
+            # the detailed logic within the `update` method itself for authorization.
+            return [IsAuthenticated()]
+        elif self.action == 'destroy':
+            # Example: Only registrars can delete issues. Adjust as needed.
+            return [IsAuthenticated(), IsRegistrar()]
+        # For 'list' and 'retrieve' (GET requests), use the default IsAuthenticated.
+        return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
-        if request.user.role != 'student':
+        
             return Response({"error": "Only students can submit issues."}, status=403)
 
         serializer = self.get_serializer(data=request.data)
