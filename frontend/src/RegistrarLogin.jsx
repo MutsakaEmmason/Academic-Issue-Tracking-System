@@ -87,7 +87,7 @@ const RegistrarLogin = ({ setAccessToken, setUserRole }) => {
             console.log('RegistrarLogin: Backend response:', data);
 
             // Store in localStorage
-            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('token', data.access);
             localStorage.setItem('refresh_token', data.refresh);
             localStorage.setItem('user_role', data.role.toLowerCase());
             if (data.user_id !== undefined) localStorage.setItem('user_id', data.user_id ?? '');
