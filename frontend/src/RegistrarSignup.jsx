@@ -91,8 +91,9 @@ const RegistrarSignup = () => {
       email,
       username: formData.username || email.split('@')[0],
       password,
-      fullName: `${first_name} ${last_name}`,
-      staffId: email, // Using email as staff ID if no separate field
+      first_name,
+      last_name,
+      staffId: email,
       role: "registrar",
       college
     };
