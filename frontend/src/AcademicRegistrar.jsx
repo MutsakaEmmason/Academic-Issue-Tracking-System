@@ -34,16 +34,14 @@ const AcademicRegistrarDashboard = () => {
     const navigate = useNavigate();
 
      useEffect(() => {
-        const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
+        console.log("Token in AcademicRegistrarDashboard useEffect:", token); // ADD THIS LINE
+    
         if (!token) {
-            // This case *should* be handled by ProtectedRoute already,
-            // but if it ever slips through (e.g., direct URL access without token),
-            // a toast is fine, but navigation should ideally be handled higher up.
-            // For now, let's remove the navigation to avoid conflicts.
             toast({ title: "Authentication token missing.", status: "error", duration: 5000, isClosable: true });
             setIsLoading(false); // Make sure loading state is cleared
-            return; // Stop execution if no token
-        }
+            return;
+    }
 
         // First fetch the registrar profile to get the college
         const fetchRegistrarProfile = async () => {
