@@ -127,7 +127,7 @@ CORS_ALLOWED_ORIGINS = [
    Deployment
 
 
-The project can be deployed on either Heroku or AWS. Follow the respective documentation for deployment setup.
+The project  deployed on either Heroku or AWS or Render. Follow the respective documentation for deployment setup.
 
 Heroku Deployment:
 
