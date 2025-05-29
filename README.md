@@ -9,7 +9,7 @@ The Academic Issue Tracking System (AITS) is a web-based platform designed to he
 
 Technologies Used
 
-Backend: Django, Django REST Framework (DRF) Frontend: React, Redux, React Toastify Database: PostgreSQL Hosting/Deployment: Heroku or AWS Version Control: Git, GitHub Testing: Pytest (Backend), Jest, React Testing Library (Frontend)
+Backend: Django, Django REST Framework (DRF) Frontend: React, Redux, React Toastify Database: PostgreSQL Hosting/Deployment: Heroku or AWS or render Version Control: Git, GitHub Testing: Pytest (Backend), Jest, React Testing Library (Frontend)
 
     Features
 
